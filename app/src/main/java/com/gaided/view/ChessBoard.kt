@@ -69,7 +69,7 @@ internal class ChessBoard @JvmOverloads constructor(
         val height = canvas.height.toFloat()
 
         canvas.drawRect(0f, 0f, width, borderSize, paintBorder)
-        canvas.drawRect(0f, height - borderSize, width, height, paintBorder);
+        canvas.drawRect(0f, height - borderSize, width, height, paintBorder)
         canvas.drawRect(0f, 0f, borderSize, height, paintBorder)
         canvas.drawRect(width - borderSize, 0f, width, height, paintBorder)
     }
@@ -113,9 +113,9 @@ internal class ChessBoard @JvmOverloads constructor(
     }
 
     private fun Square.toPaint() = if ((row + column) % 2 == 0) {
-        paintLightSquare
-    } else {
         paintDarkSquare
+    } else {
+        paintLightSquare
     }
 }
 
