@@ -36,7 +36,7 @@ internal class ArrowsDrawable(
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
         val radius = 45f
-        val angle = 45f
+        val angle = 60f
 
         //some angle calculations
         anglerad = ((PI * angle / 180.0f).toFloat())

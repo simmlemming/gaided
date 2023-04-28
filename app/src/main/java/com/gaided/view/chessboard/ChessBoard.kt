@@ -57,11 +57,11 @@ internal class ChessBoard @JvmOverloads constructor(
     }
 
     private var coroutineScope: CoroutineScope? = null
-    private val pieces = MutableStateFlow(PiecesDrawable(emptyMap(), emptySet(), paintBlackPieces))
+    private val pieces = MutableStateFlow(PiecesDrawable(emptyMap(), emptySet()))
     private val arrows = MutableStateFlow(ArrowsDrawable(emptyMap(), emptySet()))
 
     internal fun update(state: State) {
-        pieces.value = PiecesDrawable(squares, state.pieces, paintBlackPieces)
+        pieces.value = PiecesDrawable(squares, state.pieces)
         arrows.value = ArrowsDrawable(squares, state.arrows)
     }
 
@@ -177,7 +177,8 @@ internal class ChessBoard @JvmOverloads constructor(
             val EMPTY = State(setOf(), setOf())
         }
 
-        internal data class Piece(val position: SquareNotation)
+        internal data class Piece(val position: SquareNotation, val color: Int)
+
         internal data class Arrow(
             val start: SquareNotation,
             val end: SquareNotation,

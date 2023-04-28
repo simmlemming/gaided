@@ -37,31 +37,39 @@ class MainActivity : AppCompatActivity() {
 
 private val rnd = Random(System.currentTimeMillis())
 private fun randomState(): ChessBoard.State {
-    val pieces = randomPieces()
-    return ChessBoard.State(pieces, randomArrows(pieces))
+    val whitePieces = randomWhitePieces()
+    return ChessBoard.State(whitePieces + randomBlackPieces(), randomArrows(whitePieces))
 }
 
 private fun randomArrows(pieces: Set<ChessBoard.State.Piece>): Set<ChessBoard.State.Arrow> {
     val numberOfArrows = 3
-    return (0..numberOfArrows)
+    return (0 until numberOfArrows)
         .map {
             val start = pieces.random(rnd).position
-            val end = randomNotation()
+            val end = randomNotation(1, 2, 3, 4, 5, 6, 7, 8)
             ChessBoard.State.Arrow(start, end, Color.parseColor("#648EBA"))
         }
         .toSet()
 }
 
-private fun randomPieces(): Set<ChessBoard.State.Piece> {
-    val numberOfPieces = rnd.nextInt(16) + 16
+private fun randomWhitePieces(): Set<ChessBoard.State.Piece> {
+    val numberOfPieces = rnd.nextInt(8) + 4
     return (0..numberOfPieces)
-        .map { randomNotation() }
-        .map { ChessBoard.State.Piece(it) }
+        .map { randomNotation(1, 2, 3, 4, 5) }
+        .map { ChessBoard.State.Piece(it, Color.WHITE) }
         .toSet()
 }
 
-private fun randomNotation(): SquareNotation {
-    val row = rnd.nextInt(8) + 1
+private fun randomBlackPieces(): Set<ChessBoard.State.Piece> {
+    val numberOfPieces = rnd.nextInt(8) + 4
+    return (0..numberOfPieces)
+        .map { randomNotation(4, 5, 6, 7, 8) }
+        .map { ChessBoard.State.Piece(it, Color.BLACK) }
+        .toSet()
+}
+
+private fun randomNotation(vararg rows: Int): SquareNotation {
+    val row = rows.random(rnd)
     val column = rnd.nextInt(8) + 1
     return "${"_abcdefgh"[column]}${row}"
 }
