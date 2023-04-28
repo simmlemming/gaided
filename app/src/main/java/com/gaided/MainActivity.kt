@@ -1,5 +1,6 @@
 package com.gaided
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         val state = flow {
             while (currentCoroutineContext().isActive) {
                 emit(randomState())
-                delay(1000)
+                delay(2000)
             }
         }
 
@@ -36,19 +37,31 @@ class MainActivity : AppCompatActivity() {
 
 private val rnd = Random(System.currentTimeMillis())
 private fun randomState(): ChessBoard.State {
-    val numberOfPieces = rnd.nextInt(16) + 16
-    val pieces = (0..numberOfPieces)
-        .map {
-            val row = rnd.nextInt(8) + 1
-            val column = rnd.nextInt(8) + 1
-            row to "_abcdefgh"[column]
-        }
-        .map { ChessBoard.State.Piece("${it.second}${it.first}") }
-        .toSet()
-
-    return ChessBoard.State(pieces)
+    val pieces = randomPieces()
+    return ChessBoard.State(pieces, randomArrows(pieces))
 }
 
-private fun Set<SquareNotation>.toState() = ChessBoard.State(
-    map { ChessBoard.State.Piece(it) }.toSet()
-)
+private fun randomArrows(pieces: Set<ChessBoard.State.Piece>): Set<ChessBoard.State.Arrow> {
+    val numberOfArrows = 3
+    return (0..numberOfArrows)
+        .map {
+            val start = pieces.random(rnd).position
+            val end = randomNotation()
+            ChessBoard.State.Arrow(start, end, Color.parseColor("#648EBA"))
+        }
+        .toSet()
+}
+
+private fun randomPieces(): Set<ChessBoard.State.Piece> {
+    val numberOfPieces = rnd.nextInt(16) + 16
+    return (0..numberOfPieces)
+        .map { randomNotation() }
+        .map { ChessBoard.State.Piece(it) }
+        .toSet()
+}
+
+private fun randomNotation(): SquareNotation {
+    val row = rnd.nextInt(8) + 1
+    val column = rnd.nextInt(8) + 1
+    return "${"_abcdefgh"[column]}${row}"
+}

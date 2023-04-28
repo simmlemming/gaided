@@ -58,9 +58,11 @@ internal class ChessBoard @JvmOverloads constructor(
 
     private var coroutineScope: CoroutineScope? = null
     private val pieces = MutableStateFlow(PiecesDrawable(emptyMap(), emptySet(), paintBlackPieces))
+    private val arrows = MutableStateFlow(ArrowsDrawable(emptyMap(), emptySet()))
 
     internal fun update(state: State) {
         pieces.value = PiecesDrawable(squares, state.pieces, paintBlackPieces)
+        arrows.value = ArrowsDrawable(squares, state.arrows)
     }
 
     override fun onAttachedToWindow() {
@@ -70,6 +72,9 @@ internal class ChessBoard @JvmOverloads constructor(
         coroutineScope = CoroutineScope(Dispatchers.Main).also {
             it.launch {
                 pieces.collect { invalidate() }
+            }
+            it.launch {
+                arrows.collect { invalidate() }
             }
         }
     }
@@ -97,6 +102,11 @@ internal class ChessBoard @JvmOverloads constructor(
         drawColumnLetters(canvas)
 
         with(pieces.value) {
+            setBounds(0, 0, canvas.width, canvas.height)
+            draw(canvas)
+        }
+
+        with(arrows.value) {
             setBounds(0, 0, canvas.width, canvas.height)
             draw(canvas)
         }
@@ -159,12 +169,20 @@ internal class ChessBoard @JvmOverloads constructor(
     private fun launch(block: suspend CoroutineScope.() -> Unit) =
         coroutineScope?.launch(block = block)
 
-    internal data class State(val pieces: Set<Piece>) {
+    internal data class State(
+        val pieces: Set<Piece>,
+        val arrows: Set<Arrow>
+    ) {
         companion object {
-            val EMPTY = State(setOf())
+            val EMPTY = State(setOf(), setOf())
         }
 
         internal data class Piece(val position: SquareNotation)
+        internal data class Arrow(
+            val start: SquareNotation,
+            val end: SquareNotation,
+            val color: Int
+        )
     }
 
     internal data class Square(val row: Int, val column: Int) {
