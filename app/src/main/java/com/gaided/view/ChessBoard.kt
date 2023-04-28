@@ -2,10 +2,16 @@ package com.gaided.view
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-private typealias SquareNotation = String
+internal typealias SquareNotation = String
 
 @Suppress("LocalVariableName")
 internal class ChessBoard @JvmOverloads constructor(
@@ -30,6 +36,10 @@ internal class ChessBoard @JvmOverloads constructor(
         textSize = 36f
     }
 
+    private val paintBlackPieces = Paint().apply {
+        color = Color.BLACK
+    }
+
     private val squares: Map<SquareNotation, Square>
 
     private val borderSize = 48f
@@ -47,6 +57,30 @@ internal class ChessBoard @JvmOverloads constructor(
         squares = _squares.toMap()
     }
 
+    private var coroutineScope: CoroutineScope? = null
+    private val pieces = MutableStateFlow(PiecesDrawable(setOf(), paintBlackPieces))
+
+    internal fun update(state: State) {
+        pieces.value = PiecesDrawable(state.pieces, paintBlackPieces)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        require(coroutineScope == null)
+
+        coroutineScope = CoroutineScope(Dispatchers.Main).also {
+            it.launch {
+                pieces.collect { invalidate() }
+            }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        checkNotNull(coroutineScope).cancel()
+        coroutineScope = null
+        super.onDetachedFromWindow()
+    }
+
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
         canvas ?: return
@@ -62,6 +96,34 @@ internal class ChessBoard @JvmOverloads constructor(
         drawBorder(canvas)
         drawRowNumbers(canvas)
         drawColumnLetters(canvas)
+
+        with(pieces.value) {
+            setBounds(0, 0, canvas.width, canvas.height)
+            draw(canvas)
+        }
+    }
+
+    private inner class PiecesDrawable(
+        private val pieces: Set<State.Piece>,
+        private val blackPaint: Paint
+    ) : Drawable() {
+        override fun draw(canvas: Canvas) {
+            for (piece in pieces) {
+                val center = squares[piece.position]!!.center
+                canvas.drawCircle(center.x, center.y, 24f, blackPaint)
+            }
+        }
+
+        override fun setAlpha(alpha: Int) {}
+
+        override fun setColorFilter(colorFilter: ColorFilter?) {}
+
+        override fun getOpacity(): Int = PixelFormat.OPAQUE
+
+        override fun equals(other: Any?) =
+            this.pieces == (other as? PiecesDrawable)?.pieces
+
+        override fun hashCode() = pieces.hashCode()
     }
 
     private fun drawBorder(canvas: Canvas) {
@@ -116,6 +178,17 @@ internal class ChessBoard @JvmOverloads constructor(
         paintDarkSquare
     } else {
         paintLightSquare
+    }
+
+    private fun launch(block: suspend CoroutineScope.() -> Unit) =
+        coroutineScope?.launch(block = block)
+
+    internal data class State(val pieces: Set<Piece>) {
+        companion object {
+            val EMPTY = State(setOf())
+        }
+
+        internal data class Piece(val position: SquareNotation)
     }
 }
 
