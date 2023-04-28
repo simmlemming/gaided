@@ -3,8 +3,8 @@ package com.gaided
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.gaided.view.ChessBoard
-import com.gaided.view.SquareNotation
+import com.gaided.view.chessboard.ChessBoard
+import com.gaided.view.chessboard.SquareNotation
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

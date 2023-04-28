@@ -1,8 +1,7 @@
-package com.gaided.view
+package com.gaided.view.chessboard
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import kotlinx.coroutines.CoroutineScope
@@ -58,10 +57,10 @@ internal class ChessBoard @JvmOverloads constructor(
     }
 
     private var coroutineScope: CoroutineScope? = null
-    private val pieces = MutableStateFlow(PiecesDrawable(setOf(), paintBlackPieces))
+    private val pieces = MutableStateFlow(PiecesDrawable(emptyMap(), emptySet(), paintBlackPieces))
 
     internal fun update(state: State) {
-        pieces.value = PiecesDrawable(state.pieces, paintBlackPieces)
+        pieces.value = PiecesDrawable(squares, state.pieces, paintBlackPieces)
     }
 
     override fun onAttachedToWindow() {
@@ -101,29 +100,6 @@ internal class ChessBoard @JvmOverloads constructor(
             setBounds(0, 0, canvas.width, canvas.height)
             draw(canvas)
         }
-    }
-
-    private inner class PiecesDrawable(
-        private val pieces: Set<State.Piece>,
-        private val blackPaint: Paint
-    ) : Drawable() {
-        override fun draw(canvas: Canvas) {
-            for (piece in pieces) {
-                val center = squares[piece.position]!!.center
-                canvas.drawCircle(center.x, center.y, 24f, blackPaint)
-            }
-        }
-
-        override fun setAlpha(alpha: Int) {}
-
-        override fun setColorFilter(colorFilter: ColorFilter?) {}
-
-        override fun getOpacity(): Int = PixelFormat.OPAQUE
-
-        override fun equals(other: Any?) =
-            this.pieces == (other as? PiecesDrawable)?.pieces
-
-        override fun hashCode() = pieces.hashCode()
     }
 
     private fun drawBorder(canvas: Canvas) {
@@ -190,33 +166,33 @@ internal class ChessBoard @JvmOverloads constructor(
 
         internal data class Piece(val position: SquareNotation)
     }
-}
 
-private data class Square(val row: Int, val column: Int) {
-    val topLeftCorner: PointF
-        get() = PointF(
-            (column - 1) * sideLength + borderLength,
-            (8 - row) * sideLength + borderLength
-        )
+    internal data class Square(val row: Int, val column: Int) {
+        private val topLeftCorner: PointF
+            get() = PointF(
+                (column - 1) * sideLength + borderLength,
+                (8 - row) * sideLength + borderLength
+            )
 
-    val center: PointF
-        get() = PointF(topLeftCorner.x + sideLength / 2f, topLeftCorner.y + sideLength / 2f)
+        val center: PointF
+            get() = PointF(topLeftCorner.x + sideLength / 2f, topLeftCorner.y + sideLength / 2f)
 
-    val notation: String = "${COLUMN_LETTERS[column]}$row"
+        val notation: String = "${COLUMN_LETTERS[column]}$row"
 
-    fun draw(canvas: Canvas, paint: Paint) {
-        canvas.drawRect(
-            topLeftCorner.x,
-            topLeftCorner.y,
-            topLeftCorner.x + sideLength,
-            topLeftCorner.y + sideLength,
-            paint
-        )
-    }
+        fun draw(canvas: Canvas, paint: Paint) {
+            canvas.drawRect(
+                topLeftCorner.x,
+                topLeftCorner.y,
+                topLeftCorner.x + sideLength,
+                topLeftCorner.y + sideLength,
+                paint
+            )
+        }
 
-    companion object {
-        var sideLength: Float = 0f
-        var borderLength: Float = 0f
+        companion object {
+            var sideLength: Float = 0f
+            var borderLength: Float = 0f
+        }
     }
 }
 
