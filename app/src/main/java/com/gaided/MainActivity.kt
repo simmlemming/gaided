@@ -2,15 +2,14 @@ package com.gaided
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.gaided.api.StockfishApi
 import com.gaided.view.chessboard.ChessBoard
 import com.gaided.view.chessboard.SquareNotation
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +30,14 @@ class MainActivity : AppCompatActivity() {
             state.collect {
                 boardView.update(it)
             }
+        }
+
+        val api = StockfishApi("http://10.0.2.2:8080")
+        val engine = Engine(api)
+
+        lifecycleScope.launch {
+            val response = engine.getFenPosition()
+            Log.i("Gaided", response)
         }
     }
 }
