@@ -8,8 +8,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 internal class ArrowsDrawable(
-    private val squares: Map<SquareNotation, ChessBoard.Square>,
-    private val arrows: Set<ChessBoard.State.Arrow>,
+    private val squares: Map<SquareNotation, ChessBoardView.Square>,
+    private val arrows: Set<ChessBoardView.State.Arrow>,
 ) : Drawable() {
     override fun draw(canvas: Canvas) {
         for (arrow in arrows) {

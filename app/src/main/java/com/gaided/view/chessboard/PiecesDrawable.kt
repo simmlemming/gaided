@@ -7,8 +7,8 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
 internal class PiecesDrawable(
-    private val squares: Map<SquareNotation, ChessBoard.Square>,
-    private val pieces: Set<ChessBoard.State.Piece>
+    private val squares: Map<SquareNotation, ChessBoardView.Square>,
+    private val pieces: Set<ChessBoardView.State.Piece>
 ) : Drawable() {
     override fun draw(canvas: Canvas) {
         for (piece in pieces) {
