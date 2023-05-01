@@ -45,7 +45,7 @@ private fun Board.Arrow.toArrowState() = ChessBoardView.State.Arrow(
     Color.parseColor("#648EBA")
 )
 
-private fun Map.Entry<Board.Square, Board.Piece>.toPieceState() = ChessBoardView.State.Piece(
-    this.key.notation,
-    if (this.value is Board.Piece.WhitePawn) Color.WHITE else Color.BLACK
+private fun Map.Entry<SquareNotation, Board.Piece>.toPieceState() = ChessBoardView.State.Piece(
+    this.key,
+    if (this.value.isBlack) Color.BLACK else Color.WHITE
 )

@@ -12,12 +12,12 @@ internal typealias FenString = String
 public typealias SquareNotation = String
 
 public class Board {
-    private val _pieces = MutableSharedFlow<Map<Square, Piece>>(
+    private val _pieces = MutableSharedFlow<Map<SquareNotation, Piece>>(
         // https://github.com/Kotlin/kotlinx.coroutines/issues/2387
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
         extraBufferCapacity = 1
     )
-    public val pieces: Flow<Map<Square, Piece>> = _pieces.asSharedFlow()
+    public val pieces: Flow<Map<SquareNotation, Piece>> = _pieces.asSharedFlow()
 
     private val _arrows = MutableSharedFlow<Set<Arrow>>(
         // https://github.com/Kotlin/kotlinx.coroutines/issues/2387
@@ -32,8 +32,8 @@ public class Board {
         val pieces = randomState()
 
         val whiteNotations = pieces
-            .filter { it.value is Piece.WhitePawn }
-            .map { it.key.notation }
+            .filter { !it.value.isBlack }
+            .map { it.key }
             .toSet()
 
         _pieces.tryEmit(pieces)
@@ -44,26 +44,22 @@ public class Board {
         _pieces.tryEmit(fenConverter.fromFen(position))
     }
 
-    public sealed class Piece {
-        public object BlackPawn : Piece()
-        public object WhitePawn : Piece()
+    public data class Piece(public val symbol: Char) {
+        public val isBlack: Boolean
+            get() = symbol.isLowerCase()
     }
-
-    public data class Square(val notation: SquareNotation)
 
     public data class Arrow(val start: SquareNotation, val end: SquareNotation)
 }
 
 
 private val rnd = Random(System.currentTimeMillis())
-private fun randomState(): Map<Board.Square, Board.Piece> {
+private fun randomState(): Map<SquareNotation, Board.Piece> {
     val whiteSquares = randomSquareNotation(1, 2, 3, 4, 5)
-        .map { Board.Square(it) }
     val blackSquares = randomSquareNotation(4, 5, 6, 7, 8)
-        .map { Board.Square(it) }
 
-    val whitePieces = whiteSquares.associateWith { Board.Piece.WhitePawn }
-    val blackPieces = blackSquares.associateWith { Board.Piece.BlackPawn }
+    val whitePieces = whiteSquares.associateWith { Board.Piece('P') }
+    val blackPieces = blackSquares.associateWith { Board.Piece('p') }
 
     return whitePieces + blackPieces
 }
