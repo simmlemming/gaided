@@ -4,13 +4,12 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.gaided.domain.SquareNotation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
-internal typealias SquareNotation = String
 
 @Suppress("LocalVariableName")
 internal class ChessBoardView @JvmOverloads constructor(

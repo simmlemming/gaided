@@ -1,16 +1,18 @@
-package com.gaided
+@file:Suppress("RedundantVisibilityModifier")
 
-import com.gaided.api.StockfishApi
+package com.gaided.domain
+
+import com.gaided.domain.api.StockfishApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-internal class Engine(
+public class Engine(
     private val api: StockfishApi,
     private val ioContext: CoroutineContext = Dispatchers.IO
 ) {
 
-    suspend fun getFenPosition(): String = withContext(ioContext) {
+    public suspend fun getFenPosition(): String = withContext(ioContext) {
         val response = api.getFenPosition()
         response
     }

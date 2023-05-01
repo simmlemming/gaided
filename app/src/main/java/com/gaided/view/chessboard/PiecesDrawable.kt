@@ -1,10 +1,12 @@
 package com.gaided.view.chessboard
 
 import android.graphics.Canvas
+
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
+import com.gaided.domain.SquareNotation
 
 internal class PiecesDrawable(
     private val squares: Map<SquareNotation, ChessBoardView.Square>,

@@ -1,4 +1,4 @@
-package com.gaided
+package gaided
 
 import org.junit.Test
 
@@ -10,7 +10,7 @@ import org.junit.Test
 class FenTest {
     @Test
     fun `from fen - valid fen`() {
-        val fenConverter = FenConverter()
+        val fenConverter = com.gaided.domain.FenConverter()
 
         val actual =
             fenConverter.fromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")

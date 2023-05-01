@@ -2,6 +2,7 @@ package com.gaided.view.chessboard
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import com.gaided.domain.SquareNotation
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -60,6 +61,7 @@ internal class ArrowsDrawable(
         path.close()
         canvas.drawPath(path, paint)
     }
+
     override fun setAlpha(alpha: Int) {}
 
     override fun setColorFilter(colorFilter: ColorFilter?) {}

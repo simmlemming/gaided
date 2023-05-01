@@ -1,16 +1,18 @@
-package com.gaided.api
+@file:Suppress("RedundantVisibilityModifier")
+
+package com.gaided.domain.api
 
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
-internal class StockfishApi(
+public class StockfishApi(
     baseUrl: String
 ) {
 
     private val url = URL("$baseUrl/call")
 
-    fun getFenPosition(): String =
+    public fun getFenPosition(): String =
         call("get_fen_position")
 
     private fun call(method: String, vararg params: Any): String {
