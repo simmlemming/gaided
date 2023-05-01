@@ -33,7 +33,7 @@ internal class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 while (currentCoroutineContext().isActive) {
-                    viewModel.showRandomBoard()
+                    viewModel.move("", "")
                     delay(1000)
                 }
             }
