@@ -42,6 +42,7 @@ public class Board {
 
     internal fun setPosition(position: FenString) {
         _pieces.tryEmit(fenConverter.fromFen(position))
+        _arrows.tryEmit(emptySet())
     }
 
     public data class Piece(public val symbol: Char) {

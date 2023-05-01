@@ -7,7 +7,9 @@ public class Game(
     public val board: Board = Board()
 ) {
 
-    public fun move(from: SquareNotation, to: SquareNotation) {
-        board.generateRandomPosition()
+    public suspend fun move(from: SquareNotation, to: SquareNotation) {
+//        board.generateRandomPosition()
+        val fenPosition = engine.getFenPosition()
+        board.setPosition(fenPosition)
     }
 }

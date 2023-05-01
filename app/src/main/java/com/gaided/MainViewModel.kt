@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.gaided.domain.Board
 import com.gaided.domain.SquareNotation
 import com.gaided.view.chessboard.ChessBoardView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 internal class MainViewModel(
     private val game: com.gaided.domain.Game
@@ -25,9 +27,12 @@ internal class MainViewModel(
         ChessBoardView.State.EMPTY
     )
 
-    fun move(from: SquareNotation, to: SquareNotation) {
+    fun move(from: SquareNotation, to: SquareNotation) = launch {
         game.move(from, to)
     }
+
+    private fun launch(block: suspend CoroutineScope.() -> Unit) =
+        viewModelScope.launch(block = block)
 
     internal class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
