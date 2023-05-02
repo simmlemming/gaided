@@ -2,6 +2,7 @@
 
 package com.gaided.domain.api
 
+import com.gaided.domain.FenString
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -16,14 +17,26 @@ public open class StockfishApi(
     public fun getFenPosition(): String =
         call("get_fen_position")
 
+    public fun setFenPosition(position: FenString) {
+        call("set_fen_position", position)
+    }
+
     public fun makeMovesFromCurrentPosition(moves: List<String>): String =
         call("make_moves_from_current_position", moves)
 
-    private fun call(method: String, vararg params: Any): String {
+    protected open fun formatArgs(args: List<*>): String = args.joinToString {
+        when (it) {
+            is String -> "\"$it\""
+            is List<*> -> "[${formatArgs(it)}]"
+            else -> it.toString()
+        }
+    }
+
+    private fun call(method: String, vararg args: Any): String {
         val requestBody = """
             {
                 "method": "$method",
-                "args": []
+                "args": [${formatArgs(args.asList())}]
             }
             """.trimIndent()
 
