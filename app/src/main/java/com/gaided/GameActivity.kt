@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.gaided.domain.MoveNotation
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.player.PlayerView
 import kotlinx.coroutines.delay
@@ -17,32 +18,32 @@ internal class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val player1View = findViewById<PlayerView>(R.id.player1)
-        val player2View = findViewById<PlayerView>(R.id.player2)
+        val playerWhiteView = findViewById<PlayerView>(R.id.player_white)
+        val playerBlackView = findViewById<PlayerView>(R.id.player_black)
 
         val boardView = findViewById<ChessBoardView>(R.id.board)
 
         repeatOnResumed {
-            viewModel.boardState.collect {
+            viewModel.board.collect {
                 boardView.update(it)
             }
         }
 
         repeatOnResumed {
-            viewModel.player1.collect {
-                player1View.update(it, object : PlayerView.Listener {
-                    override fun onMoveClick(id: Int) {
-                        viewModel.onPlayer1MoveSelected(id)
+            viewModel.playerWhite.collect {
+                playerWhiteView.update(it, object : PlayerView.Listener {
+                    override fun onMoveClick(move: MoveNotation) {
+                        viewModel.onMoveClick(Game.Player.White, move)
                     }
                 })
             }
         }
 
         repeatOnResumed {
-            viewModel.player2.collect {
-                player2View.update(it, object : PlayerView.Listener {
-                    override fun onMoveClick(id: Int) {
-                        viewModel.onPlayer2MoveSelected(id)
+            viewModel.playerBlack.collect {
+                playerBlackView.update(it, object : PlayerView.Listener {
+                    override fun onMoveClick(move: MoveNotation) {
+                        viewModel.onMoveClick(Game.Player.Black, move)
                     }
                 })
             }
@@ -54,13 +55,13 @@ internal class GameActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             delay(3000)
-            viewModel.move("e2", "e3")
+            viewModel.move("e2e3")
         }
 
         repeatOnResumed {
             viewModel.userMessage.collect {
                 showMessageIfNotEmpty(it) {
-                    viewModel.userMessageShown()
+                    viewModel.onUserMessageShown()
                 }
             }
         }

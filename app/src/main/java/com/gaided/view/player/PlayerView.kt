@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import com.gaided.R
+import com.gaided.domain.MoveNotation
+import com.gaided.domain.SquareNotation
 
 internal class PlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -22,21 +24,21 @@ internal class PlayerView @JvmOverloads constructor(
     }
 
     fun update(state: State, listener: Listener) {
-        progressView.visibility = if (state.progressVisible) View.VISIBLE else View.INVISIBLE
+        progressView.visibility = if (state.progressVisible) View.VISIBLE else View.GONE
         move1View.update(state.move1)
         move2View.update(state.move2)
         move3View.update(state.move3)
 
         move1View.setOnClickListener {
-            listener.onMoveClick(state.move1.id)
+            listener.onMoveClick(state.move1.move)
         }
 
         move2View.setOnClickListener {
-            listener.onMoveClick(state.move2.id)
+            listener.onMoveClick(state.move2.move)
         }
 
         move3View.setOnClickListener {
-            listener.onMoveClick(state.move3.id)
+            listener.onMoveClick(state.move3.move)
         }
     }
 
@@ -49,10 +51,11 @@ internal class PlayerView @JvmOverloads constructor(
         val progressVisible: Boolean,
         val move1: Move,
         val move2: Move,
-        val move3: Move,
+        val move3: Move
     ) {
+
         data class Move(
-            val id: Int,
+            val move: MoveNotation,
             val isVisible: Boolean,
             val text: String
         )
@@ -60,14 +63,16 @@ internal class PlayerView @JvmOverloads constructor(
         companion object {
             val EMPTY = State(
                 false,
-                Move(0, false, ""),
-                Move(1, false, ""),
-                Move(2, false, ""),
+                Move("", false, ""),
+                Move("", false, ""),
+                Move("", false, ""),
             )
+
+            val OPPONENT_MOVE = EMPTY
         }
     }
 
     interface Listener {
-        fun onMoveClick(id: Int)
+        fun onMoveClick(move: MoveNotation)
     }
 }

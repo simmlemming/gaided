@@ -7,6 +7,7 @@ import kotlin.random.Random
 
 public typealias FenString = String
 public typealias SquareNotation = String
+public typealias MoveNotation = String
 
 public class Board {
     private val _fenPosition = MutableStateFlow(FEN_START_POSITION)

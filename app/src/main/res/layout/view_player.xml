@@ -7,9 +7,10 @@
 
     <ProgressBar
         android:id="@+id/progress_view"
-        style="@style/Widget.Material3.CircularProgressIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -22,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="e2e4" />
 
         <Button
@@ -30,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="h2e5" />
 
         <Button
@@ -38,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="h2e5" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>
