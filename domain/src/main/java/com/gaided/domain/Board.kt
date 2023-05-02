@@ -5,7 +5,7 @@ package com.gaided.domain
 import kotlinx.coroutines.flow.*
 import kotlin.random.Random
 
-internal typealias FenString = String
+public typealias FenString = String
 public typealias SquareNotation = String
 
 public class Board {
@@ -19,7 +19,7 @@ public class Board {
 
     private val fenConverter = FenConverter()
 
-    internal fun setPosition(position: FenString) {
+    public fun setPosition(position: FenString) {
         _fenPosition.value = position
     }
 
@@ -31,7 +31,7 @@ public class Board {
     public data class Arrow(val start: SquareNotation, val end: SquareNotation)
 }
 
-private const val FEN_START_POSITION: FenString =
+public const val FEN_START_POSITION: FenString =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 private val rnd = Random(System.currentTimeMillis())

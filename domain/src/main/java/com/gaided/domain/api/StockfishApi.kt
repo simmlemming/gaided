@@ -24,6 +24,9 @@ public open class StockfishApi(
     public fun makeMovesFromCurrentPosition(moves: List<String>): String =
         call("make_moves_from_current_position", moves)
 
+    public fun getTopMoves(numberOfMoves: Int): String =
+        call("get_top_moves", numberOfMoves)
+
     protected open fun formatArgs(args: List<*>): String = args.joinToString {
         when (it) {
             is String -> "\"$it\""
@@ -39,6 +42,8 @@ public open class StockfishApi(
                 "args": [${formatArgs(args.asList())}]
             }
             """.trimIndent()
+
+        println(requestBody)
 
         var connection: HttpURLConnection? = null
         try {

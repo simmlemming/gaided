@@ -17,6 +17,19 @@ public class Engine(
         response
     }
 
-    public suspend fun makeMovesFromCurrentPosition(from: SquareNotation, to: SquareNotation) {
+    public suspend fun getTopMoves(numberOfMoves: Int): String = withContext(ioContext) {
+        val moves = api.getTopMoves(numberOfMoves)
+        println(moves)
+        moves
+    }
+
+    public suspend fun makeMoveFromCurrentPosition(from: SquareNotation, to: SquareNotation): Unit =
+        withContext(ioContext) {
+            val moves = listOf("$from$to")
+            api.makeMovesFromCurrentPosition(moves)
+        }
+
+    public suspend fun setFenPosition(position: FenString): Unit = withContext(ioContext) {
+        api.setFenPosition(position)
     }
 }

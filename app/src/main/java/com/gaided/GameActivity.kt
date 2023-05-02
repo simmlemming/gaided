@@ -7,14 +7,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gaided.view.chessboard.ChessBoardView
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-internal class MainActivity : AppCompatActivity() {
+internal class GameActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<MainViewModel>(factoryProducer = { MainViewModel.Factory() })
+    private val viewModel by viewModels<GameViewModel>(factoryProducer = { GameViewModel.Factory() })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +28,14 @@ internal class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.move("e2", "e4")
+        if (savedInstanceState == null) {
+            viewModel.start()
+        }
+
+        lifecycleScope.launch {
+            delay(3000)
+            viewModel.move("e2", "e4")
+        }
 
 //        lifecycleScope.launch {
 //            repeatOnLifecycle(Lifecycle.State.RESUMED) {

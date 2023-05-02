@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal class MainViewModel(
-    private val game: com.gaided.domain.Game
-) : ViewModel() {
+internal class GameViewModel(private val game: Game) : ViewModel() {
     val boardState = combine(game.board.pieces, game.board.arrows) { pieces, arrows ->
         ChessBoardView.State(
             pieces.map { it.toPieceState() }.toSet(),
@@ -26,6 +24,10 @@ internal class MainViewModel(
         SharingStarted.WhileSubscribed(5000),
         ChessBoardView.State.EMPTY
     )
+
+    fun start() = launch {
+        game.start()
+    }
 
     fun move(from: SquareNotation, to: SquareNotation) = launch {
         game.move(from, to)
@@ -38,8 +40,8 @@ internal class MainViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val api = com.gaided.domain.api.StockfishApi("http://10.0.2.2:8080")
             val engine = com.gaided.domain.Engine(api)
-            val game = com.gaided.domain.Game(engine, Board())
-            return MainViewModel(game) as T
+            val game = Game(engine, Board())
+            return GameViewModel(game) as T
         }
     }
 }
