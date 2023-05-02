@@ -20,6 +20,7 @@ internal class Game(
         val fenPosition = engine.getFenPosition()
         board.setPosition(fenPosition)
 
-        engine.getTopMoves(3)
+        val topMoves = engine.getTopMoves(3)
+        board.setTopMoves(topMoves)
     }
 }

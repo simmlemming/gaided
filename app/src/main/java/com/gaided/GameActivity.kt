@@ -30,7 +30,7 @@ internal class GameActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             delay(3000)
-            viewModel.move("e2", "e4")
+            viewModel.move("e2", "e3")
         }
 
         repeatOnResumed {

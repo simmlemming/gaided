@@ -14,14 +14,25 @@ public class Board {
         fenConverter.fromFen(it)
     }
 
-    private val _arrows = MutableStateFlow<Set<Arrow>>(emptySet())
-    public val arrows: Flow<Set<Arrow>> = _arrows.asStateFlow()
+    private val _topMovesArrows = MutableStateFlow(emptyList<Arrow>())
+    public val arrows: Flow<List<Arrow>> = _topMovesArrows.asStateFlow()
 
     private val fenConverter = FenConverter()
 
     public fun setPosition(position: FenString) {
         _fenPosition.value = position
     }
+
+    public fun setTopMoves(topMoves: List<Engine.TopMove>) {
+        _topMovesArrows.value = topMoves.map {
+            it.toArrow()
+        }
+    }
+
+    private fun Engine.TopMove.toArrow() = Arrow(
+        this.move.take(2),
+        this.move.takeLast(2),
+    )
 
     public data class Piece(public val symbol: Char) {
         public val isBlack: Boolean
