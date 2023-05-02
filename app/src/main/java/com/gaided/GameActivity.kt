@@ -3,9 +3,7 @@ package com.gaided
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.gaided.view.chessboard.ChessBoardView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,11 +18,9 @@ internal class GameActivity : AppCompatActivity() {
 
         val boardView = findViewById<ChessBoardView>(R.id.board)
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.boardState.collect {
-                    boardView.update(it)
-                }
+        repeatOnResumed {
+            viewModel.boardState.collect {
+                boardView.update(it)
             }
         }
 
@@ -37,25 +33,12 @@ internal class GameActivity : AppCompatActivity() {
             viewModel.move("e2", "e4")
         }
 
-//        lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-//                while (currentCoroutineContext().isActive) {
-//                    viewModel.move("", "")
-//                    delay(1000)
-//                }
-//            }
-//        }
-
-//        val api = StockfishApi("http://10.0.2.2:8080")
-//        val engine = Engine(api)
-//
-//        lifecycleScope.launch {
-//            try {
-//                val response = engine.getFenPosition()
-//                Log.i("Gaided", response)
-//            } catch (e: IOException) {
-//                Log.e("Gaided", "", e)
-//            }
-//        }
+        repeatOnResumed {
+            viewModel.userMessage.collect {
+                showMessageIfNotEmpty(it) {
+                    viewModel.userMessageShown()
+                }
+            }
+        }
     }
 }
