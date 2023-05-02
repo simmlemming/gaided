@@ -2,47 +2,25 @@
 
 package com.gaided.domain
 
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlin.random.Random
 
 internal typealias FenString = String
 public typealias SquareNotation = String
 
 public class Board {
-    private val _pieces = MutableSharedFlow<Map<SquareNotation, Piece>>(
-        // https://github.com/Kotlin/kotlinx.coroutines/issues/2387
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        extraBufferCapacity = 1
-    )
-    public val pieces: Flow<Map<SquareNotation, Piece>> = _pieces.asSharedFlow()
+    private val _fenPosition = MutableStateFlow(FEN_START_POSITION)
+    public val pieces: Flow<Map<SquareNotation, Piece>> = _fenPosition.map {
+        fenConverter.fromFen(it)
+    }
 
-    private val _arrows = MutableSharedFlow<Set<Arrow>>(
-        // https://github.com/Kotlin/kotlinx.coroutines/issues/2387
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        extraBufferCapacity = 1
-    )
-    public val arrows: Flow<Set<Arrow>> = _arrows.asSharedFlow()
+    private val _arrows = MutableStateFlow<Set<Arrow>>(emptySet())
+    public val arrows: Flow<Set<Arrow>> = _arrows.asStateFlow()
 
     private val fenConverter = FenConverter()
 
-    internal fun generateRandomPosition() {
-        val pieces = randomState()
-
-        val whiteNotations = pieces
-            .filter { !it.value.isBlack }
-            .map { it.key }
-            .toSet()
-
-        _pieces.tryEmit(pieces)
-        _arrows.tryEmit(randomArrows(whiteNotations))
-    }
-
     internal fun setPosition(position: FenString) {
-        _pieces.tryEmit(fenConverter.fromFen(position))
-        _arrows.tryEmit(emptySet())
+        _fenPosition.value = position
     }
 
     public data class Piece(public val symbol: Char) {
@@ -53,6 +31,8 @@ public class Board {
     public data class Arrow(val start: SquareNotation, val end: SquareNotation)
 }
 
+private const val FEN_START_POSITION: FenString =
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 private val rnd = Random(System.currentTimeMillis())
 private fun randomState(): Map<SquareNotation, Board.Piece> {
