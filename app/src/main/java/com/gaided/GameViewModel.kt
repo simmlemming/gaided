@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.gaided.domain.Board
 import com.gaided.domain.SquareNotation
 import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.view.player.PlayerView
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -28,12 +29,24 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
+    private val _player1 = MutableStateFlow(PlayerView.State.EMPTY)
+    val player1 = _player1.asStateFlow()
+
+    private val _player2 = MutableStateFlow(PlayerView.State.EMPTY)
+    val player2 = _player2.asStateFlow()
+
     fun start() = launch {
         game.start()
     }
 
     fun move(from: SquareNotation, to: SquareNotation) = launch {
-        game.move(from, to)
+        game.move(Game.Player.White, from, to)
+    }
+
+    fun onPlayer1MoveSelected(id: Int) {
+    }
+
+    fun onPlayer2MoveSelected(id: Int) {
     }
 
     private fun launch(block: suspend CoroutineScope.() -> Unit) =

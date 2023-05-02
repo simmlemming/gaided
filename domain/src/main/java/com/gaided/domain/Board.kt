@@ -46,6 +46,7 @@ public const val FEN_START_POSITION: FenString =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 private val rnd = Random(System.currentTimeMillis())
+
 private fun randomState(): Map<SquareNotation, Board.Piece> {
     val whiteSquares = randomSquareNotation(1, 2, 3, 4, 5)
     val blackSquares = randomSquareNotation(4, 5, 6, 7, 8)
