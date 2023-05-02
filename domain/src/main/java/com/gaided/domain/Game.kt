@@ -8,8 +8,8 @@ public class Game(
 ) {
 
     public suspend fun move(from: SquareNotation, to: SquareNotation) {
-//        board.generateRandomPosition()
-        val fenPosition = engine.getFenPosition()
-        board.setPosition(fenPosition)
+        engine.makeMovesFromCurrentPosition(from, to)
+//        val fenPosition = engine.getFenPosition()
+//        board.setPosition(fenPosition)
     }
 }

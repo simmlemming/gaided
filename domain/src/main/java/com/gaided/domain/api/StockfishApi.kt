@@ -6,14 +6,18 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
-public class StockfishApi(
-    baseUrl: String
+public open class StockfishApi(
+    baseUrl: String,
+    private val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection }
 ) {
 
     private val url = URL("$baseUrl/call")
 
     public fun getFenPosition(): String =
         call("get_fen_position")
+
+    public fun makeMovesFromCurrentPosition(moves: List<String>): String =
+        call("make_moves_from_current_position", moves)
 
     private fun call(method: String, vararg params: Any): String {
         val requestBody = """
@@ -25,7 +29,7 @@ public class StockfishApi(
 
         var connection: HttpURLConnection? = null
         try {
-            connection = (url.openConnection() as HttpURLConnection).apply {
+            connection = openConnection(url).apply {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Content-Length", requestBody.length.toString())

@@ -30,14 +30,16 @@ internal class MainActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                while (currentCoroutineContext().isActive) {
-                    viewModel.move("", "")
-                    delay(1000)
-                }
-            }
-        }
+        viewModel.move("e2", "e4")
+
+//        lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+//                while (currentCoroutineContext().isActive) {
+//                    viewModel.move("", "")
+//                    delay(1000)
+//                }
+//            }
+//        }
 
 //        val api = StockfishApi("http://10.0.2.2:8080")
 //        val engine = Engine(api)

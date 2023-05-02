@@ -16,4 +16,7 @@ public class Engine(
         val response = api.getFenPosition()
         response
     }
+
+    public suspend fun makeMovesFromCurrentPosition(from: SquareNotation, to: SquareNotation) {
+    }
 }
