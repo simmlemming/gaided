@@ -56,11 +56,11 @@ internal class ChessBoardView @JvmOverloads constructor(
     }
 
     private var coroutineScope: CoroutineScope? = null
-    private val pieces = MutableStateFlow(PiecesDrawable(emptyMap(), emptySet()))
+    private val pieces = MutableStateFlow(PiecesDrawable(context, emptyMap(), emptySet()))
     private val arrows = MutableStateFlow(ArrowsDrawable(emptyMap(), emptySet()))
 
     internal fun update(state: State) {
-        pieces.value = PiecesDrawable(squares, state.pieces)
+        pieces.value = PiecesDrawable(context, squares, state.pieces)
         arrows.value = ArrowsDrawable(squares, state.arrows)
     }
 
@@ -176,7 +176,11 @@ internal class ChessBoardView @JvmOverloads constructor(
             val EMPTY = State(setOf(), setOf())
         }
 
-        internal data class Piece(val position: SquareNotation, val color: Int)
+        internal data class Piece(
+            val drawableName: String,
+            val position: SquareNotation,
+            val color: Int
+        )
 
         internal data class Arrow(
             val start: SquareNotation,
@@ -186,7 +190,7 @@ internal class ChessBoardView @JvmOverloads constructor(
     }
 
     internal data class Square(val row: Int, val column: Int) {
-        private val topLeftCorner: PointF
+        val topLeftCorner: PointF
             get() = PointF(
                 (column - 1) * sideLength + borderLength,
                 (8 - row) * sideLength + borderLength
@@ -194,6 +198,12 @@ internal class ChessBoardView @JvmOverloads constructor(
 
         val center: PointF
             get() = PointF(topLeftCorner.x + sideLength / 2f, topLeftCorner.y + sideLength / 2f)
+
+        val bottomRightCorner: PointF
+            get() = PointF(
+                topLeftCorner.x + sideLength,
+                topLeftCorner.y + sideLength
+            )
 
         val notation: String = "${COLUMN_LETTERS[column]}$row"
 

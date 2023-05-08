@@ -42,6 +42,13 @@ internal fun Board.Arrow.toArrowViewState() = ChessBoardView.State.Arrow(
 )
 
 internal fun Map.Entry<SquareNotation, Board.Piece>.toPieceViewState() = ChessBoardView.State.Piece(
+    this.value.toDrawableName(),
     this.key,
     if (this.value.isBlack) Color.BLACK else Color.WHITE
 )
+
+private fun Board.Piece.toDrawableName(): String {
+    val color = if (this.isBlack) "b" else "w"
+    val symbol = symbol.lowercaseChar()
+    return "piece_$symbol$color"
+}
