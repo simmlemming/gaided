@@ -6,6 +6,7 @@ import com.gaided.domain.FEN_START_POSITION
 import com.gaided.domain.MoveNotation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 
 internal class Game(
     private val engine: Engine,
@@ -15,9 +16,18 @@ internal class Game(
     private val _state = MutableStateFlow<State>(State.Initialized)
     val state = _state.asStateFlow()
 
+    private val _topMoves = board.fenPosition.map {
+        engine.setFenPosition(it)
+        engine.getTopMoves(3)
+    }
+
     internal suspend fun start() {
         engine.setFenPosition(FEN_START_POSITION)
-        _state.value = State.WaitingForMove(Player.White, setOf(), false)
+        _state.value = State.WaitingForMove(Player.White, setOf(), true)
+
+        val topMoves = engine.getTopMoves(3)
+        board.setTopMoves(topMoves)
+        _state.value = State.WaitingForMove(Player.White, topMoves.toSet(), false)
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
