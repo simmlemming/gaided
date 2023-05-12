@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import com.gaided.R
 import com.gaided.domain.MoveNotation
-import com.gaided.domain.SquareNotation
+import com.gaided.util.getDrawable
 
 internal class PlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -45,6 +45,14 @@ internal class PlayerView @JvmOverloads constructor(
     private fun Button.update(state: State.Move) {
         visibility = if (state.isVisible) View.VISIBLE else View.INVISIBLE
         text = state.text
+
+        val pieceDrawable = state.pieceDrawableName?.run {
+            val drawable = context.getDrawable(this)
+            drawable.setBounds(0, 0, 64, 64)
+            drawable
+        }
+
+        this.setCompoundDrawables(pieceDrawable, null, null, null)
     }
 
     data class State(
@@ -57,15 +65,16 @@ internal class PlayerView @JvmOverloads constructor(
         data class Move(
             val move: MoveNotation,
             val isVisible: Boolean,
-            val text: String
+            val text: String,
+            val pieceDrawableName: String?
         )
 
         companion object {
             val EMPTY = State(
                 false,
-                Move("", false, ""),
-                Move("", false, ""),
-                Move("", false, ""),
+                Move("", false, "", null),
+                Move("", false, "", null),
+                Move("", false, "", null),
             )
 
             val OPPONENT_MOVE = EMPTY

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources
 import com.gaided.domain.SquareNotation
+import com.gaided.util.getDrawable
 
 internal class PiecesDrawable(
     private val context: Context,
@@ -31,14 +32,6 @@ internal class PiecesDrawable(
         this.pieces == (other as? PiecesDrawable)?.pieces
 
     override fun hashCode() = pieces.hashCode()
-}
-
-@SuppressLint("DiscouragedApi")
-private fun Context.getDrawable(name: String): Drawable {
-    val id = resources.getIdentifier(name, "drawable", packageName)
-    val drawable = AppCompatResources.getDrawable(this, id)
-
-    return checkNotNull(drawable)
 }
 
 private fun Drawable.bindToSquare(square: ChessBoardView.Square) {

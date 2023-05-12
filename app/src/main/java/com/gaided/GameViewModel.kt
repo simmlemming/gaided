@@ -30,12 +30,12 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
-    val playerWhite = game.state.map {
-        it.toPlayerViewState(Game.Player.White)
+    val playerWhite = combine(game.board.pieces, game.state) { pieces, state ->
+        state.toPlayerViewState(pieces, Game.Player.White)
     }
 
-    val playerBlack = game.state.map {
-        it.toPlayerViewState(Game.Player.Black)
+    val playerBlack = combine(game.board.pieces, game.state) { pieces, state ->
+        state.toPlayerViewState(pieces, Game.Player.Black)
     }
 
     fun start() = launch {
