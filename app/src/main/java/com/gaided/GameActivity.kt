@@ -53,11 +53,6 @@ internal class GameActivity : AppCompatActivity() {
             viewModel.start()
         }
 
-//        lifecycleScope.launch {
-//            delay(3000)
-//            viewModel.move("e2e3")
-//        }
-
         repeatOnResumed {
             viewModel.userMessage.collect {
                 showMessageIfNotEmpty(it) {

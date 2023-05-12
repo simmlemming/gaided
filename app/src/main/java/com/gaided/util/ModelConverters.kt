@@ -9,30 +9,29 @@ import com.gaided.Game
 import com.gaided.domain.Board
 import com.gaided.domain.Engine
 import com.gaided.domain.SquareNotation
+import com.gaided.model.getTopMovesOfPlayerToMove
+import com.gaided.model.isWaitingForTopMoves
+import com.gaided.model.playerToMove
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.player.PlayerView
 
 internal fun Game.State.toPlayerViewState(
     pieces: Map<SquareNotation, Board.Piece>,
     player: Game.Player
-) = when (this) {
-    is Game.State.Initialized -> PlayerView.State.EMPTY
-    is Game.State.WaitingForMove -> {
-        if (this.player == player) {
-            this.toPlayerViewState(pieces)
-        } else {
-            PlayerView.State.OPPONENT_MOVE
-        }
-    }
+) = when (playerToMove) {
+    Game.Player.None -> PlayerView.State.EMPTY
+    player -> this.toPlayerViewState(pieces)
+    else -> PlayerView.State.OPPONENT_MOVE
 }
 
-private fun Game.State.WaitingForMove.toPlayerViewState(pieces: Map<SquareNotation, Board.Piece>): PlayerView.State {
-    val moves = this.topMoves.shuffled()
+private fun Game.State.toPlayerViewState(pieces: Map<SquareNotation, Board.Piece>): PlayerView.State {
+    val topMoves = getTopMovesOfPlayerToMove() ?: emptyList()
+
     return PlayerView.State(
-        progressVisible = this.waitingForTopMoves,
-        move1 = moves.getOrNull(0).toPlayerViewMoveState(pieces),
-        move2 = moves.getOrNull(1).toPlayerViewMoveState(pieces),
-        move3 = moves.getOrNull(2).toPlayerViewMoveState(pieces)
+        progressVisible = this.isWaitingForTopMoves,
+        move1 = topMoves.getOrNull(0).toPlayerViewMoveState(pieces),
+        move2 = topMoves.getOrNull(1).toPlayerViewMoveState(pieces),
+        move3 = topMoves.getOrNull(2).toPlayerViewMoveState(pieces)
     )
 }
 

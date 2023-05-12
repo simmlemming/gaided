@@ -1,5 +1,6 @@
 package com.gaided
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -38,6 +39,14 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         state.toPlayerViewState(pieces, Game.Player.Black)
     }
 
+    init {
+        viewModelScope.launch {
+            game.state.collect {
+                Log.d("Gaided", "$it")
+            }
+        }
+    }
+
     fun start() = launch {
         game.start()
     }
@@ -47,7 +56,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
-        game.selectTopMove(player, move)
+        game.move(player, move)
     }
 
     internal fun onUserMessageShown() {
