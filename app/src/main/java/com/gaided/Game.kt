@@ -4,9 +4,11 @@ import com.gaided.domain.Board
 import com.gaided.domain.Engine
 import com.gaided.domain.FEN_START_POSITION
 import com.gaided.domain.MoveNotation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlin.random.Random
 
 internal class Game(
     private val engine: Engine,
@@ -20,6 +22,8 @@ internal class Game(
         engine.setFenPosition(it)
         engine.getTopMoves(3)
     }
+
+    private val rnd = Random(System.currentTimeMillis())
 
     internal suspend fun start() {
         engine.setFenPosition(FEN_START_POSITION)
@@ -49,6 +53,13 @@ internal class Game(
         board.setTopMoves(topMoves)
 
         _state.value = State.WaitingForMove(otherPlayer, topMoves.toSet(), false)
+
+        if (otherPlayer == Player.Black) {
+            delay(rnd.nextLong(500, 2000))
+            topMoves
+                .randomOrNull(rnd)
+                ?.let { move(otherPlayer, it.move) }
+        }
     }
 
     internal suspend fun selectTopMove(player: Player, move: MoveNotation) {
