@@ -26,37 +26,33 @@ internal class ArrowsDrawable(
     }
 
     private fun drawArrow(
-        paint: Paint,
-        canvas: Canvas,
-        from_x: Float,
-        from_y: Float,
-        to_x: Float,
-        to_y: Float
+        paint: Paint, canvas: Canvas,
+        fromX: Float, fromY: Float, toX: Float, toY: Float
     ) {
-        val anglerad: Float
+        val angleRad: Float
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
         val radius = 45f
         val angle = 60f
 
         //some angle calculations
-        anglerad = ((PI * angle / 180.0f).toFloat())
-        val lineangle: Float = atan2(to_y - from_y, to_x - from_x)
+        angleRad = ((PI * angle / 180.0f).toFloat())
+        val lineAngle: Float = atan2(toY - fromY, toX - fromX)
 
         //tha line
-        canvas.drawLine(from_x, from_y, to_x, to_y, paint)
+        canvas.drawLine(fromX, fromY, toX, toY, paint)
 
         //tha triangle
         val path = Path()
         path.fillType = Path.FillType.EVEN_ODD
-        path.moveTo(to_x, to_y)
+        path.moveTo(toX, toY)
         path.lineTo(
-            (to_x - radius * cos(lineangle - anglerad / 2.0)).toFloat(),
-            (to_y - radius * sin(lineangle - anglerad / 2.0)).toFloat()
+            (toX - radius * cos(lineAngle - angleRad / 2.0)).toFloat(),
+            (toY - radius * sin(lineAngle - angleRad / 2.0)).toFloat()
         )
         path.lineTo(
-            (to_x - radius * cos(lineangle + anglerad / 2.0)).toFloat(),
-            (to_y - radius * sin(lineangle + anglerad / 2.0)).toFloat()
+            (toX - radius * cos(lineAngle + angleRad / 2.0)).toFloat(),
+            (toY - radius * sin(lineAngle + angleRad / 2.0)).toFloat()
         )
         path.close()
         canvas.drawPath(path, paint)

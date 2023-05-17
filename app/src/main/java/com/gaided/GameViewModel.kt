@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.gaided.domain.Board
 import com.gaided.domain.MoveNotation
 import com.gaided.util.toArrowViewState
+import com.gaided.util.toLastMoveOverlaySquares
 import com.gaided.util.toPieceViewState
 import com.gaided.util.toPlayerViewState
 import com.gaided.view.chessboard.ChessBoardView
@@ -17,10 +18,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 internal class GameViewModel(private val game: Game) : ViewModel() {
-    val board = combine(game.board.pieces, game.board.arrows) { pieces, arrows ->
+    val board = combine(game.board.pieces, game.board.arrows, game.state) { pieces, arrows, state ->
         ChessBoardView.State(
             pieces.map { it.toPieceViewState() }.toSet(),
-            arrows.map { it.toArrowViewState() }.toSet()
+            arrows.map { it.toArrowViewState() }.toSet(),
+            state.toLastMoveOverlaySquares()
         )
     }.stateIn(
         viewModelScope,

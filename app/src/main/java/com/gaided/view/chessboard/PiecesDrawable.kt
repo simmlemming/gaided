@@ -1,11 +1,11 @@
 package com.gaided.view.chessboard
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.util.Log
-import androidx.appcompat.content.res.AppCompatResources
 import com.gaided.domain.SquareNotation
 import com.gaided.util.getDrawable
 

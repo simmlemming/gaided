@@ -34,10 +34,6 @@ internal class ChessBoardView @JvmOverloads constructor(
         textSize = 36f
     }
 
-    private val paintBlackPieces = Paint().apply {
-        color = Color.BLACK
-    }
-
     private val squares: Map<SquareNotation, Square>
 
     private val borderSize = 48f
@@ -58,10 +54,12 @@ internal class ChessBoardView @JvmOverloads constructor(
     private var coroutineScope: CoroutineScope? = null
     private val pieces = MutableStateFlow(PiecesDrawable(context, emptyMap(), emptySet()))
     private val arrows = MutableStateFlow(ArrowsDrawable(emptyMap(), emptySet()))
+    private val overlaySquares = MutableStateFlow(OverlaySquaresDrawable(emptyMap(), emptySet()))
 
     internal fun update(state: State) {
         pieces.value = PiecesDrawable(context, squares, state.pieces)
         arrows.value = ArrowsDrawable(squares, state.arrows)
+        overlaySquares.value = OverlaySquaresDrawable(squares, state.overlaySquares)
     }
 
     override fun onAttachedToWindow() {
@@ -74,6 +72,9 @@ internal class ChessBoardView @JvmOverloads constructor(
             }
             it.launch {
                 arrows.collect { invalidate() }
+            }
+            it.launch {
+                overlaySquares.collect { invalidate() }
             }
         }
     }
@@ -99,6 +100,11 @@ internal class ChessBoardView @JvmOverloads constructor(
         drawBorder(canvas)
         drawRowNumbers(canvas)
         drawColumnLetters(canvas)
+
+        with(overlaySquares.value) {
+            setBounds(0, 0, canvas.width, canvas.height)
+            draw(canvas)
+        }
 
         with(pieces.value) {
             setBounds(0, 0, canvas.width, canvas.height)
@@ -170,10 +176,11 @@ internal class ChessBoardView @JvmOverloads constructor(
 
     internal data class State(
         val pieces: Set<Piece>,
-        val arrows: Set<Arrow>
+        val arrows: Set<Arrow>,
+        val overlaySquares: Set<OverlaySquare>
     ) {
         companion object {
-            val EMPTY = State(setOf(), setOf())
+            val EMPTY = State(setOf(), setOf(), setOf())
         }
 
         internal data class Piece(
@@ -185,6 +192,11 @@ internal class ChessBoardView @JvmOverloads constructor(
         internal data class Arrow(
             val start: SquareNotation,
             val end: SquareNotation,
+            val color: Int
+        )
+
+        internal class OverlaySquare(
+            val square: SquareNotation,
             val color: Int
         )
     }

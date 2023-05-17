@@ -54,6 +54,22 @@ internal fun Map.Entry<SquareNotation, Board.Piece>.toPieceViewState() = ChessBo
     if (this.value.isBlack) Color.BLACK else Color.WHITE
 )
 
+internal fun Game.State.toLastMoveOverlaySquares(): Set<ChessBoardView.State.OverlaySquare> {
+    val lastMove = this.currentMove?.blackMove
+        ?: this.currentMove?.whiteMove
+        ?: this.history.lastOrNull()?.blackMove
+        ?: this.history.lastOrNull()?.whiteMove
+        ?: return emptySet()
+
+    val from = lastMove.take(2)
+    val to = lastMove.takeLast(2)
+
+    return setOf(
+        ChessBoardView.State.OverlaySquare(from, Color.YELLOW),
+        ChessBoardView.State.OverlaySquare(to, Color.YELLOW)
+    )
+}
+
 private fun Board.Piece.toDrawableName(): String {
     val color = if (this.isBlack) "b" else "w"
     val symbol = symbol.lowercaseChar()
