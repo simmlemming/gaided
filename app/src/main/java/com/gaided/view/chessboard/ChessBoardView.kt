@@ -3,6 +3,7 @@ package com.gaided.view.chessboard
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import com.gaided.domain.SquareNotation
 import kotlinx.coroutines.CoroutineScope
@@ -55,11 +56,23 @@ internal class ChessBoardView @JvmOverloads constructor(
     private val pieces = MutableStateFlow(PiecesDrawable(context, emptyMap(), emptySet()))
     private val arrows = MutableStateFlow(ArrowsDrawable(emptyMap(), emptySet()))
     private val overlaySquares = MutableStateFlow(OverlaySquaresDrawable(emptyMap(), emptySet()))
+    private var listener: Listener? = null
 
-    internal fun update(state: State) {
+    internal fun update(state: State, listener: Listener? = null) {
+        this.listener = listener
         pieces.value = PiecesDrawable(context, squares, state.pieces)
         arrows.value = ArrowsDrawable(squares, state.arrows)
         overlaySquares.value = OverlaySquaresDrawable(squares, state.overlaySquares)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event?.action == MotionEvent.ACTION_UP) {
+            squares.values
+                .firstOrNull { square -> square.rect.contains(event.x, event.y) }
+                ?.let { listener?.onSquareClick(it.notation) }
+        }
+
+        return true
     }
 
     override fun onAttachedToWindow() {
@@ -217,6 +230,12 @@ internal class ChessBoardView @JvmOverloads constructor(
                 topLeftCorner.y + sideLength
             )
 
+        val rect: RectF
+            get() = RectF(
+                topLeftCorner.x, topLeftCorner.y,
+                bottomRightCorner.x, bottomRightCorner.y
+            )
+
         val notation: String = "${COLUMN_LETTERS[column]}$row"
 
         fun draw(canvas: Canvas, paint: Paint) {
@@ -233,6 +252,10 @@ internal class ChessBoardView @JvmOverloads constructor(
             var sideLength: Float = 0f
             var borderLength: Float = 0f
         }
+    }
+
+    internal interface Listener {
+        fun onSquareClick(square: SquareNotation)
     }
 }
 

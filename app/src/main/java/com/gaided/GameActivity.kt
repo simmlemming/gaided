@@ -1,14 +1,13 @@
 package com.gaided
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.gaided.domain.MoveNotation
+import com.gaided.domain.SquareNotation
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.player.PlayerView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 internal class GameActivity : AppCompatActivity() {
 
@@ -25,7 +24,11 @@ internal class GameActivity : AppCompatActivity() {
 
         repeatOnResumed {
             viewModel.board.collect {
-                boardView.update(it)
+                boardView.update(it, object : ChessBoardView.Listener {
+                    override fun onSquareClick(square: SquareNotation) {
+                        Log.i("Gaided", "Square clicked, square = $square")
+                    }
+                })
             }
         }
 
