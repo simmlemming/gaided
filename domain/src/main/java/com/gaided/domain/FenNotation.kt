@@ -1,66 +1,37 @@
 package com.gaided.domain
 
-public data class FenNotation(
-    private val position: String,
-    private val nextMoveColor: String
+public data class FenNotation private constructor(
+    public val fenString: String,
 ) {
+    private val position: String = fenString.split(" ")[0]
+    private val nextMoveColor: String = fenString.split(" ")[1]
 
-    public fun move(move: MoveNotation): FenNotation {
+    public fun pieceAt(square: SquareNotation): String? {
         val fullTable = toFullTable(position)
-        val from = move.take(2)
-        val to = move.takeLast(2)
 
-        val fromFile = FILES.indexOf(from[0])
-        val fromRank = from[1].digitToInt()
-        check(fromFile in 1..8)
-        check(fromRank in 1..8)
+        val file = FILES.indexOf(square[0])
+        val rank = square[1].digitToInt()
+        check(file in 1..8)
+        check(rank in 1..8)
 
-        val toFile = FILES.indexOf(to[0])
-        val toRank = to[1].digitToInt()
-        check(toFile in 1..8)
-        check(toRank in 1..8)
-
-        val piece = fullTable[8 - fromRank][fromFile - 1]
-        check(piece != "_")
-
-        fullTable[8 - fromRank][fromFile - 1] = "_"
-        fullTable[8 - toRank][toFile - 1] = piece
-
-        val nextMove = if (nextMoveColor == "w") "b" else "w"
-        return FenNotation(toFenPosition(fullTable), nextMove)
+        return fullTable[8 - rank][file - 1].takeIf { it != NULL_PIECE }
     }
 
     public companion object {
         private val LEGAL_NEXT_MOVES_COLORS = setOf("w", "b")
         private const val FILES = "_abcdefgh"
+        private const val NULL_PIECE = "_"
+        public val START_POSITION: FenNotation =
+            FenNotation("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
         public fun fromFenString(fen: String): FenNotation {
-            val (position, nextMoveColor) = fen.split(" ")
+            val parts = fen.split(" ")
+            require(parts.size == 6)
+
+            val nextMoveColor = parts[1]
             require(nextMoveColor in LEGAL_NEXT_MOVES_COLORS)
-            return FenNotation(position, nextMoveColor)
-        }
 
-        private fun toFenPosition(fullTable: List<List<String>>): String {
-            val fenPosition = mutableListOf<String>()
-
-            for (rank in fullTable) {
-                var spaceCount = 0
-                val fenRank = StringBuilder()
-                for (piece in rank) {
-                    when (piece) {
-                        "_" -> spaceCount++
-                        else -> {
-                            if (spaceCount > 0) fenRank.append(spaceCount)
-                            fenRank.append(piece)
-                            spaceCount = 0
-                        }
-                    }
-                }
-                if (spaceCount > 0) fenRank.append(spaceCount)
-                fenPosition.add(fenRank.toString())
-            }
-
-            return fenPosition.joinToString(separator = "/")
+            return FenNotation(fen)
         }
 
         private fun toFullTable(position: String): MutableList<MutableList<String>> {

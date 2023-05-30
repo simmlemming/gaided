@@ -2,7 +2,6 @@
 
 package com.gaided.domain.api
 
-import com.gaided.domain.FenString
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -17,7 +16,7 @@ public open class StockfishApi(
     public fun getFenPosition(): String =
         call("get_fen_position")
 
-    public fun setFenPosition(position: FenString) {
+    public fun setFenPosition(position: String) {
         call("set_fen_position", position)
     }
 

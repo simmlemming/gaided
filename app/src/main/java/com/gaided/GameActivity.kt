@@ -26,7 +26,7 @@ internal class GameActivity : AppCompatActivity() {
             viewModel.board.collect {
                 boardView.update(it, object : ChessBoardView.Listener {
                     override fun onSquareClick(square: SquareNotation) {
-                        Log.i("Gaided", "Square clicked, square = $square")
+                        viewModel.onSquareClick(square)
                     }
                 })
             }

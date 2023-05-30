@@ -36,8 +36,8 @@ public class Engine(
             api.makeMovesFromCurrentPosition(moves)
         }
 
-    public suspend fun setFenPosition(position: FenString): Unit = withContext(ioContext) {
-        api.setFenPosition(position)
+    public suspend fun setFenPosition(position: FenNotation): Unit = withContext(ioContext) {
+        api.setFenPosition(position.fenString)
     }
 
     public data class TopMove(
