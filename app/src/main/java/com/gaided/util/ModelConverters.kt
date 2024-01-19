@@ -44,7 +44,7 @@ private fun Engine.TopMove?.toPlayerViewMoveState(position: FenNotation): Player
     )
 }
 
-private fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
+internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
     "w" -> Game.Player.White
     "b" -> Game.Player.Black
     else -> Game.Player.None

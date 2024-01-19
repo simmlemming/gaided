@@ -31,6 +31,12 @@ public class Engine(
         gson.fromJson(moves, type)
     }
 
+    public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {
+        api.setFenPosition(position.fenString)
+        val moves = listOf(move)
+        api.makeMovesFromCurrentPosition(moves)
+    }
+
     public suspend fun makeMoveFromCurrentPosition(from: SquareNotation, to: SquareNotation): Unit =
         withContext(ioContext) {
             val moves = listOf("$from$to")

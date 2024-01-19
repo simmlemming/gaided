@@ -6,7 +6,6 @@ public data class FenNotation private constructor(
     private val position: String = fenString.split(" ")[0]
     public val nextMoveColor: String = fenString.split(" ")[1]
 
-
     public fun allPieces(): Map<SquareNotation, PieceNotation> {
         val result = mutableMapOf<SquareNotation, PieceNotation>()
         val fullTable = toFullTable(position)

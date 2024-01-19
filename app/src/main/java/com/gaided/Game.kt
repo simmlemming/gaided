@@ -3,6 +3,7 @@ package com.gaided
 import com.gaided.domain.Engine
 import com.gaided.domain.FenNotation
 import com.gaided.domain.MoveNotation
+import com.gaided.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,16 +27,29 @@ internal class Game(
 
     internal suspend fun start() {
         _position.value = FenNotation.START_POSITION
-        val topMoves = engine.getTopMoves(_position.value, 3)
-        _topMoves.update {
-            val updatedMap = it.toMutableMap()
-            updatedMap[FenNotation.START_POSITION] = topMoves
-            updatedMap
-        }
+        requestTopMoves(_position.value)
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
+        val expectedPlayer = _position.value.toNextMovePlayer()
+        check(expectedPlayer == player) {
+            "Expected player to move $expectedPlayer, was $player"
+        }
 
+        engine.move(_position.value, move)
+        val fenPosition = engine.getFenPosition()
+        _position.value = FenNotation.fromFenString(fenPosition)
+
+        requestTopMoves(_position.value)
+    }
+
+    private suspend fun requestTopMoves(position: FenNotation) {
+        val topMoves = engine.getTopMoves(position, 3)
+        _topMoves.update {
+            val updatedMap = it.toMutableMap()
+            updatedMap[position] = topMoves
+            updatedMap
+        }
     }
 
     internal data class HalfMove(
