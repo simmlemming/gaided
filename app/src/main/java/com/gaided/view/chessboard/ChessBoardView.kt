@@ -199,7 +199,6 @@ internal class ChessBoardView @JvmOverloads constructor(
         internal data class Piece(
             val drawableName: String,
             val position: SquareNotation,
-            val color: Int
         )
 
         internal data class Arrow(

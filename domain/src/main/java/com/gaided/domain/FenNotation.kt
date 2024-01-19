@@ -6,7 +6,26 @@ public data class FenNotation private constructor(
     private val position: String = fenString.split(" ")[0]
     private val nextMoveColor: String = fenString.split(" ")[1]
 
-    public fun pieceAt(square: SquareNotation): String? {
+    public fun allPieces(): Map<SquareNotation, PieceNotation> {
+        val result = mutableMapOf<SquareNotation, PieceNotation>()
+        val fullTable = toFullTable(position)
+
+        for (r in 0..7) {
+            for (f in 0..7) {
+                val file = FILES[f + 1]
+                val rank = fullTable[r]
+                val piece = rank[f].takeIf { it != NULL_PIECE }
+                if (piece != null) {
+                    val square = "${file}${8 - r}"
+                    result[square] = piece
+                }
+            }
+        }
+
+        return result.toMap()
+    }
+
+    public fun pieceAt(square: SquareNotation): PieceNotation? {
         val fullTable = toFullTable(position)
 
         val file = FILES.indexOf(square[0])
@@ -20,7 +39,7 @@ public data class FenNotation private constructor(
     public companion object {
         private val LEGAL_NEXT_MOVES_COLORS = setOf("w", "b")
         private const val FILES = "_abcdefgh"
-        private const val NULL_PIECE = "_"
+        private const val NULL_PIECE = '_'
         public val START_POSITION: FenNotation =
             FenNotation("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
@@ -34,11 +53,11 @@ public data class FenNotation private constructor(
             return FenNotation(fen)
         }
 
-        private fun toFullTable(position: String): MutableList<MutableList<String>> {
+        private fun toFullTable(position: String): List<List<PieceNotation>> {
             val ranks = position.split("/")
             check(ranks.size == 8)
 
-            val fullTable = mutableListOf<MutableList<String>>()
+            val fullTable = mutableListOf<List<PieceNotation>>()
             for (rank in ranks) {
                 val fullRank = toFullRank(rank)
                 fullTable.add(fullRank)
@@ -48,16 +67,17 @@ public data class FenNotation private constructor(
             return fullTable
         }
 
-        private fun toFullRank(rank: String): MutableList<String> {
+        private fun toFullRank(rank: String): List<PieceNotation> {
             val files = rank.toCharArray()
-            val fullRank = files.fold(mutableListOf<String>()) { acc, file ->
+            val fullRank = files.fold(mutableListOf<PieceNotation>()) { acc, file ->
                 when {
                     file.isDigit() -> {
-                        repeat(file.digitToInt()) { acc.add("_") }
+                        repeat(file.digitToInt()) { acc.add('_') }
                         acc
                     }
+
                     else -> {
-                        acc.add(file.toString())
+                        acc.add(file)
                         acc
                     }
                 }

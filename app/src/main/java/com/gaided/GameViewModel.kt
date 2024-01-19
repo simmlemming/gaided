@@ -5,11 +5,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gaided.domain.MoveNotation
 import com.gaided.domain.SquareNotation
+import com.gaided.util.toPiece
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.player.PlayerView
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
@@ -21,7 +28,11 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
 
     val board = combine(game.position, game.topMoves, game.history) { position, topMoves, history ->
-        ChessBoardView.State.EMPTY
+        ChessBoardView.State(
+            pieces = position.allPieces().map { it.toPiece() }.toSet(),
+            arrows = emptySet(),
+            overlaySquares = emptySet()
+        )
     }.stateInThis(ChessBoardView.State.EMPTY)
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->

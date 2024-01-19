@@ -1,6 +1,8 @@
 package com.gaided
 
-import com.gaided.domain.*
+import com.gaided.domain.Engine
+import com.gaided.domain.FenNotation
+import com.gaided.domain.MoveNotation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,8 +23,8 @@ internal class Game(
 
     private val rnd = Random(System.currentTimeMillis())
 
-    internal suspend fun start() {
-
+    internal fun start() {
+        _position.value = FenNotation.START_POSITION
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
@@ -34,7 +36,6 @@ internal class Game(
         val move: MoveNotation,
         val player: Player,
         val positionAfterMove: FenNotation,
-        val statsAfterMove: Stats,
     ) {
         override fun equals(other: Any?): Boolean {
             if (other !is HalfMove) return false
