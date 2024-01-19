@@ -4,7 +4,8 @@ public data class FenNotation private constructor(
     public val fenString: String,
 ) {
     private val position: String = fenString.split(" ")[0]
-    private val nextMoveColor: String = fenString.split(" ")[1]
+    public val nextMoveColor: String = fenString.split(" ")[1]
+
 
     public fun allPieces(): Map<SquareNotation, PieceNotation> {
         val result = mutableMapOf<SquareNotation, PieceNotation>()

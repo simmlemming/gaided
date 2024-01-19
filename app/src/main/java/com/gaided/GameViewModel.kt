@@ -1,11 +1,14 @@
 package com.gaided
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gaided.domain.MoveNotation
 import com.gaided.domain.SquareNotation
+import com.gaided.util.toArrow
 import com.gaided.util.toPiece
+import com.gaided.util.toPlayerState
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.player.PlayerView
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -22,6 +25,7 @@ import kotlinx.coroutines.plus
 
 internal class GameViewModel(private val game: Game) : ViewModel() {
     private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
+        Log.e("Gaided", "", e)
         _userMessage.value = e.message ?: "Error"
     }
 
@@ -30,17 +34,17 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     val board = combine(game.position, game.topMoves, game.history) { position, topMoves, history ->
         ChessBoardView.State(
             pieces = position.allPieces().map { it.toPiece() }.toSet(),
-            arrows = emptySet(),
+            arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
             overlaySquares = emptySet()
         )
     }.stateInThis(ChessBoardView.State.EMPTY)
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
-        PlayerView.State.EMPTY
+        toPlayerState(Game.Player.White, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
     val playerBlack = combine(game.position, game.topMoves) { position, topMoves ->
-        PlayerView.State.EMPTY
+        toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
     private val _userMessage = MutableStateFlow("")

@@ -22,7 +22,8 @@ public class Engine(
         response
     }
 
-    public suspend fun getTopMoves(numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
+    public suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
+        api.setFenPosition(position.fenString)
         val moves = api.getTopMoves(numberOfMoves)
         println(moves)
 

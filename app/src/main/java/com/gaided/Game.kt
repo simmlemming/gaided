@@ -6,6 +6,7 @@ import com.gaided.domain.MoveNotation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlin.random.Random
 
 internal class Game(
@@ -23,8 +24,14 @@ internal class Game(
 
     private val rnd = Random(System.currentTimeMillis())
 
-    internal fun start() {
+    internal suspend fun start() {
         _position.value = FenNotation.START_POSITION
+        val topMoves = engine.getTopMoves(_position.value, 3)
+        _topMoves.update {
+            val updatedMap = it.toMutableMap()
+            updatedMap[FenNotation.START_POSITION] = topMoves
+            updatedMap
+        }
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
