@@ -4,9 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.gaided.domain.Engine
+import com.gaided.domain.FenNotation
 import com.gaided.domain.MoveNotation
 import com.gaided.domain.SquareNotation
+import com.gaided.domain.api.StockfishApi
 import com.gaided.util.toArrow
+import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
 import com.gaided.view.chessboard.ChessBoardView
@@ -47,6 +51,13 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
+    // TODO: Handle multiple top moves from the same square.
+    private val topMoveStartSquares = combine(game.position, game.topMoves) { position, topMoves ->
+        topMoves[position]
+            .orEmpty()
+            .associate { topMove -> topMove.move.take(2) to topMove.toMakeMoveAction(position) }
+    }.stateInThis(emptyMap(), SharingStarted.Eagerly)
+
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
@@ -54,16 +65,14 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         game.start()
     }
 
-    fun move(move: MoveNotation) = launch {
-        game.move(Game.Player.White, move)
-    }
-
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
         game.move(player, move)
     }
 
-    fun onSquareClick(square: SquareNotation) {
-
+    fun onSquareClick(square: SquareNotation) = launch {
+        topMoveStartSquares.value[square]?.let { makeMove ->
+            makeMove(game)
+        }
     }
 
     internal fun onUserMessageShown() {
@@ -73,16 +82,23 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private fun launch(block: suspend CoroutineScope.() -> Unit) =
         safeViewModelScope.launch(block = block)
 
-    private fun <T> Flow<T>.stateInThis(initialValue: T): StateFlow<T> = stateIn(
-        safeViewModelScope, SharingStarted.WhileSubscribed(5000), initialValue
-    )
+    private fun <T> Flow<T>.stateInThis(
+        initialValue: T,
+        started: SharingStarted = SharingStarted.WhileSubscribed(5000)
+    ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
     internal class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val api = com.gaided.domain.api.StockfishApi("http://10.0.2.2:8080")
-            val engine = com.gaided.domain.Engine(api)
+            val api = StockfishApi("http://10.0.2.2:8080")
+            val engine = Engine(api)
             val game = Game(engine)
             return GameViewModel(game) as T
         }
+    }
+}
+
+private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): suspend (Game) -> Unit {
+    return { game ->
+        game.move(position.toNextMovePlayer(), move)
     }
 }
