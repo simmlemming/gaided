@@ -23,11 +23,15 @@ internal class Game(
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
+    private val _evaluation = MutableStateFlow<Map<FenNotation, Engine.Evaluation>>(emptyMap())
+    val evaluation = _evaluation.asStateFlow()
+
     private val rnd = Random(System.currentTimeMillis())
 
     internal suspend fun start() {
         _position.value = FenNotation.START_POSITION
         requestTopMoves(_position.value)
+        requestEvaluation(_position.value)
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
@@ -41,14 +45,20 @@ internal class Game(
         _position.value = FenNotation.fromFenString(fenPosition)
 
         requestTopMoves(_position.value)
+        requestEvaluation(_position.value)
     }
 
     private suspend fun requestTopMoves(position: FenNotation) {
         val topMoves = engine.getTopMoves(position, 3)
         _topMoves.update {
-            val updatedMap = it.toMutableMap()
-            updatedMap[position] = topMoves
-            updatedMap
+            it + (position to topMoves)
+        }
+    }
+
+    private suspend fun requestEvaluation(position: FenNotation) {
+        val evaluation = engine.getEvaluation(position)
+        _evaluation.update {
+            it + (position to evaluation)
         }
     }
 
@@ -85,6 +95,4 @@ internal class Game(
         object Black : Player()
         object None : Player()
     }
-
-    internal data class Stats(val w: Int, val d: Int, val b: Int)
 }

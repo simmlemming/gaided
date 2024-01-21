@@ -1,12 +1,12 @@
 package com.gaided
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.gaided.domain.MoveNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
 
 internal class GameActivity : AppCompatActivity() {
@@ -20,6 +20,7 @@ internal class GameActivity : AppCompatActivity() {
         val playerWhiteView = findViewById<PlayerView>(R.id.player_white)
         val playerBlackView = findViewById<PlayerView>(R.id.player_black)
 
+        val evaluationView = findViewById<EvaluationView>(R.id.evaluation)
         val boardView = findViewById<ChessBoardView>(R.id.board)
 
         repeatOnResumed {
@@ -49,6 +50,16 @@ internal class GameActivity : AppCompatActivity() {
                         viewModel.onMoveClick(Game.Player.Black, move)
                     }
                 })
+            }
+        }
+
+        repeatOnResumed {
+            viewModel.evaluation.collect {
+                it
+                    .takeIf { it != EvaluationView.State.NULL }
+                    ?.let { state ->
+                        evaluationView.update(state)
+                    }
             }
         }
 

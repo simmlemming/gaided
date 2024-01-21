@@ -26,6 +26,9 @@ public open class StockfishApi(
     public fun getTopMoves(numberOfMoves: Int): String =
         call("get_top_moves", numberOfMoves)
 
+    public fun getEvaluation(): String =
+        call("get_evaluation")
+
     protected open fun formatArgs(args: List<*>): String = args.joinToString {
         when (it) {
             is String -> "\"$it\""

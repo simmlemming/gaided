@@ -10,7 +10,7 @@
         android:id="@+id/player_black"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#AFA"
+        android:background="#333"
         android:gravity="center"
         android:padding="8dp"
         android:rotation="180"
@@ -23,6 +23,7 @@
         android:id="@+id/board"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="16dp"
         android:background="#FAA"
         app:layout_constraintBottom_toTopOf="@id/player_white"
         app:layout_constraintDimensionRatio="1:1"
@@ -34,12 +35,21 @@
         android:id="@+id/player_white"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#AAF"
+        android:background="#333"
         android:gravity="center"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/board" />
+
+    <com.gaided.view.evaluation.EvaluationView
+        android:id="@+id/evaluation"
+        android:layout_width="16dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/board"
+        app:layout_constraintEnd_toStartOf="@id/board"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/board" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,10 +47,21 @@ public class Engine(
         api.setFenPosition(position.fenString)
     }
 
+    public suspend fun getEvaluation(position: FenNotation): Evaluation = withContext(ioContext) {
+        api.setFenPosition(position.fenString)
+        val evaluation = api.getEvaluation()
+        gson.fromJson(evaluation, Evaluation::class.java)
+    }
+
     public data class TopMove(
         @SerializedName("Move")
         public val move: String,
         @SerializedName("Centipawn")
         public val centipawn: Int
+    )
+
+    public data class Evaluation(
+        public val type: String,
+        public val value: Int
     )
 }

@@ -14,6 +14,7 @@ import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
 import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +51,21 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     val playerBlack = combine(game.position, game.topMoves) { position, topMoves ->
         toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
+
+    val evaluation = combine(game.position, game.evaluation) { position, evaluation ->
+        val e = evaluation[position] ?: return@combine EvaluationView.State.NULL
+        EvaluationView.State(e.value)
+    }
+
+//    private val rnd = Random(System.currentTimeMillis())
+//
+//    val evaluation = flow {
+//        emit(EvaluationView.State(0))
+//        while (true) {
+//            delay(1000)
+//            emit(EvaluationView.State(rnd.nextInt(-5000, 5000)))
+//        }
+//    }
 
     // TODO: Handle multiple top moves from the same square.
     private val topMoveStartSquares = combine(game.position, game.topMoves) { position, topMoves ->
