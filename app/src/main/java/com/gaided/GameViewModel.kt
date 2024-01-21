@@ -53,17 +53,20 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(PlayerView.State.EMPTY)
 
     val evaluation = combine(game.position, game.evaluation) { position, evaluation ->
-        val e = evaluation[position] ?: return@combine EvaluationView.State.NULL
-        EvaluationView.State(e.value)
+        if (position == FenNotation.START_POSITION) return@combine EvaluationView.State.NULL
+        val e = evaluation[position] ?: return@combine EvaluationView.State.LOADING
+        EvaluationView.State(false, e.value)
     }
 
 //    private val rnd = Random(System.currentTimeMillis())
 //
 //    val evaluation = flow {
-//        emit(EvaluationView.State(0))
+//        emit(EvaluationView.State(false, 0))
 //        while (true) {
 //            delay(1000)
-//            emit(EvaluationView.State(rnd.nextInt(-5000, 5000)))
+//            emit(EvaluationView.State.LOADING)
+//            delay(1000)
+//            emit(EvaluationView.State(false, rnd.nextInt(-500, 500)))
 //        }
 //    }
 

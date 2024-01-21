@@ -30,8 +30,8 @@ internal class Game(
 
     internal suspend fun start() {
         _position.value = FenNotation.START_POSITION
-        requestTopMoves(_position.value)
         requestEvaluation(_position.value)
+        requestTopMoves(_position.value)
     }
 
     internal suspend fun move(player: Player, move: MoveNotation) {
@@ -44,8 +44,8 @@ internal class Game(
         val fenPosition = engine.getFenPosition()
         _position.value = FenNotation.fromFenString(fenPosition)
 
-        requestTopMoves(_position.value)
         requestEvaluation(_position.value)
+        requestTopMoves(_position.value)
     }
 
     private suspend fun requestTopMoves(position: FenNotation) {

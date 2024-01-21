@@ -55,11 +55,7 @@ internal class GameActivity : AppCompatActivity() {
 
         repeatOnResumed {
             viewModel.evaluation.collect {
-                it
-                    .takeIf { it != EvaluationView.State.NULL }
-                    ?.let { state ->
-                        evaluationView.update(state)
-                    }
+                evaluationView.update(it)
             }
         }
 
