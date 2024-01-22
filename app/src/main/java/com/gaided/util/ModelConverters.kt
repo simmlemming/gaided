@@ -2,7 +2,6 @@ package com.gaided.util
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import com.gaided.Game
@@ -50,11 +49,10 @@ internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
     else -> Game.Player.None
 }
 
-
 internal fun Engine.TopMove.toArrow() = ChessBoardView.State.Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
-    color = Color.GRAY
+    color = ChessBoardView.State.Arrow.COLOR_SUGGESTION
 )
 
 internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece() = ChessBoardView.State.Piece(
@@ -75,4 +73,3 @@ internal fun Context.getDrawable(name: String): Drawable {
 
     return checkNotNull(drawable)
 }
-

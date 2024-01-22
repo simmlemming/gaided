@@ -205,7 +205,11 @@ internal class ChessBoardView @JvmOverloads constructor(
             val start: SquareNotation,
             val end: SquareNotation,
             val color: Int
-        )
+        ) {
+            companion object {
+                const val COLOR_SUGGESTION: Int = Color.GRAY
+            }
+        }
 
         internal class OverlaySquare(
             val square: SquareNotation,
