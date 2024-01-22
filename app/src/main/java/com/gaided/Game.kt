@@ -43,6 +43,10 @@ internal class Game(
         val fenPosition = engine.getFenPosition()
         _position.value = FenNotation.fromFenString(fenPosition)
 
+        _history.update {
+            it.add(player, move, fenPosition)
+        }
+
         requestEvaluation(_position.value)
         requestTopMoves(_position.value)
     }
@@ -77,16 +81,24 @@ internal class Game(
         }
     }
 
-    private fun Set<HalfMove>.add(halfMove: HalfMove): Set<HalfMove> {
-        TODO()
-    }
+    private fun Set<HalfMove>.add(player: Player, move: MoveNotation, fenPosition: String): Set<HalfMove> {
+        val lastMove = this.getLastMove()
 
-    private fun Set<HalfMove>.get(number: Int, player: Player): HalfMove? {
-        TODO()
-    }
+        if (lastMove == null) {
+            require(this.isEmpty())
+            require(player == Player.White)
+            return this + HalfMove(1, move, player, FenNotation.fromFenString(fenPosition))
+        }
 
-    private fun Set<HalfMove>.getLast(): HalfMove? {
-        TODO()
+        require(lastMove.player != player)
+
+        val newMoveNumber = if (player == Player.White) {
+            lastMove.number + 1
+        } else {
+            lastMove.number
+        }
+
+        return this + HalfMove(newMoveNumber, move, player, FenNotation.fromFenString(fenPosition))
     }
 
     sealed class Player {
@@ -94,4 +106,15 @@ internal class Game(
         object Black : Player()
         object None : Player()
     }
+}
+
+internal fun Set<Game.HalfMove>.getLastMove(): Game.HalfMove? {
+    return sortedWith { o1, o2 ->
+        when {
+            o1.number != o2.number -> o1.number - o2.number
+            o1.player == Game.Player.White -> 1
+            o2.player == Game.Player.White -> -1
+            else -> 0
+        }
+    }.lastOrNull()
 }

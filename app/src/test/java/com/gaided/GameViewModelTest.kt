@@ -28,6 +28,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -134,8 +135,11 @@ internal class GameViewModelTest {
         advanceUntilIdle()
         clearRecordedCalls()
 
-        assertEquals(WHITE_KNIGHT_AT_G1, viewModel.board.pieceAt("g1"))
-        assertEquals(null, viewModel.board.pieceAt("f3"))
+        assertEquals(
+            WHITE_KNIGHT_AT_G1,
+            viewModel.board.pieceAt("g1")
+        )
+        assertNull(viewModel.board.pieceAt("f3"))
 
         // WHEN
         evaluationResponse = EVALUATION_150
@@ -165,12 +169,21 @@ internal class GameViewModelTest {
         confirmVerified(api)
 
         // ... and piece is moved
-        assertEquals(null, viewModel.board.pieceAt("g1"))
-        assertEquals(WHITE_KNIGHT_AT_F3, viewModel.board.pieceAt("f3"))
+        assertNull(viewModel.board.pieceAt("g1"))
+        assertEquals(
+            WHITE_KNIGHT_AT_F3,
+            viewModel.board.pieceAt("f3")
+        )
 
         // ... and state is updated
-        assertEquals(EvaluationView.State(150, false), viewModel.evaluation.value)
-        assertEquals(PlayerView.State.OPPONENT_MOVE, viewModel.playerWhite.value)
+        assertEquals(
+            EvaluationView.State(150, false),
+            viewModel.evaluation.value
+        )
+        assertEquals(
+            PlayerView.State.OPPONENT_MOVE,
+            viewModel.playerWhite.value
+        )
         assertEquals(
             PlayerView.State(
                 progressVisible = false,
@@ -180,6 +193,18 @@ internal class GameViewModelTest {
             ),
             viewModel.playerBlack.value
         )
+        assertEquals(
+            setOf(Arrow("e7", "e6", Arrow.COLOR_SUGGESTION)),
+            viewModel.board.value.arrows
+        )
+
+        // ... and last move is highlighted
+        val expectedOverlaySquares = setOf(
+            ChessBoardView.State.OverlaySquare("g1", ChessBoardView.State.OverlaySquare.COLOR_LAST_MOVE),
+            ChessBoardView.State.OverlaySquare("f3", ChessBoardView.State.OverlaySquare.COLOR_LAST_MOVE)
+        )
+
+        assertEquals(expectedOverlaySquares, viewModel.board.value.overlaySquares)
     }
 
     private fun StateFlow<ChessBoardView.State>.pieceAt(square: SquareNotation) =

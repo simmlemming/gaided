@@ -10,6 +10,7 @@ import com.gaided.domain.MoveNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
 import com.gaided.util.toArrow
+import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
@@ -40,9 +41,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         ChessBoardView.State(
             pieces = position.allPieces().map { it.toPiece() }.toSet(),
             arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
-            overlaySquares = emptySet()
+            overlaySquares = history.toLastMoveSquares()
         )
     }.stateInThis(ChessBoardView.State.EMPTY)
+
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY

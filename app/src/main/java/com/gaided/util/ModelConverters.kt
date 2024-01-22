@@ -9,9 +9,19 @@ import com.gaided.domain.Engine
 import com.gaided.domain.FenNotation
 import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
+import com.gaided.getLastMove
 import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
+
+internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
+    val lastMove = this.getLastMove() ?: return emptySet()
+    return setOf(
+        OverlaySquare(lastMove.move.take(2), OverlaySquare.COLOR_LAST_MOVE),
+        OverlaySquare(lastMove.move.takeLast(2), OverlaySquare.COLOR_LAST_MOVE),
+    )
+}
 
 internal fun toPlayerState(
     player: Game.Player,
