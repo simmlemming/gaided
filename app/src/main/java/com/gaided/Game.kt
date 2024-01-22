@@ -29,7 +29,6 @@ internal class Game(
     private val rnd = Random(System.currentTimeMillis())
 
     internal suspend fun start() {
-        _position.value = FenNotation.START_POSITION
         requestEvaluation(_position.value)
         requestTopMoves(_position.value)
     }

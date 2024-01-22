@@ -35,12 +35,13 @@ internal class EvaluationView @JvmOverloads constructor(
     }
 
     internal data class State(
-        val isLoading: Boolean,
         val value: Int,
+        val isLoading: Boolean,
     ) {
         companion object {
-            val NULL = State(false, Int.MAX_VALUE)
-            val LOADING = State(true, Int.MAX_VALUE)
+            val NULL = State(Int.MAX_VALUE, false)
+            val LOADING = State(Int.MAX_VALUE, true)
+            val INITIAL = State(0, false)
         }
     }
 }

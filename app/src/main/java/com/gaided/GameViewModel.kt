@@ -45,19 +45,22 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(ChessBoardView.State.EMPTY)
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
+        if (!gameStarted) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.White, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
     val playerBlack = combine(game.position, game.topMoves) { position, topMoves ->
+        if (!gameStarted) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
     val evaluation = combine(game.position, game.evaluation) { position, evaluation ->
-        if (position == FenNotation.START_POSITION) return@combine EvaluationView.State.NULL
+        if (!gameStarted) return@combine EvaluationView.State.INITIAL
         val e = evaluation[position] ?: return@combine EvaluationView.State.LOADING
-        EvaluationView.State(false, e.value)
-    }
+        EvaluationView.State(e.value, false)
+    }.stateInThis(EvaluationView.State.INITIAL)
 
+    private var gameStarted: Boolean = false
 //    private val rnd = Random(System.currentTimeMillis())
 //
 //    val evaluation = flow {
@@ -81,6 +84,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     val userMessage = _userMessage.asStateFlow()
 
     fun start() = launch {
+        gameStarted = true
         game.start()
     }
 
