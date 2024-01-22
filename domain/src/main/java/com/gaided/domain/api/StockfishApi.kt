@@ -20,8 +20,9 @@ public open class StockfishApi(
         call("set_fen_position", position)
     }
 
-    public fun makeMovesFromCurrentPosition(moves: List<String>): String =
+    public fun makeMovesFromCurrentPosition(moves: List<String>) {
         call("make_moves_from_current_position", moves)
+    }
 
     public fun getTopMoves(numberOfMoves: Int): String =
         call("get_top_moves", numberOfMoves)

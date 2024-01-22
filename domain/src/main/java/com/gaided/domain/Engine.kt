@@ -37,12 +37,6 @@ public class Engine(
         api.makeMovesFromCurrentPosition(moves)
     }
 
-    public suspend fun makeMoveFromCurrentPosition(from: SquareNotation, to: SquareNotation): Unit =
-        withContext(ioContext) {
-            val moves = listOf("$from$to")
-            api.makeMovesFromCurrentPosition(moves)
-        }
-
     public suspend fun setFenPosition(position: FenNotation): Unit = withContext(ioContext) {
         api.setFenPosition(position.fenString)
     }
