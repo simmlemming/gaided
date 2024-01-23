@@ -15,6 +15,12 @@ import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
 
+internal fun SquareNotation?.toSelectedSquares(): Set<OverlaySquare> = if (this == null) {
+    emptySet()
+} else {
+    setOf(OverlaySquare(this, OverlaySquare.COLOR_HIGHLIGHT))
+}
+
 internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
     val lastMove = this.getLastMove() ?: return emptySet()
     return setOf(

@@ -14,6 +14,7 @@ import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
+import com.gaided.util.toSelectedSquares
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
@@ -37,13 +38,16 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
     private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
 
-    val board = combine(game.position, game.topMoves, game.history) { position, topMoves, history ->
-        ChessBoardView.State(
-            pieces = position.allPieces().map { it.toPiece() }.toSet(),
-            arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
-            overlaySquares = history.toLastMoveSquares()
-        )
-    }.stateInThis(ChessBoardView.State.EMPTY)
+    private val _selectedSquare = MutableStateFlow<SquareNotation?>(null)
+
+    val board =
+        combine(game.position, game.topMoves, game.history, _selectedSquare) { position, topMoves, history, selectedSquare ->
+            ChessBoardView.State(
+                pieces = position.allPieces().map { it.toPiece() }.toSet(),
+                arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
+                overlaySquares = history.toLastMoveSquares() + selectedSquare.toSelectedSquares()
+            )
+        }.stateInThis(ChessBoardView.State.EMPTY)
 
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
@@ -95,8 +99,23 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 
     fun onSquareClick(square: SquareNotation) = launch {
-        topMoveStartSquares.value[square]?.let { makeMove ->
-            makeMove(game)
+        when {
+            _selectedSquare.value == null && topMoveStartSquares.value[square] != null -> {
+                topMoveStartSquares.value[square]!!.invoke(game)
+            }
+
+            _selectedSquare.value == square -> {
+                _selectedSquare.value = null
+            }
+
+            _selectedSquare.value == null -> _selectedSquare.value = square
+
+            _selectedSquare.value != square -> {
+                val potentialMove = "${_selectedSquare.value}$square"
+                if (game.makeMoveIfCorrect(potentialMove)) {
+                    _selectedSquare.value = null
+                }
+            }
         }
     }
 

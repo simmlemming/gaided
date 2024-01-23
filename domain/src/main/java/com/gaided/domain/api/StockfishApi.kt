@@ -2,6 +2,7 @@
 
 package com.gaided.domain.api
 
+import com.gaided.domain.MoveNotation
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -29,6 +30,11 @@ public open class StockfishApi(
 
     public fun getEvaluation(): String =
         call("get_evaluation")
+
+    public fun isMoveCorrect(move: MoveNotation): Boolean {
+        val response = call("is_move_correct", move)
+        return response == "True"
+    }
 
     protected open fun formatArgs(args: List<*>): String = args.joinToString {
         when (it) {

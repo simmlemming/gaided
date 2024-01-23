@@ -217,6 +217,7 @@ internal class ChessBoardView @JvmOverloads constructor(
         ) {
             companion object {
                 const val COLOR_LAST_MOVE = Color.YELLOW
+                const val COLOR_HIGHLIGHT = Color.RED
             }
         }
     }

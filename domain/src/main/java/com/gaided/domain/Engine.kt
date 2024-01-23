@@ -47,6 +47,11 @@ public class Engine(
         gson.fromJson(evaluation, Evaluation::class.java)
     }
 
+    public suspend fun isMoveCorrect(position: FenNotation, move: MoveNotation): Boolean = withContext(ioContext) {
+        api.setFenPosition(position.fenString)
+        api.isMoveCorrect(move)
+    }
+
     public data class TopMove(
         @SerializedName("Move")
         public val move: String,

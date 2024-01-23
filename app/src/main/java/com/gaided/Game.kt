@@ -51,6 +51,17 @@ internal class Game(
         requestTopMoves(_position.value)
     }
 
+    internal suspend fun makeMoveIfCorrect(move: MoveNotation): Boolean {
+        val isMoveCorrect = engine.isMoveCorrect(_position.value, move)
+
+        if (isMoveCorrect) {
+            move(_position.value.toNextMovePlayer(), move)
+            return true
+        }
+
+        return false
+    }
+
     private suspend fun requestTopMoves(position: FenNotation) {
         val topMoves = engine.getTopMoves(position, 3)
         _topMoves.update {
@@ -71,6 +82,11 @@ internal class Game(
         val player: Player,
         val positionAfterMove: FenNotation,
     ) {
+
+        override fun toString(): String {
+            return "$number. $move (${player::class.simpleName})"
+        }
+
         override fun equals(other: Any?): Boolean {
             if (other !is HalfMove) return false
             return (this.number == other.number && this.player == other.player)
@@ -90,7 +106,9 @@ internal class Game(
             return this + HalfMove(1, move, player, FenNotation.fromFenString(fenPosition))
         }
 
-        require(lastMove.player != player)
+        require(lastMove.player != player) {
+            "Move of player $player already exists in the history: $lastMove"
+        }
 
         val newMoveNumber = if (player == Player.White) {
             lastMove.number + 1
@@ -108,13 +126,15 @@ internal class Game(
     }
 }
 
-internal fun Set<Game.HalfMove>.getLastMove(): Game.HalfMove? {
-    return sortedWith { o1, o2 ->
-        when {
-            o1.number != o2.number -> o1.number - o2.number
-            o1.player == Game.Player.White -> 1
-            o2.player == Game.Player.White -> -1
-            else -> 0
-        }
-    }.lastOrNull()
+internal fun Set<Game.HalfMove>.sorted(): List<Game.HalfMove> = sortedWith { o1, o2 ->
+    when {
+        o1.number != o2.number -> o1.number - o2.number
+        o1.player == Game.Player.White -> -1
+        o2.player == Game.Player.White -> 1
+        else -> 0
+    }
 }
+
+internal fun Set<Game.HalfMove>.getLastMove(): Game.HalfMove? =
+    sorted().lastOrNull()
+
