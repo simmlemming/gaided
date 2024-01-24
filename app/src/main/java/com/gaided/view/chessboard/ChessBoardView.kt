@@ -184,9 +184,6 @@ internal class ChessBoardView @JvmOverloads constructor(
         paintLightSquare
     }
 
-    private fun launch(block: suspend CoroutineScope.() -> Unit) =
-        coroutineScope?.launch(block = block)
-
     internal data class State(
         val pieces: Set<Piece>,
         val arrows: Set<Arrow>,
@@ -199,6 +196,7 @@ internal class ChessBoardView @JvmOverloads constructor(
         internal data class Piece(
             val drawableName: String,
             val position: SquareNotation,
+            val isElevated: Boolean = false
         )
 
         internal data class Arrow(

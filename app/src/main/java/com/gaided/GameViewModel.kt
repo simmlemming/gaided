@@ -43,7 +43,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     val board =
         combine(game.position, game.topMoves, game.history, _selectedSquare) { position, topMoves, history, selectedSquare ->
             ChessBoardView.State(
-                pieces = position.allPieces().map { it.toPiece() }.toSet(),
+                pieces = position.allPieces().map { it.toPiece(selectedSquare) }.toSet(),
                 arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
                 overlaySquares = history.toLastMoveSquares() + selectedSquare.toSelectedSquares()
             )

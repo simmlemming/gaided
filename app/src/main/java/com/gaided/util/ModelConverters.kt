@@ -71,9 +71,10 @@ internal fun Engine.TopMove.toArrow() = ChessBoardView.State.Arrow(
     color = ChessBoardView.State.Arrow.COLOR_SUGGESTION
 )
 
-internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece() = ChessBoardView.State.Piece(
+internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?) = ChessBoardView.State.Piece(
     drawableName = value.toDrawableName(),
     position = key,
+    isElevated = key == selectedSquare
 )
 
 private fun PieceNotation.toDrawableName(): String {
