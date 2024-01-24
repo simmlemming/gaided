@@ -95,7 +95,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
-        game.move(player, move)
+        game.move(move, player)
     }
 
     fun onSquareClick(square: SquareNotation) = launch {
@@ -111,9 +111,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
             _selectedSquare.value == null -> _selectedSquare.value = square
 
             _selectedSquare.value != square -> {
-                val potentialMove = "${_selectedSquare.value}$square"
-                if (game.makeMoveIfCorrect(potentialMove)) {
+                val move = "${_selectedSquare.value}$square"
+                if (game.isMoveIfCorrect(move)) {
                     _selectedSquare.value = null
+                    game.move(move)
                 }
             }
         }
@@ -143,6 +144,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
 private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): suspend (Game) -> Unit {
     return { game ->
-        game.move(position.toNextMovePlayer(), move)
+        game.move(move, position.toNextMovePlayer())
     }
 }

@@ -33,7 +33,7 @@ internal class Game(
         requestTopMoves(_position.value)
     }
 
-    internal suspend fun move(player: Player, move: MoveNotation) {
+    internal suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
         val expectedPlayer = _position.value.toNextMovePlayer()
         check(expectedPlayer == player) {
             "Expected player to move $expectedPlayer, was $player"
@@ -51,16 +51,8 @@ internal class Game(
         requestTopMoves(_position.value)
     }
 
-    internal suspend fun makeMoveIfCorrect(move: MoveNotation): Boolean {
-        val isMoveCorrect = engine.isMoveCorrect(_position.value, move)
-
-        if (isMoveCorrect) {
-            move(_position.value.toNextMovePlayer(), move)
-            return true
-        }
-
-        return false
-    }
+    internal suspend fun isMoveIfCorrect(move: MoveNotation) =
+        engine.isMoveCorrect(_position.value, move)
 
     private suspend fun requestTopMoves(position: FenNotation) {
         val topMoves = engine.getTopMoves(position, 3)

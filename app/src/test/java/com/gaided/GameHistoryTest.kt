@@ -49,7 +49,7 @@ internal class GameHistoryTest {
         getLastHistoryValue: () -> Set<Game.HalfMove>
     ) {
         fenNotationResponse = move.positionAfterMove.fenString
-        move(move.player, move.move)
+        move(move.move, move.player)
         assertEquals(move, getLastHistoryValue().getLastMove())
     }
 }

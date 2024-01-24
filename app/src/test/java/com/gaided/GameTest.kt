@@ -29,7 +29,7 @@ class GameTest {
         game.start()
 
         assertTrue(history.isEmpty())
-        game.move(Player.White, "e2e4")
+        game.move("e2e4", Player.White)
 
         assertEquals(
             setOf(Game.HalfMove(1, "e2e4", Player.White, FEN_NOTATION_AFTER_1ST_WHITE_MOVE)),
@@ -37,7 +37,7 @@ class GameTest {
         )
 
         // WHEN
-        game.move(Player.Black, "e7e6")
+        game.move("e7e6", Player.Black)
 
         // THEN
         assertEquals(
