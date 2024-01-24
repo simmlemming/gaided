@@ -25,7 +25,6 @@ public class Engine(
     public suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
         api.setFenPosition(position.fenString)
         val moves = api.getTopMoves(numberOfMoves)
-        println(moves)
 
         val type = object : TypeToken<List<TopMove>>() {}.type
         gson.fromJson(moves, type)

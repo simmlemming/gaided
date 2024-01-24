@@ -37,15 +37,15 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 
     private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
-
-    private val _selectedSquare = MutableStateFlow<SquareNotation?>(null)
+    private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
+    private var gameStarted: Boolean = false
 
     val board =
-        combine(game.position, game.topMoves, game.history, _selectedSquare) { position, topMoves, history, selectedSquare ->
+        combine(game.position, game.topMoves, game.history, selectedSquare) { position, topMoves, history, selectedSquare ->
             ChessBoardView.State(
                 pieces = position.allPieces().map { it.toPiece(selectedSquare) }.toSet(),
                 arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
-                overlaySquares = history.toLastMoveSquares() + selectedSquare.toSelectedSquares()
+                overlaySquares = history.toLastMoveSquares() // + selectedSquare.toSelectedSquares()
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
 
@@ -66,18 +66,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         EvaluationView.State(e.value, false)
     }.stateInThis(EvaluationView.State.INITIAL)
 
-    private var gameStarted: Boolean = false
-//    private val rnd = Random(System.currentTimeMillis())
-//
-//    val evaluation = flow {
-//        emit(EvaluationView.State(false, 0))
-//        while (true) {
-//            delay(1000)
-//            emit(EvaluationView.State.LOADING)
-//            delay(1000)
-//            emit(EvaluationView.State(false, rnd.nextInt(-500, 500)))
-//        }
-//    }
 
     // TODO: Handle multiple top moves from the same square.
     private val topMoveStartSquares = combine(game.position, game.topMoves) { position, topMoves ->
@@ -85,6 +73,9 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
             .orEmpty()
             .associate { topMove -> topMove.move.take(2) to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
+
+    private val position = game.position
+        .stateInThis(FenNotation.START_POSITION)
 
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
@@ -100,20 +91,22 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
     fun onSquareClick(square: SquareNotation) = launch {
         when {
-            _selectedSquare.value == null && topMoveStartSquares.value[square] != null -> {
+            selectedSquare.value == null && topMoveStartSquares.value[square] != null -> {
                 topMoveStartSquares.value[square]!!.invoke(game)
             }
 
-            _selectedSquare.value == square -> {
-                _selectedSquare.value = null
+            selectedSquare.value == square -> {
+                selectedSquare.value = null
             }
 
-            _selectedSquare.value == null -> _selectedSquare.value = square
+            selectedSquare.value == null && position.value.allPieces().containsKey(square) -> {
+                selectedSquare.value = square
+            }
 
-            _selectedSquare.value != square -> {
-                val move = "${_selectedSquare.value}$square"
+            selectedSquare.value != null && selectedSquare.value != square -> {
+                val move = "${selectedSquare.value}$square"
                 if (game.isMoveIfCorrect(move)) {
-                    _selectedSquare.value = null
+                    selectedSquare.value = null
                     game.move(move)
                 }
             }

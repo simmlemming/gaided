@@ -1,9 +1,6 @@
 package com.gaided
 
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
 import com.gaided.domain.SquareNotation
-import com.gaided.domain.api.StockfishApi
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import com.gaided.view.evaluation.EvaluationView
@@ -14,43 +11,19 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
-internal class GameViewModelTest {
-    private lateinit var api: StockfishApi
-    private lateinit var viewModel: GameViewModel
-    private lateinit var testDispatcher: TestDispatcher
-
-    @Before
-    fun setUp() {
-        testDispatcher = StandardTestDispatcher()
-        Dispatchers.setMain(testDispatcher)
-    }
-
+internal class GameViewModelTest : GameViewModelTestCase() {
     @Test
     fun `initial state`() = runTest {
         api = mockk()
-        viewModel = createViewModel(backgroundScope)
+        viewModel = createViewModelAndCollectState()
 
-        advanceUntilIdle()
         with(viewModel.board.value) {
             assertEquals(32, pieces.size)
             assertTrue(arrows.isEmpty())
@@ -64,16 +37,18 @@ internal class GameViewModelTest {
 
     @Test
     fun start() = runTest {
+        // GIVEN
         api = mockk {
             every { setFenPosition(any()) } returns Unit
             every { getEvaluation() } returns EVALUATION_50
             every { getTopMoves(any()) } returns TOP_MOVES_AT_START
         }
-        viewModel = createViewModel(backgroundScope)
+        viewModel = createViewModelAndCollectState()
 
+        // WHEN
         viewModel.start()
-        advanceUntilIdle()
 
+        // THEN API calls are made ...
         verifySequence {
             api.setFenPosition(FEN_POSITION_AT_START)
             api.getEvaluation()
@@ -82,6 +57,7 @@ internal class GameViewModelTest {
         }
         confirmVerified(api)
 
+        // ... and state is correct
         val expectedArrows = setOf(
             Arrow("d2", "d4", Arrow.COLOR_SUGGESTION),
             Arrow("g1", "f3", Arrow.COLOR_SUGGESTION),
@@ -108,6 +84,7 @@ internal class GameViewModelTest {
 
     @Test
     fun onMoveClick() = runTest {
+        // GIVEN
         var evaluationResponse = ""
         var topMovesResponse = "[]"
         var fenPositionResponse = "[]"
@@ -126,17 +103,16 @@ internal class GameViewModelTest {
             }
         }
 
-        val viewModel = createViewModel(backgroundScope)
+        val viewModel = createViewModelAndCollectState()
         evaluationResponse = EVALUATION_50
         topMovesResponse = TOP_MOVES_AT_START
         fenPositionResponse = FEN_POSITION_AT_START
 
         viewModel.start()
-        advanceUntilIdle()
         clearRecordedCalls()
 
         assertEquals(
-            WHITE_KNIGHT_AT_G1,
+            PIECE_WHITE_KNIGHT_AT_G1,
             viewModel.board.pieceAt("g1")
         )
         assertNull(viewModel.board.pieceAt("f3"))
@@ -144,10 +120,9 @@ internal class GameViewModelTest {
         // WHEN
         evaluationResponse = EVALUATION_150
         topMovesResponse = TOP_MOVES_AFTER_1ST_MOVE
-        fenPositionResponse = FEN_POSITION_AFTER_1ST_MOVE
+        fenPositionResponse = FEN_POSITION_AFTER_1ST_MOVE_G1F3
 
         viewModel.onMoveClick(Game.Player.White, "g1f3")
-        advanceUntilIdle()
 
         // THEN calls are made ...
         verifySequence {
@@ -161,9 +136,9 @@ internal class GameViewModelTest {
             api.setFenPosition(FEN_POSITION_AT_START)
             api.makeMovesFromCurrentPosition(listOf("g1f3"))
             api.getFenPosition()
-            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE)
+            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
             api.getEvaluation()
-            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE)
+            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
             api.getTopMoves(any())
         }
         confirmVerified(api)
@@ -171,7 +146,7 @@ internal class GameViewModelTest {
         // ... and piece is moved
         assertNull(viewModel.board.pieceAt("g1"))
         assertEquals(
-            WHITE_KNIGHT_AT_F3,
+            PIECE_WHITE_KNIGHT_AT_F3,
             viewModel.board.pieceAt("f3")
         )
 
@@ -210,19 +185,6 @@ internal class GameViewModelTest {
     private fun StateFlow<ChessBoardView.State>.pieceAt(square: SquareNotation) =
         value.pieces.firstOrNull { it.position == square }
 
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
-
-    private fun createViewModel(scope: CoroutineScope) = GameViewModel(Game(Engine(api, testDispatcher)))
-        .also {
-            scope.launch { it.board.collect() }
-            scope.launch { it.evaluation.collect() }
-            scope.launch { it.playerWhite.collect() }
-            scope.launch { it.playerBlack.collect() }
-        }
-
     private fun clearRecordedCalls() {
         clearAllMocks(
             answers = false,
@@ -235,35 +197,3 @@ internal class GameViewModelTest {
         )
     }
 }
-
-private const val EVALUATION_50 = "{\"type\": \"cp\", \"value\": 50}"
-private const val EVALUATION_150 = "{\"type\": \"cp\", \"value\": 150}"
-
-@Suppress("PrivatePropertyName")
-private val TOP_MOVES_AT_START = """
-                [
-                    {'Move': 'd2d4', 'Centipawn': 29, 'Mate': None},
-                    {'Move': 'g1f3', 'Centipawn': 25, 'Mate': None},
-                    {'Move': 'e2e4', 'Centipawn': 23, 'Mate': None}
-                ]
-            """.trimIndent()
-
-@Suppress("PrivatePropertyName")
-private val TOP_MOVES_AFTER_1ST_MOVE = """
-                [
-                    {'Move': 'e7e6', 'Centipawn': 23, 'Mate': None}
-                ]
-            """.trimIndent()
-
-@Suppress("PrivatePropertyName")
-private val FEN_POSITION_AT_START =
-    FenNotation.START_POSITION.fenString
-
-private const val FEN_POSITION_AFTER_1ST_MOVE =
-    "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1"
-
-@Suppress("PrivatePropertyName")
-private val WHITE_KNIGHT_AT_G1 = ChessBoardView.State.Piece("piece_nw", "g1")
-
-@Suppress("PrivatePropertyName")
-private val WHITE_KNIGHT_AT_F3 = ChessBoardView.State.Piece("piece_nw", "f3")
