@@ -7,6 +7,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.gaided.Game
 import com.gaided.domain.Engine
 import com.gaided.domain.FenNotation
+import com.gaided.domain.MoveNotation
 import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.getLastMove
@@ -28,6 +29,11 @@ internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
         OverlaySquare(lastMove.move.takeLast(2), OverlaySquare.COLOR_LAST_MOVE),
     )
 }
+
+internal fun MoveNotation.toLastMoveSquares() = setOf(
+    OverlaySquare(this.take(2), OverlaySquare.COLOR_LAST_MOVE),
+    OverlaySquare(this.takeLast(2), OverlaySquare.COLOR_LAST_MOVE)
+)
 
 internal fun toPlayerState(
     player: Game.Player,
@@ -71,11 +77,12 @@ internal fun Engine.TopMove.toArrow() = ChessBoardView.State.Arrow(
     color = ChessBoardView.State.Arrow.COLOR_SUGGESTION
 )
 
-internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?) = ChessBoardView.State.Piece(
-    drawableName = value.toDrawableName(),
-    position = key,
-    isElevated = key == selectedSquare
-)
+internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?, pendingMove: MoveNotation?) =
+    ChessBoardView.State.Piece(
+        drawableName = value.toDrawableName(),
+        position = key,
+        isElevated = key in setOf(selectedSquare, pendingMove?.takeLast(2))
+    )
 
 private fun PieceNotation.toDrawableName(): String {
     val color = if (this.isLowerCase()) "b" else "w"

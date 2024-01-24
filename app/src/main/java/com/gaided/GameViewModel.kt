@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.gaided.domain.Engine
 import com.gaided.domain.FenNotation
 import com.gaided.domain.MoveNotation
+import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
 import com.gaided.util.toArrow
@@ -14,7 +15,6 @@ import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
-import com.gaided.util.toSelectedSquares
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
@@ -38,17 +38,39 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
     private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
     private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
+    private val pendingMove = MutableStateFlow<MoveNotation?>(null)
     private var gameStarted: Boolean = false
 
     val board =
-        combine(game.position, game.topMoves, game.history, selectedSquare) { position, topMoves, history, selectedSquare ->
+        combine(
+            game.position,
+            game.topMoves,
+            game.history,
+            selectedSquare,
+            pendingMove
+        ) { position, topMoves, history, selectedSquare, pendingMove ->
             ChessBoardView.State(
-                pieces = position.allPieces().map { it.toPiece(selectedSquare) }.toSet(),
+                pieces = position
+                    .allPieces()
+                    .let { if (pendingMove == null) it else it.move(pendingMove) }
+                    .map { it.toPiece(selectedSquare, pendingMove) }
+                    .toSet(),
                 arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
-                overlaySquares = history.toLastMoveSquares() // + selectedSquare.toSelectedSquares()
+                overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
 
+    private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
+        return this.toMutableMap().let {
+            if (!it.containsKey(move.take(2))) {
+                return@let it
+            }
+
+            val piece = checkNotNull(it.remove(move.take(2)))
+            it[move.takeLast(2)] = piece
+            it.toMap()
+        }
+    }
 
     val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY
@@ -75,7 +97,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
     private val position = game.position
-        .stateInThis(FenNotation.START_POSITION)
+        .stateInThis(FenNotation.START_POSITION, SharingStarted.Eagerly)
 
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
@@ -92,7 +114,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     fun onSquareClick(square: SquareNotation) = launch {
         when {
             selectedSquare.value == null && topMoveStartSquares.value[square] != null -> {
-                topMoveStartSquares.value[square]!!.invoke(game)
+                topMoveStartSquares.value[square]!!.invoke(game, pendingMove)
             }
 
             selectedSquare.value == square -> {
@@ -105,10 +127,12 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
             selectedSquare.value != null && selectedSquare.value != square -> {
                 val move = "${selectedSquare.value}$square"
+                pendingMove.value = move
                 if (game.isMoveIfCorrect(move)) {
                     selectedSquare.value = null
                     game.move(move)
                 }
+                pendingMove.value = null
             }
         }
     }
@@ -135,8 +159,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 }
 
-private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): suspend (Game) -> Unit {
-    return { game ->
+private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit {
+    return { game, pendingMove ->
+        pendingMove.value = move
         game.move(move, position.toNextMovePlayer())
+        pendingMove.value = null
     }
 }
