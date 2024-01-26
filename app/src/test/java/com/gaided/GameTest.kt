@@ -26,8 +26,6 @@ class GameTest {
         val game = Game(engine)
         val history by game.history.lastValue(backgroundScope, emptySet())
 
-        game.start()
-
         assertTrue(history.isEmpty())
         game.move("e2e4", Player.White)
 

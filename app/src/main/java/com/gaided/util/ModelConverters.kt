@@ -16,6 +16,9 @@ import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
 
+internal fun FenNotation.toPieces() =
+    allPieces().map { it.toPiece(null, null) }.toSet()
+
 internal fun SquareNotation?.toSelectedSquares(): Set<OverlaySquare> = if (this == null) {
     emptySet()
 } else {

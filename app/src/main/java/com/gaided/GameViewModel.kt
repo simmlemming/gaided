@@ -14,6 +14,7 @@ import com.gaided.util.toArrow
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
+import com.gaided.util.toPieces
 import com.gaided.util.toPlayerState
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.evaluation.EvaluationView
@@ -58,7 +59,13 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 arrows = if (pendingMove == null) topMoves[position].orEmpty().map { it.toArrow() }.toSet() else emptySet(),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
-        }.stateInThis(ChessBoardView.State.EMPTY)
+        }.stateInThis(
+            ChessBoardView.State(
+                pieces = FenNotation.START_POSITION.toPieces(),
+                arrows = emptySet(),
+                overlaySquares = emptySet()
+            )
+        )
 
     private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
         return this.toMutableMap().let {
@@ -103,7 +110,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
     fun start() = launch {
         gameStarted = true
-        game.start()
     }
 
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {

@@ -7,31 +7,27 @@ import com.gaided.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.random.Random
 
-internal class Game(
-    private val engine: Engine
-) {
-
+internal class Game(private val engine: Engine) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
 
-    private val _topMoves = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
-    val topMoves: Flow<Map<FenNotation, List<Engine.TopMove>>> = _topMoves.asStateFlow()
+    // Cold flow!
+    // Each consumer triggers engine.getTopMoves()
+    val topMoves = _position.map {
+        mapOf(it to engine.getTopMoves(it, 3))
+    }
+
+    // Cold flow!
+    // Each consumer triggers engine.getEvaluation()
+    val evaluation = _position.map {
+        mapOf(it to engine.getEvaluation(it))
+    }
 
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
-
-    private val _evaluation = MutableStateFlow<Map<FenNotation, Engine.Evaluation>>(emptyMap())
-    val evaluation = _evaluation.asStateFlow()
-
-    private val rnd = Random(System.currentTimeMillis())
-
-    internal suspend fun start() {
-        requestEvaluation(_position.value)
-        requestTopMoves(_position.value)
-    }
 
     internal suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
         val expectedPlayer = _position.value.toNextMovePlayer()
@@ -46,27 +42,10 @@ internal class Game(
         _history.update {
             it.add(player, move, fenPosition)
         }
-
-        requestEvaluation(_position.value)
-        requestTopMoves(_position.value)
     }
 
     internal suspend fun isMoveIfCorrect(move: MoveNotation) =
         engine.isMoveCorrect(_position.value, move)
-
-    private suspend fun requestTopMoves(position: FenNotation) {
-        val topMoves = engine.getTopMoves(position, 3)
-        _topMoves.update {
-            it + (position to topMoves)
-        }
-    }
-
-    private suspend fun requestEvaluation(position: FenNotation) {
-        val evaluation = engine.getEvaluation(position)
-        _evaluation.update {
-            it + (position to evaluation)
-        }
-    }
 
     internal data class HalfMove(
         val number: Int,
