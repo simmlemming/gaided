@@ -23,7 +23,6 @@ public class Engine(
     }
 
     public suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
-        println("getTopMoves, position: ${position.fenString}")
         val moves = api.getTopMoves(position.fenString, numberOfMoves)
 
         val type = object : TypeToken<List<TopMove>>() {}.type
@@ -31,7 +30,6 @@ public class Engine(
     }
 
     public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {
-        println("Engine.move(), move = $move")
         api.makeMoves(position.fenString, listOf(move))
     }
 

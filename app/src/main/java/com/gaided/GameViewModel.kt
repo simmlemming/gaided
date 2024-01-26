@@ -42,10 +42,13 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val pendingMove = MutableStateFlow<MoveNotation?>(null)
     private var gameStarted: Boolean = false
 
+    private val hotTopMoves = game.topMoves
+        .stateInThis(emptyMap())
+
     val board =
         combine(
             game.position,
-            game.topMoves,
+            hotTopMoves,
             game.history,
             selectedSquare,
             pendingMove
@@ -79,12 +82,12 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         }
     }
 
-    val playerWhite = combine(game.position, game.topMoves, pendingMove) { position, topMoves, pendingMove ->
+    val playerWhite = combine(game.position, hotTopMoves, pendingMove) { position, topMoves, pendingMove ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.White, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val playerBlack = combine(game.position, game.topMoves, pendingMove) { position, topMoves, pendingMove ->
+    val playerBlack = combine(game.position, hotTopMoves, pendingMove) { position, topMoves, pendingMove ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.Black, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
@@ -96,7 +99,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(EvaluationView.State.INITIAL)
 
     // TODO: Handle multiple top moves from the same square.
-    private val topMoveStartSquares = combine(game.position, game.topMoves) { position, topMoves ->
+    private val topMoveStartSquares = combine(game.position, hotTopMoves) { position, topMoves ->
         topMoves[position]
             .orEmpty()
             .associate { topMove -> topMove.move.take(2) to topMove.toMakeMoveAction(position) }
