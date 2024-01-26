@@ -57,7 +57,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 pieces = position
                     .allPieces()
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
-                    .map { it.toPiece(selectedSquare, pendingMove) }
+                    .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
                 arrows = if (pendingMove == null) topMoves[position].orEmpty().map { it.toArrow() }.toSet() else emptySet(),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
