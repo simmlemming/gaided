@@ -55,7 +55,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
                     .map { it.toPiece(selectedSquare, pendingMove) }
                     .toSet(),
-                arrows = topMoves[position].orEmpty().map { it.toArrow() }.toSet(),
+                arrows = if (pendingMove == null) topMoves[position].orEmpty().map { it.toArrow() }.toSet() else emptySet(),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
@@ -72,14 +72,14 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         }
     }
 
-    val playerWhite = combine(game.position, game.topMoves) { position, topMoves ->
+    val playerWhite = combine(game.position, game.topMoves, pendingMove) { position, topMoves, pendingMove ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY
-        toPlayerState(Game.Player.White, position, topMoves)
+        toPlayerState(Game.Player.White, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val playerBlack = combine(game.position, game.topMoves) { position, topMoves ->
+    val playerBlack = combine(game.position, game.topMoves, pendingMove) { position, topMoves, pendingMove ->
         if (!gameStarted) return@combine PlayerView.State.EMPTY
-        toPlayerState(Game.Player.Black, position, topMoves)
+        toPlayerState(Game.Player.Black, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
     val evaluation = combine(game.position, game.evaluation) { position, evaluation ->
@@ -87,7 +87,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         val e = evaluation[position] ?: return@combine EvaluationView.State.LOADING
         EvaluationView.State(e.value, false)
     }.stateInThis(EvaluationView.State.INITIAL)
-
 
     // TODO: Handle multiple top moves from the same square.
     private val topMoveStartSquares = combine(game.position, game.topMoves) { position, topMoves ->
@@ -129,9 +128,9 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 val move = "${selectedSquare.value}$square"
                 pendingMove.value = move
                 if (game.isMoveIfCorrect(move)) {
-                    selectedSquare.value = null
                     game.move(move)
                 }
+                selectedSquare.value = null
                 pendingMove.value = null
             }
         }

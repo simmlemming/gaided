@@ -38,11 +38,29 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
-    topMoves: Map<FenNotation, List<Engine.TopMove>>
-) = when (position.toNextMovePlayer()) {
-    Game.Player.None -> PlayerView.State.EMPTY
-    player -> toPlayerViewState(position, topMoves.getOrDefault(position, emptyList()))
-    else -> PlayerView.State.OPPONENT_MOVE
+    topMoves: Map<FenNotation, List<Engine.TopMove>>,
+    pendingMove: MoveNotation?
+): PlayerView.State {
+    val nextMovePlayer = position.toNextMovePlayer()
+
+    return when {
+        nextMovePlayer == Game.Player.None ->
+            PlayerView.State.EMPTY
+
+        nextMovePlayer == player && pendingMove == null ->
+            toPlayerViewState(position, topMoves.getOrDefault(position, emptyList()))
+
+        nextMovePlayer == player && pendingMove != null ->
+            PlayerView.State.EMPTY
+
+        nextMovePlayer != player && pendingMove == null ->
+            PlayerView.State.OPPONENT_MOVE
+
+        nextMovePlayer != player && pendingMove != null ->
+            PlayerView.State.EMPTY.copy(progressVisible = true)
+
+        else -> PlayerView.State.EMPTY
+    }
 }
 
 private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerView.State {
