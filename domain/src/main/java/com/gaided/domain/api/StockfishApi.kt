@@ -3,6 +3,8 @@
 package com.gaided.domain.api
 
 import com.gaided.domain.MoveNotation
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -14,26 +16,41 @@ public open class StockfishApi(
 
     private val url = URL("$baseUrl/call")
 
-    public fun getFenPosition(): String =
-        call("get_fen_position")
+    private var lastSetPosition: String? = null
+    private val mutex = Mutex()
 
-    public fun setFenPosition(position: String) {
-        call("set_fen_position", position)
+    public suspend fun getFenPosition(): String = mutex.withLock {
+        call("get_fen_position")
     }
 
-    public fun makeMovesFromCurrentPosition(moves: List<String>) {
+    public suspend fun setFenPosition(position: String): Unit = withPosition(position) {
+
+    }
+
+    public suspend fun makeMoves(position: String, moves: List<String>): Unit = withPosition(position) {
         call("make_moves_from_current_position", moves)
     }
 
-    public fun getTopMoves(numberOfMoves: Int): String =
+    public suspend fun getTopMoves(position: String, numberOfMoves: Int): String = withPosition(position) {
         call("get_top_moves", numberOfMoves)
+    }
 
-    public fun getEvaluation(): String =
+    public suspend fun getEvaluation(position: String): String = withPosition(position) {
         call("get_evaluation")
+    }
 
-    public fun isMoveCorrect(move: MoveNotation): Boolean {
+    public suspend fun isMoveCorrect(position: String, move: MoveNotation): Boolean = withPosition(position) {
         val response = call("is_move_correct", move)
-        return response == "True"
+        response == "True"
+    }
+
+    private suspend fun <R> withPosition(position: String, block: () -> R): R = mutex.withLock {
+        if (lastSetPosition != position) {
+            call("set_fen_position", position)
+            lastSetPosition = position
+        }
+
+        return block()
     }
 
     protected open fun formatArgs(args: List<*>): String = args.joinToString {

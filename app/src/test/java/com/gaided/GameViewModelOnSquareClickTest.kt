@@ -5,6 +5,8 @@ import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import io.mockk.Runs
 import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
@@ -55,12 +57,12 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     fun `valid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
         api = mockk {
-            every { setFenPosition(any()) } returns Unit
-            every { isMoveCorrect("g1f3") } returns true
-            every { makeMovesFromCurrentPosition(listOf("g1f3")) } returns Unit
-            every { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
-            every { getEvaluation() } returns "{}"
-            every { getTopMoves(any()) } returns "[]"
+            coEvery { setFenPosition(any()) } returns Unit
+            coEvery { isMoveCorrect(any(), "g1f3") } returns true
+            coEvery { makeMoves(any(), listOf("g1f3")) } returns Unit
+            coEvery { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
+            coEvery { getEvaluation(any()) } returns "{}"
+            coEvery { getTopMoves(any(), any()) } returns "[]"
         }
 
         val viewModel = createViewModelAndCollectState()
@@ -105,8 +107,8 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     fun `invalid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
         api = mockk {
-            every { setFenPosition(any()) } returns Unit
-            every { isMoveCorrect("g1b5") } returns false
+            coEvery { setFenPosition(any()) } returns Unit
+            coEvery { isMoveCorrect(any(), "g1b5") } returns false
         }
 
         val viewModel = createViewModelAndCollectState()
@@ -119,8 +121,8 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         viewModel.onSquareClick("b5")
 
         // THEN
-        verify { api.setFenPosition(any()) }
-        verify { api.isMoveCorrect("g1b5") }
+        coVerify { api.setFenPosition(any()) }
+        coVerify { api.isMoveCorrect(any(), "g1b5") }
         assertNotNull(
             viewModel.board["g1"]
         )
@@ -133,10 +135,10 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     fun arrow() = runTest {
         // GIVEN
         api = mockk(relaxed = true) {
-            every { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
-            every { getEvaluation() } returns EVALUATION_50
-            every { getTopMoves(any()) } returns TOP_MOVES_AT_START
-            every { makeMovesFromCurrentPosition(any()) } just Runs
+            coEvery { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
+            coEvery { getEvaluation(any()) } returns EVALUATION_50
+            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_AT_START
+            coEvery { makeMoves(any(), any()) } just Runs
         }
 
         val viewModel = createViewModelAndCollectState()
@@ -159,7 +161,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         viewModel.onSquareClick(expectedArrow.start)
 
         // THEN
-        verify { api.makeMovesFromCurrentPosition(listOf("g1f3")) }
+        coVerify { api.makeMoves(any(), listOf("g1f3")) }
         assertNull(
             viewModel.board[expectedArrow.start]
         )

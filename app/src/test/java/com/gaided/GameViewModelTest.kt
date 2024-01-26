@@ -91,7 +91,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         api = mockk {
             every { setFenPosition(any()) } returns Unit
-            every { makeMovesFromCurrentPosition(any()) } returns Unit
+            every { makeMoves(any()) } returns Unit
             every { getFenPosition() } answers {
                 fenPositionResponse
             }
@@ -134,7 +134,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
             // move
             api.setFenPosition(FEN_POSITION_AT_START)
-            api.makeMovesFromCurrentPosition(listOf("g1f3"))
+            api.makeMoves(listOf("g1f3"))
             api.getFenPosition()
             api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
             api.getEvaluation()

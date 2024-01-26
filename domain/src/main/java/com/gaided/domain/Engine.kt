@@ -23,17 +23,16 @@ public class Engine(
     }
 
     public suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
-        api.setFenPosition(position.fenString)
-        val moves = api.getTopMoves(numberOfMoves)
+        println("getTopMoves, position: ${position.fenString}")
+        val moves = api.getTopMoves(position.fenString, numberOfMoves)
 
         val type = object : TypeToken<List<TopMove>>() {}.type
         gson.fromJson(moves, type)
     }
 
     public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {
-        api.setFenPosition(position.fenString)
-        val moves = listOf(move)
-        api.makeMovesFromCurrentPosition(moves)
+        println("Engine.move(), move = $move")
+        api.makeMoves(position.fenString, listOf(move))
     }
 
     public suspend fun setFenPosition(position: FenNotation): Unit = withContext(ioContext) {
@@ -41,14 +40,12 @@ public class Engine(
     }
 
     public suspend fun getEvaluation(position: FenNotation): Evaluation = withContext(ioContext) {
-        api.setFenPosition(position.fenString)
-        val evaluation = api.getEvaluation()
+        val evaluation = api.getEvaluation(position.fenString)
         gson.fromJson(evaluation, Evaluation::class.java)
     }
 
     public suspend fun isMoveCorrect(position: FenNotation, move: MoveNotation): Boolean = withContext(ioContext) {
-        api.setFenPosition(position.fenString)
-        api.isMoveCorrect(move)
+        api.isMoveCorrect(position.fenString, move)
     }
 
     public data class TopMove(
