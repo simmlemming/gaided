@@ -98,6 +98,32 @@ internal class StockfishApiTest {
         assertRequestBody(api.connection, expectedRequests)
     }
 
+    @Test
+    fun `position is set if changed`() = runTest {
+        api.getTopMoves("pos-1", 3)
+        api.getEvaluation("pos-2")
+
+        // Combined bodies of all requests,
+        // "set_fen_position" occurs twice.
+        val expectedRequests = """
+            {
+                "method": "set_fen_position",
+                "args": ["pos-1"]
+            }{
+                "method": "get_top_moves",
+                "args": [3]
+            }{
+                "method": "set_fen_position",
+                "args": ["pos-2"]
+            }{
+                "method": "get_evaluation",
+                "args": []
+            }
+        """.trimIndent()
+
+        assertRequestBody(api.connection, expectedRequests)
+    }
+
     private fun mockConnection() = mockk<HttpURLConnection>(relaxed = true) {
         every { inputStream } returns ByteArrayInputStream("123".toByteArray())
         every { outputStream } returns ByteArrayOutputStream()
