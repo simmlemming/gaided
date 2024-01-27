@@ -15,14 +15,21 @@ import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
+internal fun toArrows(
+    position: FenNotation,
+    topMoves: Map<FenNotation, List<Engine.TopMove>>,
+    selectedSquare: SquareNotation?,
+    pendingMove: MoveNotation?
+): Set<ChessBoardView.State.Arrow> {
+    if (pendingMove != null) {
+        return emptySet()
+    }
 
-internal fun FenNotation.toPieces() =
-    allPieces().map { it.toPiece(null, null) }.toSet()
-
-internal fun SquareNotation?.toSelectedSquares(): Set<OverlaySquare> = if (this == null) {
-    emptySet()
-} else {
-    setOf(OverlaySquare(this, OverlaySquare.COLOR_HIGHLIGHT))
+    return topMoves[position]
+        .orEmpty()
+        .filter { selectedSquare == null || it.move.take(2) == selectedSquare }
+        .map { it.toArrow() }
+        .toSet()
 }
 
 internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {

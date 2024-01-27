@@ -11,6 +11,7 @@ import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
 import com.gaided.util.toArrow
+import com.gaided.util.toArrows
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
@@ -57,7 +58,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
-                arrows = if (pendingMove == null) topMoves[position].orEmpty().map { it.toArrow() }.toSet() else emptySet(),
+                arrows = toArrows(position, topMoves, selectedSquare, pendingMove),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(
@@ -70,8 +71,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 return@let it
             }
 
-            val piece = checkNotNull(it.remove(move.take(2)))
-            it[move.takeLast(2)] = piece
+            it[move.takeLast(2)] = checkNotNull(it.remove(move.take(2)))
             it.toMap()
         }
     }
@@ -92,11 +92,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         EvaluationView.State(e.value, false)
     }.stateInThis(EvaluationView.State.INITIAL)
 
-    // TODO: Handle multiple top moves from the same square.
     private val topMoveStartSquares = combine(game.position, hotTopMoves) { position, topMoves ->
         topMoves[position]
             .orEmpty()
-            .associate { topMove -> topMove.move.take(2) to topMove.toMakeMoveAction(position) }
+            .associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
     private val position = game.position
@@ -115,8 +114,8 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
 
     fun onSquareClick(square: SquareNotation) = launch {
         when {
-            selectedSquare.value == null && topMoveStartSquares.value[square] != null -> {
-                topMoveStartSquares.value[square]!!.invoke(game, pendingMove)
+            selectedSquare.value == null && topMoveStartSquares.value.getMovesFromSquare(square).isNotEmpty() -> {
+                onArrowClick(square)
             }
 
             selectedSquare.value == square -> {
@@ -136,6 +135,17 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 selectedSquare.value = null
                 pendingMove.value = null
             }
+        }
+    }
+
+    private suspend fun onArrowClick(square: SquareNotation) {
+        val topMovesFromSquare = topMoveStartSquares.value.getMovesFromSquare(square)
+
+        // One arrow from clicked square
+        if (topMovesFromSquare.size == 1) {
+            topMovesFromSquare.toList()[0].second.invoke(game, pendingMove)
+        } else {
+            selectedSquare.value = square
         }
     }
 
@@ -161,10 +171,16 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }
 }
 
-private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit {
+private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): MakeMoveAction {
     return { game, pendingMove ->
         pendingMove.value = move
         game.move(move, position.toNextMovePlayer())
         pendingMove.value = null
     }
 }
+
+private fun Map<MoveNotation, MakeMoveAction>.getMovesFromSquare(square: SquareNotation) =
+    filter { it.key.take(2) == square }
+
+
+private typealias MakeMoveAction = suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit

@@ -8,10 +8,8 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -169,7 +167,55 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
             viewModel.board[expectedArrow.end]
         )
     }
+
+    @Test
+    fun `two arrows from the same square`() = runTest {
+        // GIVEN
+        api = mockk(relaxed = true) {
+            coEvery { getFenPosition() } returns FEN_POSITION_AT_START
+            coEvery { isMoveCorrect(any(), "d2d4") } returns true
+            coEvery { getEvaluation(any()) } returns EVALUATION_50
+            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_FROM_SAME_SQUARE
+            coEvery { makeMoves(any(), any()) } just Runs
+        }
+
+        val viewModel = createViewModelAndCollectState()
+
+        viewModel.start()
+        assertEquals(
+            3,
+            viewModel.board.value.arrows.size
+        )
+
+        // WHEN
+        viewModel.onSquareClick("d2")
+
+        // THEN two arrows are shown
+        assertTrue(
+            viewModel.board.value.arrows.all { it.start == "d2" }
+        )
+        assertEquals(
+            2,
+            viewModel.board.value.arrows.size
+        )
+        coVerify(exactly = 0) { api.makeMoves(any(), any()) }
+
+        // WHEN 2nd square of the arrow is clicked
+        viewModel.onSquareClick("d4")
+
+        // THEN the move is made
+        coVerify(exactly = 1) { api.makeMoves(any(), listOf("d2d4")) }
+    }
 }
 
 private operator fun StateFlow<ChessBoardView.State>.get(key: SquareNotation): ChessBoardView.State.Piece? =
     value.pieces.firstOrNull { it.position == key }
+
+@Suppress("PrivatePropertyName")
+private val TOP_MOVES_FROM_SAME_SQUARE = """
+                [
+                    {'Move': 'd2d4', 'Centipawn': 29, 'Mate': None},
+                    {'Move': 'd2d3', 'Centipawn': 25, 'Mate': None},
+                    {'Move': 'e2e4', 'Centipawn': 23, 'Mate': None}
+                ]
+            """.trimIndent()
