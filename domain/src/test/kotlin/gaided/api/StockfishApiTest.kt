@@ -4,6 +4,8 @@ import com.gaided.domain.api.StockfishApi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -11,6 +13,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 
+@ExperimentalCoroutinesApi
 internal class StockfishApiTest {
 
     private lateinit var api: ApiUnderTest
@@ -21,7 +24,7 @@ internal class StockfishApiTest {
     }
 
     @Test
-    fun `formatArguments`() {
+    fun formatArguments() {
         val cases = mapOf(
             listOf<Int>() to "",
             listOf(1, 2, "a") to "1, 2, \"a\"",
@@ -34,7 +37,7 @@ internal class StockfishApiTest {
     }
 
     @Test
-    fun `call with primitive arguments`() {
+    fun `call with primitive arguments`() = runTest {
         api.setFenPosition("one argument")
 
         val expected = """
@@ -48,7 +51,7 @@ internal class StockfishApiTest {
     }
 
     @Test
-    fun `call without arguments`() {
+    fun `call without arguments`() = runTest {
         api.getFenPosition()
 
         val expected = """
@@ -62,7 +65,7 @@ internal class StockfishApiTest {
     }
 
     @Test
-    fun `calls should be POST`() {
+    fun `calls should be POST`() = runTest {
         api.getFenPosition()
 
         verify {
@@ -70,6 +73,29 @@ internal class StockfishApiTest {
             api.connection.setRequestProperty("Content-Type", "application/json")
             api.connection.setRequestProperty("Content-Length", any())
         }
+    }
+
+    @Test
+    fun `position is set once`() = runTest {
+        api.getTopMoves("pos-1", 3)
+        api.getEvaluation("pos-1")
+
+        // Combined bodies of all requests,
+        // "set_fen_position" occurs once.
+        val expectedRequests = """
+            {
+                "method": "set_fen_position",
+                "args": ["pos-1"]
+            }{
+                "method": "get_top_moves",
+                "args": [3]
+            }{
+                "method": "get_evaluation",
+                "args": []
+            }
+        """.trimIndent()
+
+        assertRequestBody(api.connection, expectedRequests)
     }
 
     private fun mockConnection() = mockk<HttpURLConnection>(relaxed = true) {
@@ -84,8 +110,7 @@ internal class StockfishApiTest {
     }
 }
 
-private class ApiUnderTest(val connection: HttpURLConnection) :
-    StockfishApi("http://a.b", { connection }) {
+private class ApiUnderTest(val connection: HttpURLConnection) : StockfishApi("http://a.b", { connection }) {
     public override fun formatArgs(args: List<*>): String {
         return super.formatArgs(args)
     }
