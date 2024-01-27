@@ -29,6 +29,10 @@ internal class GameActivity : AppCompatActivity() {
                     override fun onSquareClick(square: SquareNotation) {
                         viewModel.onSquareClick(square)
                     }
+
+                    override fun onSquareLongClick(square: SquareNotation) {
+                        viewModel.onSquareLongClick(square)
+                    }
                 })
             }
         }

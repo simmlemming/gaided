@@ -10,7 +10,6 @@ import com.gaided.domain.MoveNotation
 import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
-import com.gaided.util.toArrow
 import com.gaided.util.toArrows
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
@@ -147,6 +146,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         } else {
             selectedSquare.value = square
         }
+    }
+
+    fun onSquareLongClick(square: SquareNotation) {
+        selectedSquare.value = square
     }
 
     internal fun onUserMessageShown() {

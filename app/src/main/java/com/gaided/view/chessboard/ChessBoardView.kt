@@ -3,6 +3,8 @@ package com.gaided.view.chessboard
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import com.gaided.domain.SquareNotation
@@ -65,14 +67,34 @@ internal class ChessBoardView @JvmOverloads constructor(
         overlaySquares.value = OverlaySquaresDrawable(squares, state.overlaySquares)
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (event?.action == MotionEvent.ACTION_UP) {
-            squares.values
-                .firstOrNull { square -> square.rect.contains(event.x, event.y) }
-                ?.let { listener?.onSquareClick(it.notation) }
+    private val gestureDetector = GestureDetector(context, object : OnGestureListener {
+        override fun onDown(e: MotionEvent) =
+            e.toSquare() != null
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            val square = e.toSquare() ?: return false
+            listener?.onSquareClick(square.notation)
+            return true
         }
 
-        return true
+        override fun onLongPress(e: MotionEvent) {
+            e.toSquare()?.let {
+                listener?.onSquareLongClick(it.notation)
+            }
+        }
+
+        private fun MotionEvent.toSquare() = squares.values
+            .firstOrNull { square -> square.rect.contains(this.x, this.y) }
+
+        override fun onShowPress(e: MotionEvent) = Unit
+
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float) = false
+
+        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float) = false
+    })
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        return gestureDetector.onTouchEvent(event)
     }
 
     override fun onAttachedToWindow() {
@@ -262,6 +284,7 @@ internal class ChessBoardView @JvmOverloads constructor(
 
     internal interface Listener {
         fun onSquareClick(square: SquareNotation)
+        fun onSquareLongClick(square: SquareNotation)
     }
 }
 
