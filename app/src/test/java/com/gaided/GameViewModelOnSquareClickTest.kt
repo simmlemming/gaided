@@ -121,8 +121,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         viewModel.onSquareClick("b5")
 
         // THEN
-        coVerify { api.setFenPosition(any()) }
-        coVerify { api.isMoveCorrect(any(), "g1b5") }
+        coVerify { api.isMoveCorrect(FEN_POSITION_AT_START, "g1b5") }
         assertNotNull(
             viewModel.board["g1"]
         )

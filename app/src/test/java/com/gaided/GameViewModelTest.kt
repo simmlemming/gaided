@@ -7,6 +7,9 @@ import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
 import com.gaided.view.player.PlayerView.State.Move
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
+import io.mockk.coVerifyAll
+import io.mockk.coVerifySequence
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -39,9 +42,9 @@ internal class GameViewModelTest : GameViewModelTestCase() {
     fun start() = runTest {
         // GIVEN
         api = mockk {
-            every { setFenPosition(any()) } returns Unit
-            every { getEvaluation() } returns EVALUATION_50
-            every { getTopMoves(any()) } returns TOP_MOVES_AT_START
+            coEvery { setFenPosition(any()) } returns Unit
+            coEvery { getEvaluation(any()) } returns EVALUATION_50
+            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_AT_START
         }
         viewModel = createViewModelAndCollectState()
 
@@ -49,11 +52,9 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         viewModel.start()
 
         // THEN API calls are made ...
-        verifySequence {
-            api.setFenPosition(FEN_POSITION_AT_START)
-            api.getEvaluation()
-            api.setFenPosition(FEN_POSITION_AT_START)
-            api.getTopMoves(any())
+        coVerifyAll {
+            api.getEvaluation(FEN_POSITION_AT_START)
+            api.getTopMoves(FEN_POSITION_AT_START, any())
         }
         confirmVerified(api)
 
@@ -90,15 +91,15 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         var fenPositionResponse = "[]"
 
         api = mockk {
-            every { setFenPosition(any()) } returns Unit
-            every { makeMoves(any()) } returns Unit
-            every { getFenPosition() } answers {
+            coEvery { setFenPosition(any()) } returns Unit
+            coEvery { makeMoves(any(), any()) } returns Unit
+            coEvery { getFenPosition() } answers {
                 fenPositionResponse
             }
-            every { getEvaluation() } answers {
+            coEvery { getEvaluation(any()) } answers {
                 evaluationResponse
             }
-            every { getTopMoves(any()) } answers {
+            coEvery { getTopMoves(any(), any()) } answers {
                 topMovesResponse
             }
         }
@@ -125,21 +126,16 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         viewModel.onMoveClick(Game.Player.White, "g1f3")
 
         // THEN calls are made ...
-        verifySequence {
+        coVerifyAll {
             // start (no need to verity here, but also no way to clear the mock)
-            api.setFenPosition(FEN_POSITION_AT_START)
-            api.getEvaluation()
-            api.setFenPosition(FEN_POSITION_AT_START)
-            api.getTopMoves(any())
+            api.getEvaluation(FEN_POSITION_AT_START)
+            api.getTopMoves(FEN_POSITION_AT_START, any())
 
             // move
-            api.setFenPosition(FEN_POSITION_AT_START)
-            api.makeMoves(listOf("g1f3"))
+            api.makeMoves(FEN_POSITION_AT_START, listOf("g1f3"))
             api.getFenPosition()
-            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
-            api.getEvaluation()
-            api.setFenPosition(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
-            api.getTopMoves(any())
+            api.getEvaluation(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
+            api.getTopMoves(FEN_POSITION_AFTER_1ST_MOVE_G1F3, any())
         }
         confirmVerified(api)
 

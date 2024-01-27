@@ -14,7 +14,6 @@ import com.gaided.util.toArrow
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
-import com.gaided.util.toPieces
 import com.gaided.util.toPlayerState
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.evaluation.EvaluationView
@@ -40,7 +39,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
     private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
     private val pendingMove = MutableStateFlow<MoveNotation?>(null)
-    private var gameStarted: Boolean = false
 
     private val hotTopMoves = game.topMoves
         .stateInThis(emptyMap())
@@ -78,18 +76,18 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         }
     }
 
-    val playerWhite = combine(game.position, hotTopMoves, pendingMove) { position, topMoves, pendingMove ->
-        if (!gameStarted) return@combine PlayerView.State.EMPTY
+    val playerWhite = combine(game.started, game.position, hotTopMoves, pendingMove) { started, position, topMoves, pendingMove ->
+        if (!started) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.White, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val playerBlack = combine(game.position, hotTopMoves, pendingMove) { position, topMoves, pendingMove ->
-        if (!gameStarted) return@combine PlayerView.State.EMPTY
+    val playerBlack = combine(game.started, game.position, hotTopMoves, pendingMove) { started, position, topMoves, pendingMove ->
+        if (!started) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.Black, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val evaluation = combine(game.position, game.evaluation) { position, evaluation ->
-        if (!gameStarted) return@combine EvaluationView.State.INITIAL
+    val evaluation = combine(game.started, game.position, game.evaluation) { started, position, evaluation ->
+        if (!started) return@combine EvaluationView.State.INITIAL
         val e = evaluation[position] ?: return@combine EvaluationView.State.LOADING
         EvaluationView.State(e.value, false)
     }.stateInThis(EvaluationView.State.INITIAL)
@@ -107,8 +105,8 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
-    fun start() = launch {
-        gameStarted = true
+    fun start() {
+        game.start()
     }
 
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
