@@ -63,11 +63,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(
-            ChessBoardView.State(
-                pieces = FenNotation.START_POSITION.toPieces(),
-                arrows = emptySet(),
-                overlaySquares = emptySet()
-            )
+            ChessBoardView.State.EMPTY
         )
 
     private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
