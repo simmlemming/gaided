@@ -87,7 +87,7 @@ private fun Engine.TopMove?.toPlayerViewMoveState(position: FenNotation): Player
 
     return PlayerView.State.Move(
         move = this.move,
-        isVisible = true,
+        isVisible = false,
         text = this.move,
         pieceDrawableName = position.pieceAt(this.move.take(2))?.toDrawableName()
     )

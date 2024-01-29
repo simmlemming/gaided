@@ -73,9 +73,9 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         val expectedPlayerWhiteState = PlayerView.State(
             progressVisible = false,
-            move1 = Move("d2d4", true, "d2d4", "piece_pw"),
-            move2 = Move("g1f3", true, "g1f3", "piece_nw"),
-            move3 = Move("e2e4", true, "e2e4", "piece_pw")
+            move1 = Move("d2d4", false, "d2d4", "piece_pw"),
+            move2 = Move("g1f3", false, "g1f3", "piece_nw"),
+            move3 = Move("e2e4", false, "e2e4", "piece_pw")
         )
 
         assertEquals(expectedPlayerWhiteState, viewModel.playerWhite.value)
@@ -158,7 +158,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         assertEquals(
             PlayerView.State(
                 progressVisible = false,
-                move1 = Move("e7e6", true, "e7e6", "piece_pb"),
+                move1 = Move("e7e6", false, "e7e6", "piece_pb"),
                 move2 = Move("", false, "", null),
                 move3 = Move("", false, "", null)
             ),
