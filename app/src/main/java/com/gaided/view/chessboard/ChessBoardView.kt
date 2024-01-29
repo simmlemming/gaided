@@ -224,7 +224,8 @@ internal class ChessBoardView @JvmOverloads constructor(
         internal data class Arrow(
             val start: SquareNotation,
             val end: SquareNotation,
-            val color: Int
+            val color: Int,
+            val weight: Float = 1f
         ) {
             companion object {
                 const val COLOR_SUGGESTION: Int = Color.GRAY

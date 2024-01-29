@@ -16,33 +16,35 @@ internal class ArrowsDrawable(
         for (arrow in arrows) {
             val paint = Paint().apply {
                 color = arrow.color
-                strokeWidth = 16f
+                strokeWidth = 16f * arrow.weight
             }
             val start = squares[arrow.start]!!.center
             val end = squares[arrow.end]!!.center
 
-            drawArrow(paint, canvas, start.x, start.y, end.x, end.y)
+            drawArrow(paint, canvas, start.x, start.y, end.x, end.y, arrow.weight)
         }
     }
 
     private fun drawArrow(
         paint: Paint, canvas: Canvas,
-        fromX: Float, fromY: Float, toX: Float, toY: Float
+        fromX: Float, fromY: Float, toX: Float, toY: Float, weight: Float
     ) {
         val angleRad: Float
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        val radius = 45f
+        val radius = 45f * weight
         val angle = 60f
 
         //some angle calculations
         angleRad = ((PI * angle / 180.0f).toFloat())
         val lineAngle: Float = atan2(toY - fromY, toX - fromX)
 
-        //tha line
-        canvas.drawLine(fromX, fromY, toX, toY, paint)
+        //the line
+        val x = toX - radius * 0.7f * cos(lineAngle)
+        val y = toY- radius * 0.7f * sin(lineAngle)
+        canvas.drawLine(fromX, fromY, x, y, paint)
 
-        //tha triangle
+        //the triangle
         val path = Path()
         path.fillType = Path.FillType.EVEN_ODD
         path.moveTo(toX, toY)

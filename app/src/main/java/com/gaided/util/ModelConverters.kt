@@ -15,7 +15,7 @@ import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
-internal fun toArrows(
+internal fun toTopMoveArrows(
     position: FenNotation,
     topMoves: Map<FenNotation, List<Engine.TopMove>>,
     selectedSquare: SquareNotation?,

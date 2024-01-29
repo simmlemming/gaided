@@ -10,11 +10,11 @@ import com.gaided.domain.MoveNotation
 import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
-import com.gaided.util.toArrows
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
+import com.gaided.util.toTopMoveArrows
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
@@ -57,7 +57,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
-                arrows = toArrows(position, topMoves, selectedSquare, pendingMove),
+                arrows = toTopMoveArrows(position, topMoves, selectedSquare, pendingMove),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(
