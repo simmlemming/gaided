@@ -28,6 +28,7 @@
             android:layout_height="16dp"
             android:layout_gravity="center_horizontal"
             android:indeterminate="true"
+            android:indeterminateTint="@color/black"
             android:padding="2dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
