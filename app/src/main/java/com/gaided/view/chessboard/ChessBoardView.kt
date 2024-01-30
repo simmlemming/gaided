@@ -229,6 +229,12 @@ internal class ChessBoardView @JvmOverloads constructor(
         ) {
             companion object {
                 const val COLOR_SUGGESTION: Int = Color.GRAY
+
+                fun colorByTopMoveIndex(index: Int) = when (index) {
+                    0 -> Color.GREEN
+                    1 -> Color.YELLOW
+                    else -> Color.RED
+                }
             }
         }
 

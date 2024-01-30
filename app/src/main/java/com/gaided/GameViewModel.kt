@@ -11,6 +11,7 @@ import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.domain.api.StockfishApi
 import com.gaided.util.toLastMoveSquares
+import com.gaided.util.toLastTopMoveArrows
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
@@ -26,6 +27,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -40,8 +43,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
     private val pendingMove = MutableStateFlow<MoveNotation?>(null)
 
-    private val hotTopMoves = game.topMoves
-        .stateInThis(emptyMap())
+    @Suppress("OPT_IN_USAGE")
+    private val hotTopMoves = game.position
+        .flatMapLatest { position -> game.getTopMoves(position) }
+        .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     val board =
         combine(
@@ -57,7 +62,8 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
-                arrows = toTopMoveArrows(position, topMoves, selectedSquare, pendingMove),
+                arrows = toTopMoveArrows(topMoves, selectedSquare, pendingMove) +
+                        toLastTopMoveArrows(topMoves),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(
@@ -92,8 +98,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(EvaluationView.State.INITIAL)
 
     private val topMoveStartSquares = combine(game.position, hotTopMoves) { position, topMoves ->
-        topMoves[position]
-            .orEmpty()
+        topMoves
             .associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 

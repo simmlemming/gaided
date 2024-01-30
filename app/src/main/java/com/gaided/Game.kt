@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 
 internal class Game(private val engine: Engine) {
@@ -18,12 +19,6 @@ internal class Game(private val engine: Engine) {
     val started = _started.asStateFlow()
 
     // Cold flow!
-    // Each consumer triggers engine.getTopMoves()
-    val topMoves = combine(_position, _started) { position, stared ->
-        if (stared) mapOf(position to engine.getTopMoves(position, 3)) else emptyMap()
-    }
-
-    // Cold flow!
     // Each consumer triggers engine.getEvaluation()
     val evaluation = combine(_position, _started) { position, stared ->
         if (stared) mapOf(position to engine.getEvaluation(position)) else emptyMap()
@@ -32,8 +27,28 @@ internal class Game(private val engine: Engine) {
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
+    private val topMoves = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
+
     internal fun start() {
         _started.value = true
+    }
+
+    internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
+        combine(topMoves, started) { cache, _ ->
+            cache[position].orEmpty()
+        }.onStart {
+            emit(topMoves.value[position].orEmpty())
+            refreshTopMoves(position)
+        }
+
+    private suspend fun refreshTopMoves(position: FenNotation) {
+        if (topMoves.value[position] != null) {
+            return
+        }
+
+        topMoves.update {
+            it + (position to engine.getTopMoves(position, 3))
+        }
     }
 
     internal suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {

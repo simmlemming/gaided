@@ -12,23 +12,29 @@ import com.gaided.domain.PieceNotation
 import com.gaided.domain.SquareNotation
 import com.gaided.getLastMove
 import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
+internal fun toLastTopMoveArrows(topMoves: List<Engine.TopMove>): Set<Arrow> {
+    return topMoves
+        .sortedByDescending { it.centipawn }
+        .mapIndexed { index, move -> move.toArrow(Arrow.colorByTopMoveIndex(index)) }
+        .toSet()
+}
+
 internal fun toTopMoveArrows(
-    position: FenNotation,
-    topMoves: Map<FenNotation, List<Engine.TopMove>>,
+    topMoves: List<Engine.TopMove>,
     selectedSquare: SquareNotation?,
     pendingMove: MoveNotation?
-): Set<ChessBoardView.State.Arrow> {
+): Set<Arrow> {
     if (pendingMove != null) {
         return emptySet()
     }
 
-    return topMoves[position]
-        .orEmpty()
+    return topMoves
         .filter { selectedSquare == null || it.move.take(2) == selectedSquare }
-        .map { it.toArrow() }
+        .map { it.toArrow(Arrow.COLOR_SUGGESTION) }
         .toSet()
 }
 
@@ -48,7 +54,7 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
-    topMoves: Map<FenNotation, List<Engine.TopMove>>,
+    topMoves: List<Engine.TopMove>,
     pendingMove: MoveNotation?
 ): PlayerView.State {
     val nextMovePlayer = position.toNextMovePlayer()
@@ -58,7 +64,7 @@ internal fun toPlayerState(
             PlayerView.State.EMPTY
 
         nextMovePlayer == player && pendingMove == null ->
-            toPlayerViewState(position, topMoves.getOrDefault(position, emptyList()))
+            toPlayerViewState(position, topMoves)
 
         nextMovePlayer == player && pendingMove != null ->
             PlayerView.State.EMPTY
@@ -99,10 +105,10 @@ internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
     else -> Game.Player.None
 }
 
-internal fun Engine.TopMove.toArrow() = ChessBoardView.State.Arrow(
+internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
-    color = ChessBoardView.State.Arrow.COLOR_SUGGESTION
+    color = color
 )
 
 internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?, pendingMove: MoveNotation?) =
