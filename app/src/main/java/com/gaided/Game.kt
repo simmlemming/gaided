@@ -38,6 +38,7 @@ internal class Game(private val engine: Engine) {
             cache[position].orEmpty()
         }.onStart {
             emit(topMoves.value[position].orEmpty())
+            // TODO(): Refresh only when started
             refreshTopMoves(position)
         }
 
