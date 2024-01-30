@@ -23,11 +23,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -44,18 +46,24 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     private val pendingMove = MutableStateFlow<MoveNotation?>(null)
 
     @Suppress("OPT_IN_USAGE")
-    private val hotTopMoves = game.position
+    private val topMoves = game.position
         .flatMapLatest { position -> game.getTopMoves(position) }
+        .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
+
+    @Suppress("OPT_IN_USAGE")
+    private val oldTopMoves: SharedFlow<List<Engine.TopMove>> = game.history
+        .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     val board =
         combine(
             game.position,
-            hotTopMoves,
+            topMoves,
+            oldTopMoves,
             game.history,
             selectedSquare,
             pendingMove
-        ) { position, topMoves, history, selectedSquare, pendingMove ->
+        ) { position, topMoves, oldTopMoves, history, selectedSquare, pendingMove ->
             ChessBoardView.State(
                 pieces = position
                     .allPieces()
@@ -63,12 +71,10 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
                 arrows = toTopMoveArrows(topMoves, selectedSquare, pendingMove) +
-                        toLastTopMoveArrows(topMoves),
+                        toLastTopMoveArrows(oldTopMoves),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
-        }.stateInThis(
-            ChessBoardView.State.EMPTY
-        )
+        }.stateInThis(ChessBoardView.State.EMPTY)
 
     private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
         return this.toMutableMap().let {
@@ -81,12 +87,12 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         }
     }
 
-    val playerWhite = combine(game.started, game.position, hotTopMoves, pendingMove) { started, position, topMoves, pendingMove ->
+    val playerWhite = combine(game.started, game.position, topMoves, pendingMove) { started, position, topMoves, pendingMove ->
         if (!started) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.White, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val playerBlack = combine(game.started, game.position, hotTopMoves, pendingMove) { started, position, topMoves, pendingMove ->
+    val playerBlack = combine(game.started, game.position, topMoves, pendingMove) { started, position, topMoves, pendingMove ->
         if (!started) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.Black, position, topMoves, pendingMove)
     }.stateInThis(PlayerView.State.EMPTY)
@@ -97,7 +103,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         EvaluationView.State(e.value, false)
     }.stateInThis(EvaluationView.State.INITIAL)
 
-    private val topMoveStartSquares = combine(game.position, hotTopMoves) { position, topMoves ->
+    private val topMoveStartSquares = combine(game.position, topMoves) { position, topMoves ->
         topMoves
             .associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
@@ -169,6 +175,13 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         started: SharingStarted = SharingStarted.WhileSubscribed(5000)
     ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
+    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<List<Engine.TopMove>> {
+        return when (val position = this.oneBeforeLastPositionOrNull()) {
+            null -> flowOf(emptyList())
+            else -> game.getTopMoves(position)
+        }
+    }
+
     internal class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val api = StockfishApi("http://10.0.2.2:8080")
@@ -192,3 +205,38 @@ private fun Map<MoveNotation, MakeMoveAction>.getMovesFromSquare(square: SquareN
 
 
 private typealias MakeMoveAction = suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit
+
+private fun Set<Game.HalfMove>.oneBeforeLastPositionOrNull(): FenNotation? {
+    if (this.isEmpty()) {
+        return null
+    }
+
+    if (this.size == 1) {
+        return FenNotation.START_POSITION
+    }
+
+    val sortedHistory = this.sorted()
+    return sortedHistory[sortedHistory.lastIndex - 1].positionAfterMove
+}
+
+private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
+    flow: Flow<T1>,
+    flow2: Flow<T2>,
+    flow3: Flow<T3>,
+    flow4: Flow<T4>,
+    flow5: Flow<T5>,
+    flow6: Flow<T6>,
+    crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+): Flow<R> {
+    return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
+        @Suppress("UNCHECKED_CAST")
+        transform(
+            args[0] as T1,
+            args[1] as T2,
+            args[2] as T3,
+            args[3] as T4,
+            args[4] as T5,
+            args[5] as T6,
+        )
+    }
+}
