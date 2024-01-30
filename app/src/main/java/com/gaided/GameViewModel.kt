@@ -76,17 +76,6 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
 
-    private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
-        return this.toMutableMap().let {
-            if (!it.containsKey(move.take(2))) {
-                return@let it
-            }
-
-            it[move.takeLast(2)] = checkNotNull(it.remove(move.take(2)))
-            it.toMap()
-        }
-    }
-
     val playerWhite = combine(game.started, game.position, topMoves, pendingMove) { started, position, topMoves, pendingMove ->
         if (!started) return@combine PlayerView.State.EMPTY
         toPlayerState(Game.Player.White, position, topMoves, pendingMove)
@@ -104,8 +93,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     }.stateInThis(EvaluationView.State.INITIAL)
 
     private val topMoveStartSquares = combine(game.position, topMoves) { position, topMoves ->
-        topMoves
-            .associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
+        topMoves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
     private val position = game.position
@@ -176,9 +164,9 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
     ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
     private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<List<Engine.TopMove>> {
-        return when (val position = this.oneBeforeLastPositionOrNull()) {
+        return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
             null -> flowOf(emptyList())
-            else -> game.getTopMoves(position)
+            else -> game.getTopMoves(position.positionAfterMove)
         }
     }
 
@@ -206,17 +194,17 @@ private fun Map<MoveNotation, MakeMoveAction>.getMovesFromSquare(square: SquareN
 
 private typealias MakeMoveAction = suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit
 
-private fun Set<Game.HalfMove>.oneBeforeLastPositionOrNull(): FenNotation? {
+private fun Set<Game.HalfMove>.oneBeforeLastHalfMoveOrNull(): Game.HalfMove? {
     if (this.isEmpty()) {
         return null
     }
 
     if (this.size == 1) {
-        return FenNotation.START_POSITION
+        return Game.HalfMove(0, "", Game.Player.White, FenNotation.START_POSITION)
     }
 
     val sortedHistory = this.sorted()
-    return sortedHistory[sortedHistory.lastIndex - 1].positionAfterMove
+    return sortedHistory[sortedHistory.lastIndex - 1]
 }
 
 private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
@@ -228,7 +216,7 @@ private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
     flow6: Flow<T6>,
     crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
 ): Flow<R> {
-    return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
+    return combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
         @Suppress("UNCHECKED_CAST")
         transform(
             args[0] as T1,
@@ -238,5 +226,16 @@ private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
             args[4] as T5,
             args[5] as T6,
         )
+    }
+}
+
+private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
+    return this.toMutableMap().let {
+        if (!it.containsKey(move.take(2))) {
+            return@let it
+        }
+
+        it[move.takeLast(2)] = checkNotNull(it.remove(move.take(2)))
+        it.toMap()
     }
 }
