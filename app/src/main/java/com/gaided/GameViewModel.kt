@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     @Suppress("OPT_IN_USAGE")
-    private val oldTopMoves: SharedFlow<List<Engine.TopMove>> = game.history
+    private val oldTopMoves: SharedFlow<Pair<Game.Player, List<Engine.TopMove>>> = game.history
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
@@ -71,7 +72,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
                 arrows = toTopMoveArrows(topMoves, selectedSquare, pendingMove) +
-                        toLastTopMoveArrows(oldTopMoves),
+                        toLastTopMoveArrows(oldTopMoves.first, oldTopMoves.second),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
@@ -164,10 +165,12 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         started: SharingStarted = SharingStarted.WhileSubscribed(5000)
     ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
-    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<List<Engine.TopMove>> {
+    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<Engine.TopMove>>> {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
-            null -> flowOf(emptyList())
-            else -> game.getTopMoves(position.positionAfterMove)
+            null -> flowOf(Game.Player.White to emptyList())
+            else -> game.getTopMoves(position.positionAfterMove).map {
+                position.positionAfterMove.toNextMovePlayer() to it
+            }
         }
     }
 

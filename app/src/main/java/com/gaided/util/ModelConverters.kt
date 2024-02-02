@@ -16,9 +16,17 @@ import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
 import com.gaided.view.player.PlayerView
 
-internal fun toLastTopMoveArrows(topMoves: List<Engine.TopMove>): Set<Arrow> {
+internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {
+    val comparator = Comparator<Engine.TopMove> { o1, o2 ->
+        if (player == Game.Player.White) {
+            o2.centipawn - o1.centipawn
+        } else {
+            o1.centipawn - o2.centipawn
+        }
+    }
+
     return topMoves
-        .sortedByDescending { it.centipawn }
+        .sortedWith(comparator)
         .mapIndexed { index, move -> move.toArrow(Arrow.colorByTopMoveIndex(index)) }
         .toSet()
 }
