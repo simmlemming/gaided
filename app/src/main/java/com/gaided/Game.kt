@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 
 internal class Game(private val engine: Engine) {
@@ -35,21 +36,15 @@ internal class Game(private val engine: Engine) {
 
     internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
         topMovesCache.combineTransform(started) { cache, started ->
-            emit(cache[position].orEmpty())
-            if (started) {
-                refreshTopMovesIfNeeded(position)
+            val cached = cache[position]
+            emit(cached.orEmpty())
+
+            if (cached == null && started) {
+                topMovesCache.update {
+                    it + (position to engine.getTopMoves(position, 3))
+                }
             }
         }
-
-    private suspend fun refreshTopMovesIfNeeded(position: FenNotation) {
-        if (topMovesCache.value[position] != null) {
-            return
-        }
-
-        topMovesCache.update {
-            it + (position to engine.getTopMoves(position, 3))
-        }
-    }
 
     internal suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
         val expectedPlayer = _position.value.toNextMovePlayer()
