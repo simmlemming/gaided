@@ -9,11 +9,8 @@ import com.gaided.view.player.PlayerView.State.Move
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll
-import io.mockk.coVerifySequence
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verifySequence
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -118,12 +115,12 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         )
         assertNull(viewModel.board.pieceAt("f3"))
 
-        // WHEN
+        // WHEN a square with one top move is clicked
         evaluationResponse = EVALUATION_150
         topMovesResponse = TOP_MOVES_AFTER_1ST_MOVE
         fenPositionResponse = FEN_POSITION_AFTER_1ST_MOVE_G1F3
 
-        viewModel.onMoveClick(Game.Player.White, "g1f3")
+        viewModel.onSquareClick("g1")
 
         // THEN calls are made ...
         coVerifyAll {
@@ -165,7 +162,12 @@ internal class GameViewModelTest : GameViewModelTestCase() {
             viewModel.playerBlack.value
         )
         assertEquals(
-            setOf(Arrow("e7", "e6", Arrow.COLOR_SUGGESTION)),
+            setOf(
+                Arrow("e7", "e6", Arrow.COLOR_SUGGESTION),
+                Arrow("d2", "d4", Arrow.colorByTopMoveIndex(0)),
+                Arrow("g1", "f3", Arrow.colorByTopMoveIndex(1)),
+                Arrow("e2", "e4", Arrow.colorByTopMoveIndex(2))
+            ),
             viewModel.board.value.arrows
         )
 

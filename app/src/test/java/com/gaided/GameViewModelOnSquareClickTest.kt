@@ -211,7 +211,6 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
 private operator fun StateFlow<ChessBoardView.State>.get(key: SquareNotation): ChessBoardView.State.Piece? =
     value.pieces.firstOrNull { it.position == key }
 
-@Suppress("PrivatePropertyName")
 private val TOP_MOVES_FROM_SAME_SQUARE = """
                 [
                     {'Move': 'd2d4', 'Centipawn': 29, 'Mate': None},

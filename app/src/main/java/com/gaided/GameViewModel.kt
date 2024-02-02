@@ -106,6 +106,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         game.start()
     }
 
+    @Deprecated("Use onSquareClick().")
     fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
         game.move(move, player)
     }
