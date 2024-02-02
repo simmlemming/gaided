@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
 internal class Game(private val engine: Engine) {
@@ -27,27 +27,26 @@ internal class Game(private val engine: Engine) {
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
-    private val topMoves = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
+    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
 
     internal fun start() {
         _started.value = true
     }
 
     internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
-        combine(topMoves, started) { cache, _ ->
-            cache[position].orEmpty()
-        }.onStart {
-            emit(topMoves.value[position].orEmpty())
-            // TODO(): Refresh only when started
-            refreshTopMoves(position)
+        topMovesCache.combineTransform(started) { cache, started ->
+            emit(cache[position].orEmpty())
+            if (started) {
+                refreshTopMovesIfNeeded(position)
+            }
         }
 
-    private suspend fun refreshTopMoves(position: FenNotation) {
-        if (topMoves.value[position] != null) {
+    private suspend fun refreshTopMovesIfNeeded(position: FenNotation) {
+        if (topMovesCache.value[position] != null) {
             return
         }
 
-        topMoves.update {
+        topMovesCache.update {
             it + (position to engine.getTopMoves(position, 3))
         }
     }
