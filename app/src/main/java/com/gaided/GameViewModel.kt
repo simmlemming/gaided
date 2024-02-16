@@ -77,14 +77,14 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
             )
         }.stateInThis(ChessBoardView.State.EMPTY)
 
-    val playerWhite = combine(game.started, game.position, topMoves, pendingMove) { started, position, topMoves, pendingMove ->
+    val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerView.State.EMPTY
-        toPlayerState(Game.Player.White, position, topMoves, pendingMove)
+        toPlayerState(Game.Player.White, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
-    val playerBlack = combine(game.started, game.position, topMoves, pendingMove) { started, position, topMoves, pendingMove ->
+    val playerBlack = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerView.State.EMPTY
-        toPlayerState(Game.Player.Black, position, topMoves, pendingMove)
+        toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerView.State.EMPTY)
 
     val evaluation = combine(game.started, game.position, game.evaluation) { started, position, evaluation ->
