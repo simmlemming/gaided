@@ -39,21 +39,13 @@ internal class GameActivity : AppCompatActivity() {
 
         repeatOnResumed {
             viewModel.playerWhite.collect {
-                playerWhiteView.update(it, object : PlayerView.Listener {
-                    override fun onMoveClick(move: MoveNotation) {
-                        viewModel.onMoveClick(Game.Player.White, move)
-                    }
-                })
+                playerWhiteView.update(it)
             }
         }
 
         repeatOnResumed {
             viewModel.playerBlack.collect {
-                playerBlackView.update(it, object : PlayerView.Listener {
-                    override fun onMoveClick(move: MoveNotation) {
-                        viewModel.onMoveClick(Game.Player.Black, move)
-                    }
-                })
+                playerBlackView.update(it)
             }
         }
 

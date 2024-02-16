@@ -2,8 +2,9 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="#333">
 
     <ProgressBar
         android:id="@+id/progress_view"
@@ -15,33 +16,33 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/move_1"
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/move_1_stats"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            tools:text="e2e4" />
+            android:layout_marginVertical="4dp"
+            android:textColor="#eee"
+            android:textSize="18sp"
+            tools:text="1. 7 / 15 (47%)" />
 
-        <Button
-            android:id="@+id/move_2"
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/move_2_stats"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            tools:text="h2e5" />
+            android:layout_marginVertical="4dp"
+            android:textColor="#eee"
+            android:textSize="18sp"
+            tools:text="1. 7 / 15 (47%)" />
 
-        <Button
-            android:id="@+id/move_3"
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/move_3_stats"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            tools:text="h2e5" />
+            android:layout_marginVertical="4dp"
+            android:textColor="#eee"
+            android:textSize="18sp"
+            tools:text="1. 7 / 15 (47%)" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

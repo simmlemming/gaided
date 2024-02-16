@@ -3,85 +3,50 @@ package com.gaided.view.player
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.core.view.isVisible
 import com.gaided.R
-import com.gaided.domain.MoveNotation
-import com.gaided.util.getDrawable
 
 internal class PlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
     private val progressView: View by lazy { findViewById(R.id.progress_view) }
-    private val move1View: Button by lazy { findViewById(R.id.move_1) }
-    private val move2View: Button by lazy { findViewById(R.id.move_2) }
-    private val move3View: Button by lazy { findViewById(R.id.move_3) }
+    private val move1StatsView: TextView by lazy { findViewById(R.id.move_1_stats) }
+    private val move2StatsView: TextView by lazy { findViewById(R.id.move_2_stats) }
+    private val move3StatsView: TextView by lazy { findViewById(R.id.move_3_stats) }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
         inflate(context, R.layout.view_player, this)
     }
 
-    fun update(state: State, listener: Listener) {
+    fun update(state: State) {
         progressView.visibility = if (state.progressVisible) View.VISIBLE else View.GONE
-        move1View.update(state.move1)
-        move2View.update(state.move2)
-        move3View.update(state.move3)
-
-        move1View.setOnClickListener {
-            listener.onMoveClick(state.move1.move)
-        }
-
-        move2View.setOnClickListener {
-            listener.onMoveClick(state.move2.move)
-        }
-
-        move3View.setOnClickListener {
-            listener.onMoveClick(state.move3.move)
-        }
+        move1StatsView.setTextOrGone(state.movesStats.getOrNull(0)?.text)
+        move2StatsView.setTextOrGone(state.movesStats.getOrNull(1)?.text)
+        move3StatsView.setTextOrGone(state.movesStats.getOrNull(2)?.text)
     }
 
-    private fun Button.update(state: State.Move) {
-        visibility = if (state.isVisible) View.VISIBLE else View.INVISIBLE
-        text = state.text
-
-        val pieceDrawable = state.pieceDrawableName?.run {
-            val drawable = context.getDrawable(this)
-            drawable.setBounds(0, 0, 64, 64)
-            drawable
-        }
-
-        this.setCompoundDrawables(pieceDrawable, null, null, null)
+    private fun TextView.setTextOrGone(text: String?) {
+        isVisible = (text != null)
+        this.text = text
     }
 
     data class State(
         val progressVisible: Boolean,
-        val move1: Move,
-        val move2: Move,
-        val move3: Move
+        val movesStats: List<Stats>
     ) {
-
-        data class Move(
-            val move: MoveNotation,
-            val isVisible: Boolean,
-            val text: String,
-            val pieceDrawableName: String?
-        )
-
         companion object {
-            val EMPTY = State(
-                false,
-                Move("", false, "", null),
-                Move("", false, "", null),
-                Move("", false, "", null),
-            )
-
+            val EMPTY = State(false, emptyList())
             val OPPONENT_MOVE = EMPTY
         }
     }
 
-    interface Listener {
-        fun onMoveClick(move: MoveNotation)
-    }
+    data class Stats(
+        val number: Int,
+        val total: Int,
+        val text: String
+    )
 }
