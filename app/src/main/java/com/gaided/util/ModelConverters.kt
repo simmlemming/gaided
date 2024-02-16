@@ -90,20 +90,7 @@ internal fun toPlayerState(
 private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerView.State {
     return PlayerView.State(
         progressVisible = topMoves.isEmpty(),
-        move1 = topMoves.getOrNull(0).toPlayerViewMoveState(position),
-        move2 = topMoves.getOrNull(1).toPlayerViewMoveState(position),
-        move3 = topMoves.getOrNull(2).toPlayerViewMoveState(position)
-    )
-}
-
-private fun Engine.TopMove?.toPlayerViewMoveState(position: FenNotation): PlayerView.State.Move {
-    this?.move ?: return PlayerView.State.Move("", false, "", null)
-
-    return PlayerView.State.Move(
-        move = this.move,
-        isVisible = false,
-        text = this.move,
-        pieceDrawableName = position.pieceAt(this.move.take(2))?.toDrawableName()
+        movesStats = emptyList()
     )
 }
 

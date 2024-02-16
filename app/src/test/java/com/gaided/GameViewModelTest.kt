@@ -5,7 +5,6 @@ import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import com.gaided.view.evaluation.EvaluationView
 import com.gaided.view.player.PlayerView
-import com.gaided.view.player.PlayerView.State.Move
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll
@@ -70,9 +69,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         val expectedPlayerWhiteState = PlayerView.State(
             progressVisible = false,
-            move1 = Move("d2d4", false, "d2d4", "piece_pw"),
-            move2 = Move("g1f3", false, "g1f3", "piece_nw"),
-            move3 = Move("e2e4", false, "e2e4", "piece_pw")
+            movesStats = emptyList()
         )
 
         assertEquals(expectedPlayerWhiteState, viewModel.playerWhite.value)
@@ -155,9 +152,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         assertEquals(
             PlayerView.State(
                 progressVisible = false,
-                move1 = Move("e7e6", false, "e7e6", "piece_pb"),
-                move2 = Move("", false, "", null),
-                move3 = Move("", false, "", null)
+                movesStats = emptyList()
             ),
             viewModel.playerBlack.value
         )
