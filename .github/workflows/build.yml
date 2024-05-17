@@ -19,7 +19,10 @@ jobs:
         cache: gradle
 
     - name: Test engine
-      run: ./gradlew :engine:test --no-daemon
+      run: ./gradlew :engine:test
+
+    - name: Test game
+      run: ./gradlew :game:allTest
 
     - name: Build Android app
-      run: ./gradlew :androidApp:build --no-daemon
+      run: ./gradlew :androidApp:build

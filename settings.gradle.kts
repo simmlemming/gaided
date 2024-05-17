@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Gaided"
-include(":androidApp", ":engine")
+include(":engine", ":game", ":androidApp")

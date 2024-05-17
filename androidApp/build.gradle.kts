@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":engine"))
+    implementation(project(":game"))
     implementation(libs.fragment.ktx)
     implementation(libs.androidxCore.ktx)
     implementation(libs.appcompat)
