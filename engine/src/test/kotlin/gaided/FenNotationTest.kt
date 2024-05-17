@@ -2,7 +2,7 @@
 
 package gaided
 
-import com.gaided.domain.FenNotation
+import com.gaided.engine.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

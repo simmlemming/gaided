@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
+    implementation(project(":engine"))
     implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

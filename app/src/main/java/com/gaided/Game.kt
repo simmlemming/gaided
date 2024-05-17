@@ -1,15 +1,14 @@
 package com.gaided
 
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
-import com.gaided.domain.MoveNotation
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
+import com.gaided.engine.MoveNotation
 import com.gaided.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 
 internal class Game(private val engine: Engine) {

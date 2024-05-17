@@ -5,11 +5,11 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import com.gaided.Game
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
-import com.gaided.domain.MoveNotation
-import com.gaided.domain.PieceNotation
-import com.gaided.domain.SquareNotation
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
+import com.gaided.engine.MoveNotation
+import com.gaided.engine.PieceNotation
+import com.gaided.engine.SquareNotation
 import com.gaided.getLastMove
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.Arrow

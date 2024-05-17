@@ -2,7 +2,7 @@ package com.gaided.view.chessboard
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import com.gaided.domain.SquareNotation
+import com.gaided.engine.SquareNotation
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos

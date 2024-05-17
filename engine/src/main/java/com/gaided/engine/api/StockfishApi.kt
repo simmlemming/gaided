@@ -1,8 +1,8 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package com.gaided.domain.api
+package com.gaided.engine.api
 
-import com.gaided.domain.MoveNotation
+import com.gaided.engine.MoveNotation
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.*

@@ -2,9 +2,9 @@
 
 package com.gaided
 
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
-import com.gaided.domain.api.StockfishApi
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
+import com.gaided.engine.api.StockfishApi
 import com.gaided.view.chessboard.ChessBoardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -1,6 +1,6 @@
 package com.gaided
 
-import com.gaided.domain.SquareNotation
+import com.gaided.engine.SquareNotation
 import com.gaided.view.chessboard.ChessBoardView
 import com.gaided.view.chessboard.ChessBoardView.State.Arrow
 import com.gaided.view.evaluation.EvaluationView

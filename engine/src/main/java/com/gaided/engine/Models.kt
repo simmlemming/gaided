@@ -1,4 +1,4 @@
-package com.gaided.domain
+package com.gaided.engine
 
 public typealias SquareNotation = String
 public typealias MoveNotation = String

@@ -1,8 +1,8 @@
 package com.gaided
 
 import com.gaided.Game.Player
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

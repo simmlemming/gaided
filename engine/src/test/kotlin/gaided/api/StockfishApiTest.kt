@@ -1,6 +1,6 @@
 package gaided.api
 
-import com.gaided.domain.api.StockfishApi
+import com.gaided.engine.api.StockfishApi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

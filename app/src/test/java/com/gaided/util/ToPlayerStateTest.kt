@@ -1,8 +1,8 @@
 package com.gaided.util
 
 import com.gaided.Game
-import com.gaided.domain.Engine
-import com.gaided.domain.FenNotation
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
 import com.gaided.view.player.PlayerView
 import org.junit.Assert.assertEquals
 import org.junit.Test

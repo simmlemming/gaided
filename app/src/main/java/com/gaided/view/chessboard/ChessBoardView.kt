@@ -7,7 +7,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
-import com.gaided.domain.SquareNotation
+import com.gaided.engine.SquareNotation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

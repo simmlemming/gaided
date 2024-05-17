@@ -8,7 +8,7 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import com.gaided.domain.SquareNotation
+import com.gaided.engine.SquareNotation
 import com.gaided.util.getDrawable
 
 internal class PiecesDrawable(

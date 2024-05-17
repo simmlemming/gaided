@@ -1,8 +1,8 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package com.gaided.domain
+package com.gaided.engine
 
-import com.gaided.domain.api.StockfishApi
+import com.gaided.engine.api.StockfishApi
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
