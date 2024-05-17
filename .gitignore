@@ -10,7 +10,7 @@
 /.idea/migrations.xml
 /.idea/deploymentTargetSelector.xml
 .DS_Store
-*/build
+**/build
 /captures
 .externalNativeBuild
 .cxx
