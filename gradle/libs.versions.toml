@@ -5,6 +5,7 @@ android-min-sdk = "29"
 agp = "8.4.0"
 kotlin = "1.9.22"
 compose = "1.6.7"
+compose-multiplatform = "1.6.2"
 coroutines = "1.8.1"
 compose-compiler = "1.5.4"
 compose-material3 = "1.2.1"
@@ -42,3 +43,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }

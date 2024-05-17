@@ -24,5 +24,8 @@ jobs:
     - name: Test game
       run: ./gradlew :game:allTest
 
+    - name: Build desktop app
+      run: ./gradlew :desktopApp:build
+
     - name: Build Android app
       run: ./gradlew :androidApp:build
