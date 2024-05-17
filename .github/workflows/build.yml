@@ -18,8 +18,8 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Test domain
-      run: ./gradlew :domain:test --no-daemon
+    - name: Test engine
+      run: ./gradlew :engine:test --no-daemon
 
-    - name: Build app
-      run: ./gradlew :app:build --no-daemon
+    - name: Build Android app
+      run: ./gradlew :androidApp:build --no-daemon
