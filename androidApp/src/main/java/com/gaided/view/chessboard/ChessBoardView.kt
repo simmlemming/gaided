@@ -77,20 +77,20 @@ internal class ChessBoardView @JvmOverloads constructor(
             return true
         }
 
+        override fun onScroll(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float) = false
+
         override fun onLongPress(e: MotionEvent) {
             e.toSquare()?.let {
                 listener?.onSquareLongClick(it.notation)
             }
         }
 
+        override fun onFling(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float) = false
+
         private fun MotionEvent.toSquare() = squares.values
             .firstOrNull { square -> square.rect.contains(this.x, this.y) }
 
         override fun onShowPress(e: MotionEvent) = Unit
-
-        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float) = false
-
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float) = false
     })
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -120,9 +120,8 @@ internal class ChessBoardView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    override fun draw(canvas: Canvas?) {
+    override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        canvas ?: return
 
         val width = canvas.width.toFloat()
         Square.sideLength = (width - borderSize * 2) / 8f
