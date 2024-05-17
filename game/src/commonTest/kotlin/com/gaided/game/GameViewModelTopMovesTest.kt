@@ -1,6 +1,6 @@
-package com.gaided
+package com.gaided.game
 
-import com.gaided.view.chessboard.ChessBoardView.State.Arrow
+import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

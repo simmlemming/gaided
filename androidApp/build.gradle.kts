@@ -37,16 +37,11 @@ android {
 dependencies {
     implementation(project(":game"))
     implementation(libs.fragment.ktx)
-    implementation(libs.androidxCore.ktx)
+//    implementation(libs.androidxCore.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.constraintlayout)
-    implementation(libs.coroutines.core)
-    implementation(libs.lifecycle.runtimeKtx)
-    implementation(libs.lifecycle.viewmodelKtx)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
+//    implementation(libs.constraintlayout)
+//    implementation(libs.coroutines.core)
+//    implementation(libs.lifecycle.runtimeKtx)
+//    implementation(libs.lifecycle.viewmodelKtx)
 }

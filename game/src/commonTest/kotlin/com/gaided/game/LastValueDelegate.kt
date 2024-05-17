@@ -1,4 +1,4 @@
-package com.gaided
+package com.gaided.game
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

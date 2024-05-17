@@ -1,6 +1,6 @@
-package com.gaided
+package com.gaided.game
 
-import com.gaided.Game.Player
+import com.gaided.game.Game.Player
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import io.mockk.coEvery

@@ -9,16 +9,17 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import com.gaided.engine.SquareNotation
-import com.gaided.util.getDrawable
+import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.util.getDrawableByName
 
 internal class PiecesDrawable(
     private val context: Context,
     private val squares: Map<SquareNotation, ChessBoardView.Square>,
-    private val pieces: Set<ChessBoardView.State.Piece>
+    private val pieces: Set<ChessBoardViewState.Piece>
 ) : Drawable() {
     override fun draw(canvas: Canvas) {
         for (piece in pieces) {
-            val pieceDrawable = context.getDrawable(piece.drawableName)
+            val pieceDrawable = context.getDrawableByName(piece.drawableName)
             pieceDrawable.bindToSquare(checkNotNull(squares[piece.position]))
             if (piece.isElevated) {
                 // Scale it a bit
@@ -53,7 +54,7 @@ private fun Drawable.bindToSquare(square: ChessBoardView.Square) {
     )
 }
 
-private fun Context.getShadowDrawable(name: String) = getDrawable(name).apply {
+private fun Context.getShadowDrawable(name: String) = getDrawableByName(name).apply {
     setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
     alpha = 50
 }

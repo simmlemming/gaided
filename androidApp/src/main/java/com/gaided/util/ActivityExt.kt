@@ -1,4 +1,4 @@
-package com.gaided
+package com.gaided.util
 
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

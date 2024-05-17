@@ -1,9 +1,9 @@
-package com.gaided
+package com.gaided.game
 
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
-import com.gaided.util.toNextMovePlayer
+import com.gaided.game.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
-internal class Game(private val engine: Engine) {
+class Game(private val engine: Engine) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
 
@@ -63,7 +63,7 @@ internal class Game(private val engine: Engine) {
     internal suspend fun isMoveIfCorrect(move: MoveNotation) =
         engine.isMoveCorrect(_position.value, move)
 
-    internal data class HalfMove(
+    data class HalfMove(
         val number: Int,
         val move: MoveNotation,
         val player: Player,

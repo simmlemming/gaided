@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.gaided.R
+import com.gaided.game.ui.model.PlayerViewState
 
 internal class PlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -22,7 +23,7 @@ internal class PlayerView @JvmOverloads constructor(
         inflate(context, R.layout.view_player, this)
     }
 
-    fun update(state: State) {
+    fun update(state: PlayerViewState) {
         progressView.visibility = if (state.progressVisible) View.VISIBLE else View.GONE
         move1StatsView.setTextOrGone(state.movesStats.getOrNull(0)?.text)
         move2StatsView.setTextOrGone(state.movesStats.getOrNull(1)?.text)
@@ -33,20 +34,4 @@ internal class PlayerView @JvmOverloads constructor(
         isVisible = (text != null)
         this.text = text
     }
-
-    data class State(
-        val progressVisible: Boolean,
-        val movesStats: List<Stats>
-    ) {
-        companion object {
-            val EMPTY = State(false, emptyList())
-            val OPPONENT_MOVE = EMPTY
-        }
-    }
-
-    data class Stats(
-        val number: Int,
-        val total: Int,
-        val text: String
-    )
 }

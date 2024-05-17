@@ -6,10 +6,11 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import com.gaided.engine.SquareNotation
+import com.gaided.game.ui.model.ChessBoardViewState
 
 internal class OverlaySquaresDrawable(
     private val squares: Map<SquareNotation, ChessBoardView.Square>,
-    private val overlaySquares: Set<ChessBoardView.State.OverlaySquare>
+    private val overlaySquares: Set<ChessBoardViewState.OverlaySquare>
 ) : Drawable() {
     override fun draw(canvas: Canvas) {
         for(square in overlaySquares) {

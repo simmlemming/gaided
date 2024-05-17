@@ -1,9 +1,10 @@
-package com.gaided.util
+package com.gaided.game.util
 
-import com.gaided.Game
+import com.gaided.game.Game
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
-import com.gaided.view.player.PlayerView
+import com.gaided.game.util.toPlayerState
+import com.gaided.game.ui.model.PlayerViewState
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -12,7 +13,7 @@ internal class ToPlayerStateTest {
     @Test
     fun `waiting for top moves for other player`() {
         assertEquals(
-            PlayerView.State(
+            PlayerViewState(
                 progressVisible = false,
                 movesStats = emptyList()
             ),
@@ -27,7 +28,7 @@ internal class ToPlayerStateTest {
     @Test
     fun `waiting for top moves for self`() {
         assertEquals(
-            PlayerView.State(
+            PlayerViewState(
                 progressVisible = true,
                 movesStats = emptyList()
             ),
@@ -42,7 +43,7 @@ internal class ToPlayerStateTest {
     @Test
     fun `have top moves`() {
         assertEquals(
-            PlayerView.State(
+            PlayerViewState(
                 progressVisible = false,
                 movesStats = emptyList()
             ),

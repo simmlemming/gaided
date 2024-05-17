@@ -1,20 +1,16 @@
-package com.gaided.util
+package com.gaided.game.util
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.drawable.Drawable
-import androidx.appcompat.content.res.AppCompatResources
-import com.gaided.Game
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
 import com.gaided.engine.SquareNotation
-import com.gaided.getLastMove
-import com.gaided.view.chessboard.ChessBoardView
-import com.gaided.view.chessboard.ChessBoardView.State.Arrow
-import com.gaided.view.chessboard.ChessBoardView.State.OverlaySquare
-import com.gaided.view.player.PlayerView
+import com.gaided.game.Game
+import com.gaided.game.getLastMove
+import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.game.ui.model.ChessBoardViewState.Arrow
+import com.gaided.game.ui.model.ChessBoardViewState.OverlaySquare
+import com.gaided.game.ui.model.PlayerViewState
 
 internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {
     val comparator = Comparator<Engine.TopMove> { o1, o2 ->
@@ -63,31 +59,31 @@ internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
     topMoves: List<Engine.TopMove>
-): PlayerView.State {
+): PlayerViewState {
     val nextMovePlayer = position.toNextMovePlayer()
 
     return when {
         nextMovePlayer == Game.Player.None ->
-            PlayerView.State.EMPTY
+            PlayerViewState.EMPTY
 
         nextMovePlayer == player ->
             toPlayerViewState(position, topMoves)
 
         nextMovePlayer == player ->
-            PlayerView.State.EMPTY
+            PlayerViewState.EMPTY
 
         nextMovePlayer != player ->
-            PlayerView.State.OPPONENT_MOVE
+            PlayerViewState.OPPONENT_MOVE
 
         nextMovePlayer != player ->
-            PlayerView.State.EMPTY.copy(progressVisible = true)
+            PlayerViewState.EMPTY.copy(progressVisible = true)
 
-        else -> PlayerView.State.EMPTY
+        else -> PlayerViewState.EMPTY
     }
 }
 
-private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerView.State {
-    return PlayerView.State(
+private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerViewState {
+    return PlayerViewState(
         progressVisible = topMoves.isEmpty(),
         movesStats = emptyList()
     )
@@ -106,7 +102,7 @@ internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
 )
 
 internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?, pendingMove: MoveNotation?) =
-    ChessBoardView.State.Piece(
+    ChessBoardViewState.Piece(
         drawableName = value.toDrawableName(),
         position = key,
         isElevated = key in setOf(selectedSquare, pendingMove?.takeLast(2))
@@ -116,12 +112,4 @@ private fun PieceNotation.toDrawableName(): String {
     val color = if (this.isLowerCase()) "b" else "w"
     val symbol = this.lowercaseChar()
     return "piece_$symbol$color"
-}
-
-@SuppressLint("DiscouragedApi")
-internal fun Context.getDrawable(name: String): Drawable {
-    val id = resources.getIdentifier(name, "drawable", packageName)
-    val drawable = AppCompatResources.getDrawable(this, id)
-
-    return checkNotNull(drawable)
 }

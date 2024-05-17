@@ -1,11 +1,11 @@
 @file:Suppress("PropertyName")
 
-package com.gaided
+package com.gaided.game
 
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.api.StockfishApi
-import com.gaided.view.chessboard.ChessBoardView
+import com.gaided.game.ui.model.ChessBoardViewState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -70,6 +70,6 @@ internal abstract class GameViewModelTestCase {
     protected val EVALUATION_50 = "{\"type\": \"cp\", \"value\": 50}"
     protected val EVALUATION_150 = "{\"type\": \"cp\", \"value\": 150}"
 
-    protected val PIECE_WHITE_KNIGHT_AT_G1 = ChessBoardView.State.Piece("piece_nw", "g1")
-    protected val PIECE_WHITE_KNIGHT_AT_F3 = ChessBoardView.State.Piece("piece_nw", "f3")
+    protected val PIECE_WHITE_KNIGHT_AT_G1 = ChessBoardViewState.Piece("piece_nw", "g1")
+    protected val PIECE_WHITE_KNIGHT_AT_F3 = ChessBoardViewState.Piece("piece_nw", "f3")
 }

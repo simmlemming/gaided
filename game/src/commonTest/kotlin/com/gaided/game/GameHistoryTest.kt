@@ -1,4 +1,4 @@
-package com.gaided
+package com.gaided.game
 
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation

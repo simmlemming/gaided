@@ -17,9 +17,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":engine"))
+            implementation(libs.coroutines.core)
+            implementation(libs.lifecycle.viewmodelKtx)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.junit)
+            implementation(libs.coroutines.test)
+            implementation(libs.mockk)
+            implementation(libs.turbine)
         }
     }
 }

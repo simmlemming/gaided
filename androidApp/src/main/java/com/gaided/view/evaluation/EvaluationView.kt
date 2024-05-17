@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.gaided.R
+import com.gaided.game.ui.model.EvaluationViewState
 
 internal class EvaluationView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -23,25 +24,15 @@ internal class EvaluationView @JvmOverloads constructor(
     }
 
 
-    fun update(state: State) {
+    fun update(state: EvaluationViewState) {
         loadingView.isVisible = state.isLoading
 
         state
-            .takeIf { it != State.NULL && it != State.LOADING }
+            .takeIf { it != EvaluationViewState.NULL && it != EvaluationViewState.LOADING }
             ?.let {
                 progressBarView.setProgress(it.value, true)
                 progressTextView.text = "%.1f".format(it.value / 100f)
             }
     }
 
-    internal data class State(
-        val value: Int,
-        val isLoading: Boolean,
-    ) {
-        companion object {
-            val NULL = State(Int.MAX_VALUE, false)
-            val LOADING = State(Int.MAX_VALUE, true)
-            val INITIAL = State(0, false)
-        }
-    }
 }

@@ -1,8 +1,8 @@
-package com.gaided
+package com.gaided.game
 
 import com.gaided.engine.SquareNotation
-import com.gaided.view.chessboard.ChessBoardView
-import com.gaided.view.chessboard.ChessBoardView.State.Arrow
+import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -208,7 +208,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     }
 }
 
-private operator fun StateFlow<ChessBoardView.State>.get(key: SquareNotation): ChessBoardView.State.Piece? =
+private operator fun StateFlow<ChessBoardViewState>.get(key: SquareNotation): ChessBoardViewState.Piece? =
     value.pieces.firstOrNull { it.position == key }
 
 private val TOP_MOVES_FROM_SAME_SQUARE = """

@@ -8,6 +8,7 @@ import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import com.gaided.engine.SquareNotation
+import com.gaided.game.ui.model.ChessBoardViewState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -60,7 +61,7 @@ internal class ChessBoardView @JvmOverloads constructor(
     private val overlaySquares = MutableStateFlow(OverlaySquaresDrawable(emptyMap(), emptySet()))
     private var listener: Listener? = null
 
-    internal fun update(state: State, listener: Listener? = null) {
+    internal fun update(state: ChessBoardViewState, listener: Listener? = null) {
         this.listener = listener
         pieces.value = PiecesDrawable(context, squares, state.pieces)
         arrows.value = ArrowsDrawable(squares, state.arrows)
@@ -203,49 +204,6 @@ internal class ChessBoardView @JvmOverloads constructor(
         paintDarkSquare
     } else {
         paintLightSquare
-    }
-
-    internal data class State(
-        val pieces: Set<Piece>,
-        val arrows: Set<Arrow>,
-        val overlaySquares: Set<OverlaySquare>
-    ) {
-        companion object {
-            val EMPTY = State(setOf(), setOf(), setOf())
-        }
-
-        internal data class Piece(
-            val drawableName: String,
-            val position: SquareNotation,
-            val isElevated: Boolean = false
-        )
-
-        internal data class Arrow(
-            val start: SquareNotation,
-            val end: SquareNotation,
-            val color: Int,
-            val weight: Float = 1f
-        ) {
-            companion object {
-                const val COLOR_SUGGESTION: Int = Color.GRAY
-
-                fun colorByTopMoveIndex(index: Int) = when (index) {
-                    0 -> Color.GREEN
-                    1 -> Color.YELLOW
-                    else -> Color.RED
-                }
-            }
-        }
-
-        internal data class OverlaySquare(
-            val square: SquareNotation,
-            val color: Int
-        ) {
-            companion object {
-                const val COLOR_LAST_MOVE = Color.YELLOW
-                const val COLOR_HIGHLIGHT = Color.RED
-            }
-        }
     }
 
     internal data class Square(val row: Int, val column: Int) {

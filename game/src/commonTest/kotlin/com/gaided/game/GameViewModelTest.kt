@@ -1,10 +1,10 @@
-package com.gaided
+package com.gaided.game
 
 import com.gaided.engine.SquareNotation
-import com.gaided.view.chessboard.ChessBoardView
-import com.gaided.view.chessboard.ChessBoardView.State.Arrow
-import com.gaided.view.evaluation.EvaluationView
-import com.gaided.view.player.PlayerView
+import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.game.ui.model.ChessBoardViewState.Arrow
+import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.game.ui.model.EvaluationViewState
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll
@@ -29,9 +29,9 @@ internal class GameViewModelTest : GameViewModelTestCase() {
             assertTrue(overlaySquares.isEmpty())
         }
 
-        assertEquals(PlayerView.State.EMPTY, viewModel.playerWhite.value)
-        assertEquals(PlayerView.State.EMPTY, viewModel.playerBlack.value)
-        assertEquals(EvaluationView.State.INITIAL, viewModel.evaluation.value)
+        assertEquals(PlayerViewState.EMPTY, viewModel.playerWhite.value)
+        assertEquals(PlayerViewState.EMPTY, viewModel.playerBlack.value)
+        assertEquals(EvaluationViewState.INITIAL, viewModel.evaluation.value)
     }
 
     @Test
@@ -67,14 +67,14 @@ internal class GameViewModelTest : GameViewModelTestCase() {
             assertTrue(overlaySquares.isEmpty())
         }
 
-        val expectedPlayerWhiteState = PlayerView.State(
+        val expectedPlayerWhiteState = PlayerViewState(
             progressVisible = false,
             movesStats = emptyList()
         )
 
         assertEquals(expectedPlayerWhiteState, viewModel.playerWhite.value)
-        assertEquals(PlayerView.State.OPPONENT_MOVE, viewModel.playerBlack.value)
-        assertEquals(EvaluationView.State(50, false), viewModel.evaluation.value)
+        assertEquals(PlayerViewState.OPPONENT_MOVE, viewModel.playerBlack.value)
+        assertEquals(EvaluationViewState(50, false), viewModel.evaluation.value)
     }
 
     @Test
@@ -142,15 +142,15 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         // ... and state is updated
         assertEquals(
-            EvaluationView.State(150, false),
+            EvaluationViewState(150, false),
             viewModel.evaluation.value
         )
         assertEquals(
-            PlayerView.State.OPPONENT_MOVE,
+            PlayerViewState.OPPONENT_MOVE,
             viewModel.playerWhite.value
         )
         assertEquals(
-            PlayerView.State(
+            PlayerViewState(
                 progressVisible = false,
                 movesStats = emptyList()
             ),
@@ -168,14 +168,14 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         // ... and last move is highlighted
         val expectedOverlaySquares = setOf(
-            ChessBoardView.State.OverlaySquare("g1", ChessBoardView.State.OverlaySquare.COLOR_LAST_MOVE),
-            ChessBoardView.State.OverlaySquare("f3", ChessBoardView.State.OverlaySquare.COLOR_LAST_MOVE)
+            ChessBoardViewState.OverlaySquare("g1", ChessBoardViewState.OverlaySquare.COLOR_LAST_MOVE),
+            ChessBoardViewState.OverlaySquare("f3", ChessBoardViewState.OverlaySquare.COLOR_LAST_MOVE)
         )
 
         assertEquals(expectedOverlaySquares, viewModel.board.value.overlaySquares)
     }
 
-    private fun StateFlow<ChessBoardView.State>.pieceAt(square: SquareNotation) =
+    private fun StateFlow<ChessBoardViewState>.pieceAt(square: SquareNotation) =
         value.pieces.firstOrNull { it.position == square }
 
     private fun clearRecordedCalls() {

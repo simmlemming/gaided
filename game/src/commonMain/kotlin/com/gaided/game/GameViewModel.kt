@@ -1,24 +1,24 @@
-package com.gaided
+package com.gaided.game
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
 import com.gaided.engine.SquareNotation
 import com.gaided.engine.api.StockfishApi
-import com.gaided.util.toLastMoveSquares
-import com.gaided.util.toLastTopMoveArrows
-import com.gaided.util.toNextMovePlayer
-import com.gaided.util.toPiece
-import com.gaided.util.toPlayerState
-import com.gaided.util.toTopMoveArrows
-import com.gaided.view.chessboard.ChessBoardView
-import com.gaided.view.evaluation.EvaluationView
-import com.gaided.view.player.PlayerView
+import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.game.ui.model.EvaluationViewState
+import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.game.util.toLastMoveSquares
+import com.gaided.game.util.toLastTopMoveArrows
+import com.gaided.game.util.toNextMovePlayer
+import com.gaided.game.util.toPiece
+import com.gaided.game.util.toPlayerState
+import com.gaided.game.util.toTopMoveArrows
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +35,11 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlin.reflect.KClass
 
-internal class GameViewModel(private val game: Game) : ViewModel() {
+class GameViewModel(private val game: Game) : ViewModel() {
     private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
-        Log.e("Gaided", "", e)
+        loge("Gaided", "", e)
         _userMessage.value = e.message ?: "Error"
     }
 
@@ -65,7 +66,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
             selectedSquare,
             pendingMove
         ) { position, topMoves, oldTopMoves, history, selectedSquare, pendingMove ->
-            ChessBoardView.State(
+            ChessBoardViewState(
                 pieces = position
                     .allPieces()
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
@@ -75,23 +76,23 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
                         toLastTopMoveArrows(oldTopMoves.first, oldTopMoves.second),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
-        }.stateInThis(ChessBoardView.State.EMPTY)
+        }.stateInThis(ChessBoardViewState.EMPTY)
 
     val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
-        if (!started) return@combine PlayerView.State.EMPTY
+        if (!started) return@combine PlayerViewState.EMPTY
         toPlayerState(Game.Player.White, position, topMoves)
-    }.stateInThis(PlayerView.State.EMPTY)
+    }.stateInThis(PlayerViewState.EMPTY)
 
     val playerBlack = combine(game.started, game.position, topMoves) { started, position, topMoves ->
-        if (!started) return@combine PlayerView.State.EMPTY
+        if (!started) return@combine PlayerViewState.EMPTY
         toPlayerState(Game.Player.Black, position, topMoves)
-    }.stateInThis(PlayerView.State.EMPTY)
+    }.stateInThis(PlayerViewState.EMPTY)
 
     val evaluation = combine(game.started, game.position, game.evaluation) { started, position, evaluation ->
-        if (!started) return@combine EvaluationView.State.INITIAL
-        val e = evaluation[position] ?: return@combine EvaluationView.State.LOADING
-        EvaluationView.State(e.value, false)
-    }.stateInThis(EvaluationView.State.INITIAL)
+        if (!started) return@combine EvaluationViewState.INITIAL
+        val e = evaluation[position] ?: return@combine EvaluationViewState.LOADING
+        EvaluationViewState(e.value, false)
+    }.stateInThis(EvaluationViewState.INITIAL)
 
     private val topMoveStartSquares = combine(game.position, topMoves) { position, topMoves ->
         topMoves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
@@ -153,7 +154,7 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         selectedSquare.value = square
     }
 
-    internal fun onUserMessageShown() {
+    fun onUserMessageShown() {
         _userMessage.value = ""
     }
 
@@ -174,8 +175,8 @@ internal class GameViewModel(private val game: Game) : ViewModel() {
         }
     }
 
-    internal class Factory : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    class Factory : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             val api = StockfishApi("http://10.0.2.2:8080")
             val engine = Engine(api)
             val game = Game(engine)
