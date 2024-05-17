@@ -12,5 +12,5 @@ compose.desktop {
 dependencies {
     implementation(compose.desktop.currentOs)
 //    implementation(libs.lifecycle.viewmodelKtx)
-//    implementation(project(":game"))
+    implementation(project(":game"))
 }

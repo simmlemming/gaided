@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+//    alias(libs.plugins.composeMultiplatform)
 }
 
 android {
@@ -37,9 +38,15 @@ android {
 dependencies {
     implementation(project(":game"))
     implementation(libs.fragment.ktx)
-//    implementation(libs.androidxCore.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.activity.compose)
+//    implementation(compose.runtime)
+//    implementation(compose.foundation)
+//    implementation(compose.material3)
+//    implementation(compose.preview)
+//    implementation(compose.uiTooling)
+//    implementation(libs.androidxCore.ktx)
 //    implementation(libs.constraintlayout)
 //    implementation(libs.coroutines.core)
 //    implementation(libs.lifecycle.runtimeKtx)

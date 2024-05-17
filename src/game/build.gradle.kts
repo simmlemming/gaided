@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -19,6 +20,10 @@ kotlin {
             api(project(":engine"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodelKtx)
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
