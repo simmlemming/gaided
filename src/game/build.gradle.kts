@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    jvm("desktop")
 
     androidTarget {
         compilations.all {
