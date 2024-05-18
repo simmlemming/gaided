@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Gaided.app" target="17" />
+      <module name="Gaided.src.androidApp" target="17" />
+      <module name="Gaided.src.game" target="17" />
+      <module name="src.Gaided.androidApp" target="17" />
+      <module name="src.Gaided.game" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

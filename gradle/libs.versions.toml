@@ -24,6 +24,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jvm", version.ref = "coroutines" }
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+compose-multiplatform-toolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform"}
 gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 junit = { module = "junit:junit", version = "4.13.2" }
 mockk = { module = "io.mockk:mockk", version = "1.13.9" }

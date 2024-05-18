@@ -9,8 +9,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/androidApp" />
-            <option value="$PROJECT_DIR$/engine" />
+            <option value="$PROJECT_DIR$/src/androidApp" />
+            <option value="$PROJECT_DIR$/src/desktopApp" />
+            <option value="$PROJECT_DIR$/src/engine" />
+            <option value="$PROJECT_DIR$/src/game" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
