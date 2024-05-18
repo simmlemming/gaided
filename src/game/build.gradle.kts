@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
+    jvm()
 
     androidTarget {
         compilations.all {
@@ -23,8 +23,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.foundation)
             implementation(compose.material3)
-
         }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.junit)
