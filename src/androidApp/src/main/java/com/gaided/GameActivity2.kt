@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.gaided.game.GameViewModel
 import com.gaided.game.ui.MainView
 
-internal class GameActivity2 : AppCompatActivity(){
+internal class GameActivity2 : AppCompatActivity() {
 
     private val viewModel by viewModels<GameViewModel>(factoryProducer = { GameViewModel.Factory() })
 

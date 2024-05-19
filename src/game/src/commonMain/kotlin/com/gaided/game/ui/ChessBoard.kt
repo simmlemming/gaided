@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
@@ -23,6 +24,10 @@ import com.gaided.engine.SquareNotation
 import com.gaided.game.logi
 import com.gaided.game.ui.model.ChessBoardViewState
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 private val colorDarkSquare = Color(0xBA, 0x97, 0x72)
 private val colorLightSquare = Color(0xF1, 0xDF, 0xC0)
@@ -52,6 +57,7 @@ internal fun chessBoardView(
             drawRowNumbers(textMeasurer)
             drawColumnLetters(textMeasurer)
             drawPieces(boardState.value.pieces, textMeasurer)
+            drawArrows(boardState.value.arrows)
         }
         .pointerInput(Unit) {
             detectTapGestures(
@@ -83,6 +89,58 @@ private fun Square.toColor() = if ((row + column) % 2 == 0) {
     colorLightSquare
 }
 
+
+private fun DrawScope.drawArrows(arrows: Set<ChessBoardViewState.Arrow>) {
+    arrows.forEach {
+        drawArrow(
+            color = Color(it.color),
+            from = squares[it.start]!!.center,
+            to = squares[it.end]!!.center,
+            weight = it.weight
+        )
+    }
+}
+
+private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: Float) {
+    val angleRad: Float
+
+    //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
+    val radius = 45f * weight
+    val angle = 60f
+
+    //some angle calculations
+    angleRad = ((PI * angle / 180.0f).toFloat())
+    val lineAngle: Float = atan2(to.y - from.y, to.x - from.x)
+
+    //the line
+    val x = to.x - radius * 0.7f * cos(lineAngle)
+    val y = to.y - radius * 0.7f * sin(lineAngle)
+    drawLine(
+        color = color,
+        start = from,
+        end = Offset(x, y),
+        strokeWidth = 16f * weight,
+    )
+
+    //the triangle
+    val path = androidx.compose.ui.graphics.Path()
+    path.fillType = PathFillType.EvenOdd
+    path.moveTo(to.x, to.y)
+    path.lineTo(
+        (to.x - radius * cos(lineAngle - angleRad / 2.0)).toFloat(),
+        (to.y - radius * sin(lineAngle - angleRad / 2.0)).toFloat()
+    )
+    path.lineTo(
+        (to.x - radius * cos(lineAngle + angleRad / 2.0)).toFloat(),
+        (to.y - radius * sin(lineAngle + angleRad / 2.0)).toFloat()
+    )
+    path.close()
+
+    drawPath(
+        path = path,
+        color = color
+    )
+}
 
 private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMeasurer: TextMeasurer) {
     var textStyle = TextStyle.Default + TextStyle(fontSize = findTextSize(size, "p", textMeasurer))
