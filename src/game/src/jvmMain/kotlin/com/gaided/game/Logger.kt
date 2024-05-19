@@ -1,19 +1,19 @@
 package com.gaided.game
 
-actual fun logd(tag: String, message: String) {
-    log("DEBUG", tag, message, null)
+actual fun logd(message: String) {
+    log("DEBUG", message, null)
 }
 
-actual fun logi(tag: String, message: String) {
-    log("INFO", tag, message, null)
+actual fun logi(message: String) {
+    log("INFO", message, null)
 }
 
-actual fun loge(tag: String, message: String, e: Throwable?) {
-    log("ERROR", tag, message, e)
+actual fun loge(message: String, e: Throwable?) {
+    log("ERROR", message, e)
 }
 
-private fun log(level: String, tag: String, message: String, e: Throwable?) {
-    println("$tag:$level $message")
+private fun log(level: String, message: String, e: Throwable?) {
+    println("$level $message")
     e?.let {
         println(it.toString())
     }

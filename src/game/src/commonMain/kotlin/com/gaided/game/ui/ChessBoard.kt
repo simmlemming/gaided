@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -14,9 +15,12 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.gaided.engine.SquareNotation
+import com.gaided.game.logi
 import com.gaided.game.ui.model.ChessBoardViewState
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 private val colorDarkSquare = Color(0xBA, 0x97, 0x72)
 private val colorLightSquare = Color(0xF1, 0xDF, 0xC0)
@@ -28,8 +32,10 @@ private val DrawScope.borderSize
     get() = size.width / 24
 
 @Composable
-internal fun chessBoardView(boardState: Flow<ChessBoardViewState>, modifier: Modifier = Modifier) {
+internal fun chessBoardView(boardUiState: StateFlow<ChessBoardViewState>, modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
+    val boardState = boardUiState.collectAsState()
+
     Box(modifier = Modifier
         .fillMaxSize()
         .aspectRatio(1f)
@@ -38,6 +44,7 @@ internal fun chessBoardView(boardState: Flow<ChessBoardViewState>, modifier: Mod
             drawBorder()
             drawRowNumbers(textMeasurer)
             drawColumnLetters(textMeasurer)
+            drawPieces(boardState.value.pieces, textMeasurer)
         }
     )
 }
@@ -59,6 +66,51 @@ private fun Square.toColor() = if ((row + column) % 2 == 0) {
     colorLightSquare
 }
 
+
+private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMeasurer: TextMeasurer) {
+    val textStyle = TextStyle.Default + TextStyle(fontSize = findTextSize(size, "p", textMeasurer))
+    val blackPieceStyle = textStyle + TextStyle(color = Color.DarkGray)
+    val whitePieceStyle = textStyle + TextStyle(color = Color.White)
+
+    pieces.forEach {
+        val symbol = it.drawableName.takeLast(2)
+        val pieceSymbol = symbol.take(1).uppercase()
+        val pieceTextStyle = if (symbol.takeLast(1) == "w") whitePieceStyle else blackPieceStyle
+        logi(pieceTextStyle.toString())
+
+        val symbolSize = textMeasurer.measure(pieceSymbol, textStyle)
+        val square = checkNotNull(squares[it.position])
+
+        val topLeft = Offset(
+            square.topLeftCorner.x + (Square.sideLength - symbolSize.size.width) / 2,
+            square.topLeftCorner.y + (Square.sideLength - symbolSize.size.height) / 2,
+        )
+
+        drawText(
+            textMeasurer = textMeasurer,
+            text = pieceSymbol,
+            topLeft = topLeft,
+            style = pieceTextStyle
+        )
+    }
+}
+
+private val textSizesCache = mutableMapOf<Int, TextUnit>()
+
+@Suppress("SameParameterValue")
+private fun findTextSize(drawScopeSize: Size, symbol: String, textMeasurer: TextMeasurer): TextUnit {
+    return textSizesCache.getOrPut(drawScopeSize.height.toInt()) {
+        var size = 2
+
+        while (
+            textMeasurer.measure(symbol, TextStyle.Default + TextStyle(fontSize = size.sp)).size.height < Square.sideLength * 0.8
+        ) {
+            size++
+        }
+
+        size.sp
+    }
+}
 
 private fun DrawScope.drawSquares() {
     Square.sideLength = (this.size.width - borderSize * 2) / 8f
@@ -107,7 +159,7 @@ private fun DrawScope.drawRowNumbers(textMeasurer: TextMeasurer) {
             textMeasurer = textMeasurer,
             text = text,
             style = borderTextStyle,
-            topLeft = Offset(width - (borderSize + textWidth) / 2, squares["a$row"]!!.center.y - textHeight/2),
+            topLeft = Offset(width - (borderSize + textWidth) / 2, squares["a$row"]!!.center.y - textHeight / 2),
         )
     }
 }

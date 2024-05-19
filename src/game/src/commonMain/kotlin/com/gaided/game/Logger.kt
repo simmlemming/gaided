@@ -1,5 +1,5 @@
 package com.gaided.game
 
-expect fun logd(tag: String, message: String)
-expect fun logi(tag: String, message: String)
-expect fun loge(tag: String, message: String, e: Throwable? = null)
+expect fun logd(message: String)
+expect fun logi(message: String)
+expect fun loge(message: String, e: Throwable? = null)

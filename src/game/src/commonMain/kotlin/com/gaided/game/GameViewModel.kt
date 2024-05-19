@@ -39,7 +39,7 @@ import kotlin.reflect.KClass
 
 class GameViewModel(private val game: Game) : ViewModel() {
     private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
-        loge("Gaided", "", e)
+        loge("", e)
         _userMessage.value = e.message ?: "Error"
     }
 
