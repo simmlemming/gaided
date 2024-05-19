@@ -177,7 +177,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
 
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-            val api = StockfishApi("http://10.0.2.2:8080")
+            val api = StockfishApi(serverUrl)
             val engine = Engine(api)
             val game = Game(engine)
             return GameViewModel(game) as T
