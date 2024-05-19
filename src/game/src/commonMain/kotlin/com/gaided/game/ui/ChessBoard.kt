@@ -1,5 +1,6 @@
 package com.gaided.game.ui
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -32,7 +34,12 @@ private val DrawScope.borderSize
     get() = size.width / 24
 
 @Composable
-internal fun chessBoardView(boardUiState: StateFlow<ChessBoardViewState>, modifier: Modifier = Modifier) {
+internal fun chessBoardView(
+    boardUiState: StateFlow<ChessBoardViewState>,
+    onSquareTap: (SquareNotation) -> Unit = {},
+    onSquareLongPress: (SquareNotation) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     val textMeasurer = rememberTextMeasurer()
     val boardState = boardUiState.collectAsState()
 
@@ -46,8 +53,18 @@ internal fun chessBoardView(boardUiState: StateFlow<ChessBoardViewState>, modifi
             drawColumnLetters(textMeasurer)
             drawPieces(boardState.value.pieces, textMeasurer)
         }
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { offset -> offset.toSquare()?.let { onSquareTap(it.notation) } },
+                onLongPress = { offset -> offset.toSquare()?.let { onSquareLongPress(it.notation) } }
+            )
+        }
     )
 }
+
+private fun Offset.toSquare() =
+    squares.values.firstOrNull { square -> square.rect.contains(this.x, this.y) }
+
 
 private val _squares = mutableMapOf<SquareNotation, Square>().also {
     for (row in 1..8) {
@@ -68,7 +85,7 @@ private fun Square.toColor() = if ((row + column) % 2 == 0) {
 
 
 private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMeasurer: TextMeasurer) {
-    val textStyle = TextStyle.Default + TextStyle(fontSize = findTextSize(size, "p", textMeasurer))
+    var textStyle = TextStyle.Default + TextStyle(fontSize = findTextSize(size, "p", textMeasurer))
     val blackPieceStyle = textStyle + TextStyle(color = Color.DarkGray)
     val whitePieceStyle = textStyle + TextStyle(color = Color.White)
 
@@ -76,7 +93,6 @@ private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMea
         val symbol = it.drawableName.takeLast(2)
         val pieceSymbol = symbol.take(1).uppercase()
         val pieceTextStyle = if (symbol.takeLast(1) == "w") whitePieceStyle else blackPieceStyle
-        logi(pieceTextStyle.toString())
 
         val symbolSize = textMeasurer.measure(pieceSymbol, textStyle)
         val square = checkNotNull(squares[it.position])
@@ -86,11 +102,17 @@ private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMea
             square.topLeftCorner.y + (Square.sideLength - symbolSize.size.height) / 2,
         )
 
+        textStyle = if (it.isElevated) {
+            pieceTextStyle + TextStyle(color = Color.Yellow)
+        } else {
+            pieceTextStyle
+        }
+
         drawText(
             textMeasurer = textMeasurer,
             text = pieceSymbol,
             topLeft = topLeft,
-            style = pieceTextStyle
+            style = textStyle
         )
     }
 }

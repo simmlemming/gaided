@@ -5,5 +5,9 @@ import com.gaided.game.GameViewModel
 
 @Composable
 fun MainView(viewModel: GameViewModel) {
-    chessBoardView(viewModel.board)
+    chessBoardView(
+        boardUiState = viewModel.board,
+        onSquareTap = viewModel::onSquareClick,
+        onSquareLongPress = viewModel::onSquareLongClick
+    )
 }
