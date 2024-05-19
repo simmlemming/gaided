@@ -21,7 +21,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.gaided.engine.SquareNotation
-import com.gaided.game.logi
 import com.gaided.game.ui.model.ChessBoardViewState
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.PI
@@ -53,6 +52,7 @@ internal fun chessBoardView(
         .aspectRatio(1f)
         .drawWithContent {
             drawSquares()
+            drawOverlaySquares(boardState.value.overlaySquares)
             drawBorder()
             drawRowNumbers(textMeasurer)
             drawColumnLetters(textMeasurer)
@@ -89,6 +89,19 @@ private fun Square.toColor() = if ((row + column) % 2 == 0) {
     colorLightSquare
 }
 
+
+private fun DrawScope.drawOverlaySquares(overlaySquares: Set<ChessBoardViewState.OverlaySquare>) {
+    val squareSize = Size(Square.sideLength, Square.sideLength)
+
+    overlaySquares.forEach {
+        val overlaySquare = checkNotNull(squares[it.square])
+        drawRect(
+            color = Color(it.color).copy(alpha = 0.5f),
+            topLeft = overlaySquare.topLeftCorner,
+            size = squareSize
+        )
+    }
+}
 
 private fun DrawScope.drawArrows(arrows: Set<ChessBoardViewState.Arrow>) {
     arrows.forEach {
