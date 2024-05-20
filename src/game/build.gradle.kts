@@ -20,6 +20,7 @@ kotlin {
             api(project(":engine"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodelKtx)
+            implementation(libs.lifecycle.viewmodelCompose)
             implementation(compose.ui)
             implementation(compose.foundation)
             implementation(compose.material3)

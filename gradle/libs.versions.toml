@@ -36,6 +36,7 @@ constraintlayout = { module = "androidx.constraintlayout:constraintlayout", vers
 lifecycle-runtimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 lifecycle-viewmodelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.0.0" }
 #androidTestImplementation = { module = "androidx.test.ext:junit", version = "1.1.5" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }

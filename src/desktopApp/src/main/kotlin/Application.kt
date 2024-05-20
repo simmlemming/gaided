@@ -3,9 +3,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import com.gaided.game.GameViewModel
 import com.gaided.game.ui.MainView
 
 fun main() {
@@ -16,17 +13,6 @@ fun main() {
         ),
         title = "Gaided"
     ) {
-        MainView(getGameViewModel())
+        MainView()
     }
-}
-
-private val viewModelStore = ViewModelStore()
-
-private val viewModelProvider = ViewModelProvider.create(
-    viewModelStore,
-    GameViewModel.Factory()
-)
-
-private fun getGameViewModel(): GameViewModel {
-    return viewModelProvider[GameViewModel::class]
 }
