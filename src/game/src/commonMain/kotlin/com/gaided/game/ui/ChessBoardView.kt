@@ -50,8 +50,6 @@ internal fun ChessBoardView(
     val boardState = state.collectAsState()
 
     Box(modifier = modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
         .drawBehind {
             drawSquares()
             drawOverlaySquares(boardState.value.overlaySquares)

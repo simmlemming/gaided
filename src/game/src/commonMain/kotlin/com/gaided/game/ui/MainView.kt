@@ -1,20 +1,29 @@
 package com.gaided.game.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gaided.game.EvaluationView
 import com.gaided.game.GameViewModel
 import com.gaided.game.ui.theme.GameTheme
 
@@ -31,28 +40,42 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
             viewModel.start()
         }
 
-        Column(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier.fillMaxSize()
         ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier.fillMaxWidth().height(intrinsicSize = IntrinsicSize.Max)
+            ) {
+                PlayerView(
+                    state = viewModel.playerBlack.collectAsState(),
+                )
 
-            PlayerView(
-                state = viewModel.playerBlack.collectAsState(),
-            )
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Max)
+                ) {
+                    EvaluationView(
+                        state = viewModel.evaluation.collectAsState(),
+                        modifier = Modifier.width(32.dp).fillMaxHeight()
+                    )
 
-            ChessBoardView(
-                state = viewModel.board,
-                onSquareTap = viewModel::onSquareClick,
-                onSquareLongPress = viewModel::onSquareLongClick,
-            )
+                    ChessBoardView(
+                        state = viewModel.board,
+                        onSquareTap = viewModel::onSquareClick,
+                        onSquareLongPress = viewModel::onSquareLongClick,
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).weight(1f)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            PlayerView(
-                state = viewModel.playerWhite.collectAsState(),
-            )
+                PlayerView(
+                    state = viewModel.playerWhite.collectAsState(),
+                )
+            }
         }
     }
 }
