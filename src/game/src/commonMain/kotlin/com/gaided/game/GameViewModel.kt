@@ -28,9 +28,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -56,6 +58,11 @@ class GameViewModel(private val game: Game) : ViewModel() {
     private val oldTopMoves: SharedFlow<Pair<Game.Player, List<Engine.TopMove>>> = game.history
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
+
+    @Suppress("OPT_IN_USAGE")
+    private val oldPosition: StateFlow<FenNotation> = game.history
+        .mapLatest { it.toOneBeforeLastPosition() }
+        .stateInThis(FenNotation.START_POSITION)
 
     val board =
         combine(
@@ -88,11 +95,18 @@ class GameViewModel(private val game: Game) : ViewModel() {
         toPlayerState(Game.Player.Black, position, topMoves)
     }.stateInThis(PlayerViewState.EMPTY)
 
-    val evaluation = combine(game.started, game.position, game.evaluation) { started, position, evaluation ->
-        if (!started) return@combine EvaluationViewState.INITIAL
-        val e = evaluation[position] ?: return@combine EvaluationViewState.LOADING
-        EvaluationViewState(e.value, false)
-    }.stateInThis(EvaluationViewState.INITIAL)
+    val evaluation =
+        combine(game.started, game.position, oldPosition, game.evaluation) { started, position, oldPosition, evaluation ->
+            if (!started) return@combine EvaluationViewState.INITIAL
+
+            val positionEvaluation = evaluation[position]?.value
+            val oldPositionEvaluation = evaluation[oldPosition]?.value
+            val isLoading = positionEvaluation == null
+
+            EvaluationViewState(positionEvaluation ?: oldPositionEvaluation ?: 0, isLoading)
+        }
+            .distinctUntilChanged()
+            .stateInThis(EvaluationViewState.INITIAL)
 
     private val topMoveStartSquares = combine(game.position, topMoves) { position, topMoves ->
         topMoves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
@@ -174,6 +188,9 @@ class GameViewModel(private val game: Game) : ViewModel() {
             }
         }
     }
+
+    private fun Set<Game.HalfMove>.toOneBeforeLastPosition(): FenNotation =
+        oneBeforeLastHalfMoveOrNull()?.positionAfterMove ?: FenNotation.START_POSITION
 
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {

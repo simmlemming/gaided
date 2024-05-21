@@ -29,6 +29,7 @@ fun VerticalProgressView(
 
         Box(
             modifier = Modifier
+                .background(Color.Black)
                 .weight(1f - weight)
                 .fillMaxWidth()
         )
