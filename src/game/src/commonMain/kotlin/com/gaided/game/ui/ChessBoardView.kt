@@ -4,9 +4,11 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -38,19 +40,19 @@ private val DrawScope.borderSize
     get() = size.width / 24
 
 @Composable
-internal fun chessBoardView(
-    boardUiState: StateFlow<ChessBoardViewState>,
+internal fun ChessBoardView(
+    state: StateFlow<ChessBoardViewState>,
     onSquareTap: (SquareNotation) -> Unit = {},
     onSquareLongPress: (SquareNotation) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val boardState = boardUiState.collectAsState()
+    val boardState = state.collectAsState()
 
-    Box(modifier = Modifier
-        .fillMaxSize()
+    Box(modifier = modifier
+        .fillMaxWidth()
         .aspectRatio(1f)
-        .drawWithContent {
+        .drawBehind {
             drawSquares()
             drawOverlaySquares(boardState.value.overlaySquares)
             drawBorder()
