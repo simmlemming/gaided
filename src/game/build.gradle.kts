@@ -6,21 +6,23 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    jvm("desktop")
 
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "11"
             }
         }
     }
 
     sourceSets {
+        val desktopMain by getting
+
         commonMain.dependencies {
             api(project(":engine"))
             implementation(libs.coroutines.core)
-            implementation(libs.lifecycle.viewmodelKtx)
+            implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.viewmodelCompose)
             implementation(compose.ui)
             implementation(compose.foundation)
@@ -35,6 +37,10 @@ kotlin {
             implementation(libs.mockk)
             implementation(libs.turbine)
         }
+
+        desktopMain.dependencies {
+//            api("androidx.compose.ui:ui-graphics-desktop:1.7.0-beta01")
+        }
     }
 }
 
@@ -45,7 +51,7 @@ android {
         minSdk = libs.versions.android.min.sdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
