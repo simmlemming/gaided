@@ -4,12 +4,16 @@ android-compile-sdk = "34"
 android-min-sdk = "29"
 agp = "8.4.0"
 kotlin = "2.0.0"
-compose = "1.6.7"
-compose-multiplatform = "1.6.10"
 coroutines = "1.8.1"
-compose-material3 = "1.2.1"
 androidx-activityCompose = "1.9.0"
 androidx-lifecycle = "2.8.0"
+
+compose-multiplatform = "1.6.10"
+# These must be in sync with `compose-multiplatform`,
+# see https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compatibility-and-versioning.html#jetpack-compose-and-compose-multiplatform-release-cycles
+compose = "1.6.4"
+compose-material3 = "1.2.1"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

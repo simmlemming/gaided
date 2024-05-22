@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
 }
@@ -10,9 +10,21 @@ compose.desktop {
     }
 }
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.coroutines.swing)
-    implementation(project(":game"))
+kotlin {
+    jvm("desktop")
+
+    sourceSets {
+        val desktopMain by getting
+
+        commonMain.dependencies {
+            implementation(compose.runtime)
+        }
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.lifecycle.viewmodel)
+            implementation(libs.coroutines.swing)
+            implementation(project(":game"))
+        }
+    }
 }
