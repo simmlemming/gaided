@@ -3,11 +3,10 @@ android-target-sdk = "34"
 android-compile-sdk = "34"
 android-min-sdk = "29"
 agp = "8.4.0"
-kotlin = "1.9.20"
+kotlin = "2.0.0"
 compose = "1.6.7"
-compose-multiplatform = "1.6.2"
+compose-multiplatform = "1.6.10"
 coroutines = "1.8.1"
-compose-compiler = "1.5.4"
 compose-material3 = "1.2.1"
 androidx-activityCompose = "1.9.0"
 androidx-lifecycle = "2.8.0"
@@ -48,4 +47,5 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
