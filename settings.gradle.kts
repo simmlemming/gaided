@@ -17,7 +17,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Gaided"
-include(":engine", ":game", ":androidApp")
+include(":engine", ":game", ":androidApp", ":desktopApp")
 
 // All projects are in src folder.
 rootProject.children.forEach {

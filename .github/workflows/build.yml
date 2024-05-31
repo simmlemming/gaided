@@ -25,7 +25,6 @@ jobs:
         run: ./gradlew :game:allTest
 
       - name: Build desktop app
-        if: false
         run: ./gradlew :desktopApp:build
 
       - name: Build Android app
