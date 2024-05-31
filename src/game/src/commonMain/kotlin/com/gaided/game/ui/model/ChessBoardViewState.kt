@@ -1,8 +1,10 @@
 package com.gaided.game.ui.model
 
+import androidx.compose.runtime.Immutable
 import com.gaided.engine.SquareNotation
 import com.gaided.game.util.Color
 
+@Immutable
 data class ChessBoardViewState(
     val pieces: Set<Piece>,
     val arrows: Set<Arrow>,
@@ -12,13 +14,14 @@ data class ChessBoardViewState(
         val EMPTY = ChessBoardViewState(setOf(), setOf(), setOf())
     }
 
+    @Immutable
     data class Piece(
         val drawableName: String,
         val position: SquareNotation,
         val isElevated: Boolean = false
     )
 
-    @Suppress("PropertyName")
+    @Immutable
     data class Arrow(
         val start: SquareNotation,
         val end: SquareNotation,
@@ -37,6 +40,7 @@ data class ChessBoardViewState(
         }
     }
 
+    @Immutable
     data class OverlaySquare(
         val square: SquareNotation,
         val color: Int

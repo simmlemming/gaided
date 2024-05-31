@@ -1,5 +1,8 @@
 package com.gaided.game.ui.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class PlayerViewState(
     val progressVisible: Boolean,
     val movesStats: List<PlayerViewStats>

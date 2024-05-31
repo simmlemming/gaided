@@ -1,5 +1,8 @@
 package com.gaided.game.ui.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class EvaluationViewState(
     val value: Int,
     val isLoading: Boolean,

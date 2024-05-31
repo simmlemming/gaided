@@ -21,7 +21,7 @@ kotlin {
             api(project(":engine"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodel)
-            implementation(libs.lifecycle.viewmodelCompose)
+            implementation(libs.compose.runtime)
         }
 
         commonTest.dependencies {
