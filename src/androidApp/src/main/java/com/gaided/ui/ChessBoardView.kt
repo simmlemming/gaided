@@ -1,4 +1,4 @@
-package com.gaided.game.ui
+package com.gaided.ui
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box

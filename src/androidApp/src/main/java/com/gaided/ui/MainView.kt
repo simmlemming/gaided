@@ -1,4 +1,4 @@
-package com.gaided.game.ui
+package com.gaided.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,20 +19,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gaided.game.EvaluationView
 import com.gaided.game.GameViewModel
-import com.gaided.game.ui.theme.GameTheme
+import com.gaided.ui.theme.GameTheme
 
 @Composable
 fun MainView(modifier: Modifier = Modifier) = GameTheme {
     Surface {
         val viewModel: GameViewModel = viewModel(
             GameViewModel::class,
-            viewModelStoreOwner = LocalViewModelStoreOwner.current ?: appViewModelStoreOwner,
             factory = GameViewModel.Factory()
         )
 
@@ -78,12 +73,4 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
             }
         }
     }
-}
-
-// In desktop app the LocalViewModelStoreOwner.current is null, so this one is used.
-private val appViewModelStoreOwner = object : ViewModelStoreOwner {
-    private val appViewModelStore = ViewModelStore()
-
-    override val viewModelStore: ViewModelStore
-        get() = appViewModelStore
 }

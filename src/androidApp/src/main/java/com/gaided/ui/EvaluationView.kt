@@ -1,4 +1,4 @@
-package com.gaided.game
+package com.gaided.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gaided.game.ui.model.EvaluationViewState
-import com.gaided.game.ui.model.VerticalProgressView
 
 private const val EVALUATION_MAX = 800
 

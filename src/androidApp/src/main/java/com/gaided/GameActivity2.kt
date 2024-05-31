@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.gaided.game.ui.MainView
+import com.gaided.ui.MainView
 
 internal class GameActivity2 : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.gaided.game.ui.theme
+package com.gaided.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.gaided.game.ui.theme
+package com.gaided.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

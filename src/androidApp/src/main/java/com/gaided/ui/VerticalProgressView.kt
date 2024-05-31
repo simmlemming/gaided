@@ -1,4 +1,4 @@
-package com.gaided.game.ui.model
+package com.gaided.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.gaided.game.logi
 
 @Composable
 fun VerticalProgressView(

@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.jetbrainsCompose)
 }
 
 kotlin {
@@ -24,10 +22,6 @@ kotlin {
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.viewmodelCompose)
-            implementation(compose.ui)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.components.resources)
         }
 
         commonTest.dependencies {
@@ -36,10 +30,6 @@ kotlin {
             implementation(libs.coroutines.test)
             implementation(libs.mockk)
             implementation(libs.turbine)
-        }
-
-        desktopMain.dependencies {
-//            api("androidx.compose.ui:ui-graphics-desktop:1.7.0-beta01")
         }
     }
 }
