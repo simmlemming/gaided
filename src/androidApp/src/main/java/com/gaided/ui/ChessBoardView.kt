@@ -1,8 +1,10 @@
 package com.gaided.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -10,13 +12,18 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
+import com.gaided.R
 import com.gaided.engine.SquareNotation
 import com.gaided.game.ui.model.ChessBoardViewState
 import kotlin.math.PI
@@ -41,15 +48,24 @@ internal fun ChessBoardView(
     onSquareLongPress: (SquareNotation) -> Unit = {}
 ) {
     val textMeasurer = rememberTextMeasurer()
+    val piecePainters = remember { mutableMapOf<String, Painter>() }
+    if (piecePainters.isEmpty()) {
+        createPiecePainters(piecePainters)
+    }
 
     Box(modifier = modifier
         .drawBehind {
+            if (Dimensions.squareSideLength == 0f) {
+                Dimensions.squareSideLength = (this.size.width - borderSize * 2) / 8f
+                Dimensions.borderLength = borderSize
+            }
+
             drawSquares()
             drawOverlaySquares(state.overlaySquares)
             drawBorder()
             drawRowNumbers(textMeasurer)
             drawColumnLetters(textMeasurer)
-            drawPieces(state.pieces, textMeasurer)
+            drawPieces(state.pieces, piecePainters)
             drawArrows(state.arrows)
         }
         .pointerInput(Unit) {
@@ -69,9 +85,45 @@ internal fun ChessBoardView(
     )
 }
 
+private object Dimensions {
+    var borderLength: Float = 0f
+
+    var squareSideLength: Float = 0f
+        set(value) {
+            field = value
+            squareSize = Size(value, value)
+            pieceSize = Size(value * 0.9f, value * 0.9f)
+            piecePadding = (value - pieceSize.width) / 2
+        }
+
+    var squareSize: Size = Size(0f, 0f)
+        private set
+
+    var pieceSize: Size = Size(0f, 0f)
+        private set
+
+    var piecePadding: Float = 0f
+        private set
+}
+
+private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, painters: Map<String, Painter>) {
+    pieces.forEach {
+        val painter = checkNotNull(painters[it.drawableName]) { "No painter for ${it.drawableName}." }
+        val topLeft = squares[it.position]!!.topLeftCorner
+        val center = squares[it.position]!!.center
+
+        with(painter) {
+            scale(pivot = center, scale = if (it.isElevated) 1.2f else 1f) {
+                translate(left = topLeft.x + Dimensions.piecePadding, top = topLeft.y + Dimensions.piecePadding) {
+                    draw(size = Dimensions.pieceSize)
+                }
+            }
+        }
+    }
+}
+
 private fun Offset.toSquare() =
     squares.values.firstOrNull { square -> square.rect.contains(this.x, this.y) }
-
 
 private val _squares = mutableMapOf<SquareNotation, Square>().also {
     for (row in 1..8) {
@@ -90,16 +142,13 @@ private fun Square.toColor() = if ((row + column) % 2 == 0) {
     colorLightSquare
 }
 
-
 private fun DrawScope.drawOverlaySquares(overlaySquares: Set<ChessBoardViewState.OverlaySquare>) {
-    val squareSize = Size(Square.sideLength, Square.sideLength)
-
     overlaySquares.forEach {
         val overlaySquare = checkNotNull(squares[it.square])
         drawRect(
             color = Color(it.color).copy(alpha = 0.5f),
             topLeft = overlaySquare.topLeftCorner,
-            size = squareSize
+            size = Dimensions.squareSize
         )
     }
 }
@@ -156,60 +205,24 @@ private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: 
     )
 }
 
-private fun DrawScope.drawPieces(pieces: Set<ChessBoardViewState.Piece>, textMeasurer: TextMeasurer) {
-    var textStyle = TextStyle.Default + TextStyle(fontSize = findTextSize(size, "p", textMeasurer))
-    val blackPieceStyle = textStyle + TextStyle(color = Color.DarkGray)
-    val whitePieceStyle = textStyle + TextStyle(color = Color.White)
-
-    pieces.forEach {
-        val symbol = it.drawableName.takeLast(2)
-        val pieceSymbol = symbol.take(1).uppercase()
-        val pieceTextStyle = if (symbol.takeLast(1) == "w") whitePieceStyle else blackPieceStyle
-
-        val symbolSize = textMeasurer.measure(pieceSymbol, textStyle)
-        val square = checkNotNull(squares[it.position])
-
-        val topLeft = Offset(
-            square.topLeftCorner.x + (Square.sideLength - symbolSize.size.width) / 2,
-            square.topLeftCorner.y + (Square.sideLength - symbolSize.size.height) / 2,
-        )
-
-        textStyle = if (it.isElevated) {
-            pieceTextStyle + TextStyle(color = Color.Yellow)
-        } else {
-            pieceTextStyle
-        }
-
-        drawText(
-            textMeasurer = textMeasurer,
-            text = pieceSymbol,
-            topLeft = topLeft,
-            style = textStyle
-        )
-    }
-}
-
-private val textSizesCache = mutableMapOf<Int, TextUnit>()
-
-@Suppress("SameParameterValue")
-private fun findTextSize(drawScopeSize: Size, symbol: String, textMeasurer: TextMeasurer): TextUnit {
-    return textSizesCache.getOrPut(drawScopeSize.height.toInt()) {
-        var size = 2
-
-        while (
-            textMeasurer.measure(symbol, TextStyle.Default + TextStyle(fontSize = size.sp)).size.height < Square.sideLength * 0.8
-        ) {
-            size++
-        }
-
-        size.sp
-    }
-}
+//private val textSizesCache = mutableMapOf<Int, TextUnit>()
+//
+//@Suppress("SameParameterValue")
+//private fun findTextSize(drawScopeSize: Size, symbol: String, textMeasurer: TextMeasurer): TextUnit {
+//    return textSizesCache.getOrPut(drawScopeSize.height.toInt()) {
+//        var size = 2
+//
+//        while (
+//            textMeasurer.measure(symbol, TextStyle.Default + TextStyle(fontSize = size.sp)).size.height < Square.sideLength * 0.8
+//        ) {
+//            size++
+//        }
+//
+//        size.sp
+//    }
+//}
 
 private fun DrawScope.drawSquares() {
-    Square.sideLength = (this.size.width - borderSize * 2) / 8f
-    Square.borderLength = borderSize
-
     for (square in squares.values) {
         square.draw(this, square.toColor())
     }
@@ -278,20 +291,37 @@ private fun DrawScope.drawColumnLetters(textMeasurer: TextMeasurer) {
     }
 }
 
+@SuppressLint("ComposableNaming")
+@Composable
+private fun createPiecePainters(painters: MutableMap<String, Painter>) {
+    painters["piece_bb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_bb))
+    painters["piece_bw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_bw))
+    painters["piece_kb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_kb))
+    painters["piece_kw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_kw))
+    painters["piece_nb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_nb))
+    painters["piece_nw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_nw))
+    painters["piece_pb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_pb))
+    painters["piece_pw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_pw))
+    painters["piece_qb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_qb))
+    painters["piece_qw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_qw))
+    painters["piece_rb"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_rb))
+    painters["piece_rw"] = rememberVectorPainter(ImageVector.vectorResource(R.drawable.piece_rw))
+}
+
 private data class Square(val row: Int, val column: Int) {
     val topLeftCorner: Offset
         get() = Offset(
-            (column - 1) * sideLength + borderLength,
-            (8 - row) * sideLength + borderLength
+            (column - 1) * Dimensions.squareSideLength + Dimensions.borderLength,
+            (8 - row) * Dimensions.squareSideLength + Dimensions.borderLength
         )
 
     val center: Offset
-        get() = Offset(topLeftCorner.x + sideLength / 2f, topLeftCorner.y + sideLength / 2f)
+        get() = Offset(topLeftCorner.x + Dimensions.squareSideLength / 2f, topLeftCorner.y + Dimensions.squareSideLength / 2f)
 
     val bottomRightCorner: Offset
         get() = Offset(
-            topLeftCorner.x + sideLength,
-            topLeftCorner.y + sideLength
+            topLeftCorner.x + Dimensions.squareSideLength,
+            topLeftCorner.y + Dimensions.squareSideLength
         )
 
     val rect: RectF
@@ -306,13 +336,8 @@ private data class Square(val row: Int, val column: Int) {
         drawScope.drawRect(
             color = color,
             topLeft = topLeftCorner,
-            size = Size(width = sideLength, height = sideLength),
+            size = Dimensions.squareSize,
         )
-    }
-
-    companion object {
-        var sideLength: Float = 0f
-        var borderLength: Float = 0f
     }
 }
 
