@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,11 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
             factory = GameViewModel.Factory()
         )
 
+        val boardViewState by viewModel.board.collectAsState()
+        val evaluationViewState by viewModel.evaluation.collectAsState()
+        val playerWhiteViewState by viewModel.playerWhite.collectAsState()
+        val playerBlackViewState by viewModel.playerBlack.collectAsState()
+
         LaunchedEffect(viewModel) {
             viewModel.start()
         }
@@ -41,10 +47,12 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
-                modifier = modifier.fillMaxWidth().height(intrinsicSize = IntrinsicSize.Max)
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(intrinsicSize = IntrinsicSize.Max)
             ) {
                 PlayerView(
-                    state = viewModel.playerBlack.collectAsState(),
+                    state = playerBlackViewState,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -53,22 +61,27 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
                     modifier = Modifier.height(IntrinsicSize.Max)
                 ) {
                     EvaluationView(
-                        state = viewModel.evaluation.collectAsState(),
-                        modifier = Modifier.width(32.dp).fillMaxHeight()
+                        state = evaluationViewState,
+                        modifier = Modifier
+                            .width(16.dp)
+                            .fillMaxHeight()
                     )
 
                     ChessBoardView(
-                        state = viewModel.board,
+                        state = boardViewState,
                         onSquareTap = viewModel::onSquareClick,
                         onSquareLongPress = viewModel::onSquareLongClick,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .weight(1f)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 PlayerView(
-                    state = viewModel.playerWhite.collectAsState(),
+                    state = playerWhiteViewState,
                 )
             }
         }

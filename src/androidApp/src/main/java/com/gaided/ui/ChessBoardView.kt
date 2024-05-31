@@ -3,7 +3,6 @@ package com.gaided.ui
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.gaided.engine.SquareNotation
 import com.gaided.game.ui.model.ChessBoardViewState
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -37,28 +35,35 @@ private val DrawScope.borderSize
 
 @Composable
 internal fun ChessBoardView(
-    state: StateFlow<ChessBoardViewState>,
+    modifier: Modifier = Modifier,
+    state: ChessBoardViewState,
     onSquareTap: (SquareNotation) -> Unit = {},
-    onSquareLongPress: (SquareNotation) -> Unit = {},
-    modifier: Modifier = Modifier
+    onSquareLongPress: (SquareNotation) -> Unit = {}
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val boardState = state.collectAsState()
 
     Box(modifier = modifier
         .drawBehind {
             drawSquares()
-            drawOverlaySquares(boardState.value.overlaySquares)
+            drawOverlaySquares(state.overlaySquares)
             drawBorder()
             drawRowNumbers(textMeasurer)
             drawColumnLetters(textMeasurer)
-            drawPieces(boardState.value.pieces, textMeasurer)
-            drawArrows(boardState.value.arrows)
+            drawPieces(state.pieces, textMeasurer)
+            drawArrows(state.arrows)
         }
         .pointerInput(Unit) {
             detectTapGestures(
-                onTap = { offset -> offset.toSquare()?.let { onSquareTap(it.notation) } },
-                onLongPress = { offset -> offset.toSquare()?.let { onSquareLongPress(it.notation) } }
+                onTap = { offset ->
+                    offset
+                        .toSquare()
+                        ?.let { onSquareTap(it.notation) }
+                },
+                onLongPress = { offset ->
+                    offset
+                        .toSquare()
+                        ?.let { onSquareLongPress(it.notation) }
+                }
             )
         }
     )
