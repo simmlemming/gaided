@@ -1,0 +1,59 @@
+package com.gaided.engine.api
+
+import com.google.gson.Gson
+import java.net.URL
+
+private const val OPEN_AI_API_KEY = "..."
+
+public class OpenAiApi : HttpApi() {
+
+    private val gson = Gson()
+
+    public fun getTopMoves(position: String, numberOfMoves: Int): String {
+        return post {
+            url = URL("https://api.openai.com/v1/chat/completions")
+            headers["Authorization"] = "Bearer $OPEN_AI_API_KEY"
+            headers["Content-Type"] = "application/json"
+            parse = { gson.parseOpenAiResponse(it) }
+            body = """
+                {
+                    "model": "gpt-3.5-turbo",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You will be provided with chess FEN position, and your task is to find $numberOfMoves best moves. You reply with comma separated string of moves. You use fully expanded algebraic notation."
+                          },
+                          {
+                            "role": "user",
+                            "content": "$position"
+                          }
+                        ]
+                }
+            """.trimIndent()
+        }
+    }
+}
+// "content": "FEN position: '$position'. What are top $numberOfMoves moves?"
+
+private fun Gson.parseOpenAiResponse(response: String) =
+    fromJson(response, OpenAiResponse::class.java).choices.firstOrNull()?.message?.content ?: "-"
+
+public data class OpenAiResponse(
+    val choices: List<Choice>
+) {
+    public data class Choice(
+        val message: Message
+    )
+
+    public data class Message(
+        val content: String
+    )
+}
+
+public fun main() {
+    val topMoves = OpenAiApi().getTopMoves(
+        position = "rnbqkb1r/1pp1pppp/p4n2/3P4/3P4/2N5/PP2PPPP/R1BQKBNR b KQkq - 0 4",
+        numberOfMoves = 3
+    )
+    println(topMoves)
+}

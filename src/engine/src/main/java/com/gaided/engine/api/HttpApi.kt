@@ -34,6 +34,11 @@ public sealed class HttpApi protected constructor(
             }
 
             val response = connection.inputStream.readAdString()
+            if (request.logRawResponse) {
+                println("Raw response")
+                println(response)
+                println()
+            }
             return request.parse!!.invoke(response)
         } catch (e: Exception) {
             val errorMessage = connection?.errorStream?.readAdString()
@@ -47,6 +52,7 @@ public sealed class HttpApi protected constructor(
         internal var url: URL? = null
         internal val headers = mutableMapOf<String, String>()
         internal var parse: ((String) -> T)? = null
+        internal var logRawResponse: Boolean = false
 
         internal open fun validate() {
             checkNotNull(url) { "url is null" }
