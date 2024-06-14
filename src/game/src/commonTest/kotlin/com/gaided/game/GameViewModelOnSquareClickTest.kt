@@ -27,7 +27,9 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     @Test
     fun `empty square`() = runTest {
         // GIVEN
-        api = mockk()
+        remoteBoardApi = mockk()
+        stockfishEngineApi = mockk()
+
         val viewModel = createViewModel()
         assertNull(
             viewModel.board["a4"]
@@ -42,7 +44,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         advanceUntilIdle()
 
         // THEN nothing happens
-        confirmVerified(api)
+        confirmVerified(remoteBoardApi)
         assertNull(
             viewModel.board["a4"]
         )
@@ -54,12 +56,15 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     @Test
     fun `valid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
-        api = mockk {
+        remoteBoardApi = mockk {
             coEvery { setFenPosition(any()) } returns Unit
             coEvery { isMoveCorrect(any(), "g1f3") } returns true
             coEvery { makeMoves(any(), listOf("g1f3")) } returns Unit
             coEvery { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
             coEvery { getEvaluation(any()) } returns "{}"
+        }
+
+        stockfishEngineApi = mockk {
             coEvery { getTopMoves(any(), any()) } returns "[]"
         }
 
@@ -85,11 +90,11 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         )
 
         // WHEN an empty square is clicked again
-        clearMocks(api)
+        clearMocks(remoteBoardApi)
         viewModel.onSquareClick("a3")
 
         // THEN nothing happens
-        confirmVerified(api)
+        confirmVerified(remoteBoardApi)
         assertNull(
             viewModel.board["g1"]
         )
@@ -104,10 +109,11 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     @Test
     fun `invalid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
-        api = mockk {
+        remoteBoardApi = mockk {
             coEvery { setFenPosition(any()) } returns Unit
             coEvery { isMoveCorrect(any(), "g1b5") } returns false
         }
+        stockfishEngineApi = mockk()
 
         val viewModel = createViewModelAndCollectState()
         assertNotNull(
@@ -119,7 +125,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         viewModel.onSquareClick("b5")
 
         // THEN
-        coVerify { api.isMoveCorrect(FEN_POSITION_AT_START, "g1b5") }
+        coVerify { remoteBoardApi.isMoveCorrect(FEN_POSITION_AT_START, "g1b5") }
         assertNotNull(
             viewModel.board["g1"]
         )
@@ -131,11 +137,14 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     @Test
     fun arrow() = runTest {
         // GIVEN
-        api = mockk(relaxed = true) {
+        remoteBoardApi = mockk(relaxed = true) {
             coEvery { getFenPosition() } returns FEN_POSITION_AFTER_1ST_MOVE_G1F3
             coEvery { getEvaluation(any()) } returns EVALUATION_50
-            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_AT_START
             coEvery { makeMoves(any(), any()) } just Runs
+        }
+
+        stockfishEngineApi = mockk {
+            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_AT_START
         }
 
         val viewModel = createViewModelAndCollectState()
@@ -158,7 +167,7 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
         viewModel.onSquareClick(expectedArrow.start)
 
         // THEN
-        coVerify { api.makeMoves(any(), listOf("g1f3")) }
+        coVerify { remoteBoardApi.makeMoves(any(), listOf("g1f3")) }
         assertNull(
             viewModel.board[expectedArrow.start]
         )
@@ -171,12 +180,15 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
     @Test
     fun `two arrows from the same square`() = runTest {
         // GIVEN
-        api = mockk(relaxed = true) {
+        remoteBoardApi = mockk(relaxed = true) {
             coEvery { getFenPosition() } returns FEN_POSITION_AT_START
             coEvery { isMoveCorrect(any(), "d2d4") } returns true
             coEvery { getEvaluation(any()) } returns EVALUATION_50
-            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_FROM_SAME_SQUARE
             coEvery { makeMoves(any(), any()) } just Runs
+        }
+
+        stockfishEngineApi = mockk {
+            coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_FROM_SAME_SQUARE
         }
 
         val viewModel = createViewModelAndCollectState()
@@ -198,13 +210,13 @@ internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
             2,
             viewModel.board.value.arrows.size
         )
-        coVerify(exactly = 0) { api.makeMoves(any(), any()) }
+        coVerify(exactly = 0) { remoteBoardApi.makeMoves(any(), any()) }
 
         // WHEN 2nd square of the arrow is clicked
         viewModel.onSquareClick("d4")
 
         // THEN the move is made
-        coVerify(exactly = 1) { api.makeMoves(any(), listOf("d2d4")) }
+        coVerify(exactly = 1) { remoteBoardApi.makeMoves(any(), listOf("d2d4")) }
     }
 }
 

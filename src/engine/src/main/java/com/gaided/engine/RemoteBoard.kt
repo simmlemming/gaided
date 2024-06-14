@@ -2,16 +2,15 @@
 
 package com.gaided.engine
 
-import com.gaided.engine.api.StockfishApi
+import com.gaided.engine.api.RemoteBoardApi
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 public class RemoteBoard(
-    private val api: StockfishApi,
+    private val api: RemoteBoardApi,
     private val ioContext: CoroutineContext = Dispatchers.IO
 ) {
 
@@ -20,13 +19,6 @@ public class RemoteBoard(
     public suspend fun getFenPosition(): String = withContext(ioContext) {
         val response = api.getFenPosition()
         response
-    }
-
-    public suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> = withContext(ioContext) {
-        val moves = api.getTopMoves(position.fenString, numberOfMoves)
-
-        val type = object : TypeToken<List<TopMove>>() {}.type
-        gson.fromJson(moves, type)
     }
 
     public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {

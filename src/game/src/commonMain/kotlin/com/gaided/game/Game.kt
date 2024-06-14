@@ -1,8 +1,9 @@
 package com.gaided.game
 
-import com.gaided.engine.RemoteBoard
+import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
+import com.gaided.engine.RemoteBoard
 import com.gaided.game.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
-class Game(private val remoteBoard: RemoteBoard) {
+class Game(
+    private val remoteBoard: RemoteBoard,
+    private val engine: Engine
+) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
 
@@ -40,7 +44,7 @@ class Game(private val remoteBoard: RemoteBoard) {
 
             if (cached == null && started) {
                 topMovesCache.update {
-                    it + (position to remoteBoard.getTopMoves(position, 3))
+                    it + (position to engine.getTopMoves(position, 3))
                 }
             }
         }

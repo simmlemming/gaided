@@ -1,6 +1,6 @@
 package gaided.api
 
-import com.gaided.engine.api.StockfishApi
+import com.gaided.engine.api.RemoteBoardApi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 
 @ExperimentalCoroutinesApi
-internal class StockfishApiTest {
+internal class RemoteBoardApiTest {
 
     private lateinit var api: ApiUnderTest
 
@@ -77,7 +77,7 @@ internal class StockfishApiTest {
 
     @Test
     fun `position is set once`() = runTest {
-        api.getTopMoves("pos-1", 3)
+        api.makeMoves("pos-1", listOf("a2a3"))
         api.getEvaluation("pos-1")
 
         // Combined bodies of all requests,
@@ -87,8 +87,8 @@ internal class StockfishApiTest {
                 "method": "set_fen_position",
                 "args": ["pos-1"]
             }{
-                "method": "get_top_moves",
-                "args": [3]
+                "method": "make_moves_from_current_position",
+                "args": [["a2a3"]]
             }{
                 "method": "get_evaluation",
                 "args": []
@@ -100,7 +100,7 @@ internal class StockfishApiTest {
 
     @Test
     fun `position is set if changed`() = runTest {
-        api.getTopMoves("pos-1", 3)
+        api.makeMoves("pos-1", listOf("a2a3"))
         api.getEvaluation("pos-2")
 
         // Combined bodies of all requests,
@@ -110,8 +110,8 @@ internal class StockfishApiTest {
                 "method": "set_fen_position",
                 "args": ["pos-1"]
             }{
-                "method": "get_top_moves",
-                "args": [3]
+                "method": "make_moves_from_current_position",
+                "args": [["a2a3"]]
             }{
                 "method": "set_fen_position",
                 "args": ["pos-2"]
@@ -136,7 +136,7 @@ internal class StockfishApiTest {
     }
 }
 
-private class ApiUnderTest(val connection: HttpURLConnection) : StockfishApi("http://a.b", { connection }) {
+private class ApiUnderTest(val connection: HttpURLConnection) : RemoteBoardApi("http://a.b", { connection }) {
     public override fun formatArgs(args: List<*>): String {
         return super.formatArgs(args)
     }

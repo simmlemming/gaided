@@ -1,3 +1,4 @@
 package com.gaided.game
 
-expect val serverUrl: String
+expect val remoteBoardUrl: String
+expect val stockfishEngineUrl: String

@@ -3,8 +3,8 @@ package com.gaided.game
 import com.gaided.engine.SquareNotation
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.ChessBoardViewState.Arrow
-import com.gaided.game.ui.model.PlayerViewState
 import com.gaided.game.ui.model.EvaluationViewState
+import com.gaided.game.ui.model.PlayerViewState
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll
@@ -20,7 +20,8 @@ import org.junit.Test
 internal class GameViewModelTest : GameViewModelTestCase() {
     @Test
     fun `initial state`() = runTest {
-        api = mockk()
+        remoteBoardApi = mockk()
+        stockfishEngineApi = mockk()
         viewModel = createViewModelAndCollectState()
 
         with(viewModel.board.value) {
@@ -37,11 +38,15 @@ internal class GameViewModelTest : GameViewModelTestCase() {
     @Test
     fun start() = runTest {
         // GIVEN
-        api = mockk {
+        remoteBoardApi = mockk {
             coEvery { setFenPosition(any()) } returns Unit
             coEvery { getEvaluation(any()) } returns EVALUATION_50
+        }
+
+        stockfishEngineApi = mockk {
             coEvery { getTopMoves(any(), any()) } returns TOP_MOVES_AT_START
         }
+
         viewModel = createViewModelAndCollectState()
 
         // WHEN
@@ -49,10 +54,10 @@ internal class GameViewModelTest : GameViewModelTestCase() {
 
         // THEN API calls are made ...
         coVerifyAll {
-            api.getEvaluation(FEN_POSITION_AT_START)
-            api.getTopMoves(FEN_POSITION_AT_START, any())
+            remoteBoardApi.getEvaluation(FEN_POSITION_AT_START)
+            stockfishEngineApi.getTopMoves(FEN_POSITION_AT_START, any())
         }
-        confirmVerified(api)
+        confirmVerified(remoteBoardApi)
 
         // ... and state is correct
         val expectedArrows = setOf(
@@ -84,7 +89,7 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         var topMovesResponse = "[]"
         var fenPositionResponse = "[]"
 
-        api = mockk {
+        remoteBoardApi = mockk {
             coEvery { setFenPosition(any()) } returns Unit
             coEvery { makeMoves(any(), any()) } returns Unit
             coEvery { getFenPosition() } answers {
@@ -93,6 +98,9 @@ internal class GameViewModelTest : GameViewModelTestCase() {
             coEvery { getEvaluation(any()) } answers {
                 evaluationResponse
             }
+        }
+
+        stockfishEngineApi = mockk {
             coEvery { getTopMoves(any(), any()) } answers {
                 topMovesResponse
             }
@@ -122,16 +130,16 @@ internal class GameViewModelTest : GameViewModelTestCase() {
         // THEN calls are made ...
         coVerifyAll {
             // start (no need to verity here, but also no way to clear the mock)
-            api.getEvaluation(FEN_POSITION_AT_START)
-            api.getTopMoves(FEN_POSITION_AT_START, any())
+            remoteBoardApi.getEvaluation(FEN_POSITION_AT_START)
+            stockfishEngineApi.getTopMoves(FEN_POSITION_AT_START, any())
 
             // move
-            api.makeMoves(FEN_POSITION_AT_START, listOf("g1f3"))
-            api.getFenPosition()
-            api.getEvaluation(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
-            api.getTopMoves(FEN_POSITION_AFTER_1ST_MOVE_G1F3, any())
+            remoteBoardApi.makeMoves(FEN_POSITION_AT_START, listOf("g1f3"))
+            remoteBoardApi.getFenPosition()
+            remoteBoardApi.getEvaluation(FEN_POSITION_AFTER_1ST_MOVE_G1F3)
+            stockfishEngineApi.getTopMoves(FEN_POSITION_AFTER_1ST_MOVE_G1F3, any())
         }
-        confirmVerified(api)
+        confirmVerified(remoteBoardApi)
 
         // ... and piece is moved
         assertNull(viewModel.board.pieceAt("g1"))

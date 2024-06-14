@@ -2,9 +2,11 @@
 
 package com.gaided.game
 
-import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
-import com.gaided.engine.api.StockfishApi
+import com.gaided.engine.RemoteBoard
+import com.gaided.engine.StockfishEngine
+import com.gaided.engine.api.RemoteBoardApi
+import com.gaided.engine.api.StockfishEngineApi
 import com.gaided.game.ui.model.ChessBoardViewState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +23,8 @@ import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal abstract class GameViewModelTestCase {
-    protected lateinit var api: StockfishApi
+    protected lateinit var remoteBoardApi: RemoteBoardApi
+    protected lateinit var stockfishEngineApi: StockfishEngineApi
     protected lateinit var viewModel: GameViewModel
     private lateinit var testDispatcher: TestDispatcher
 
@@ -36,7 +39,12 @@ internal abstract class GameViewModelTestCase {
         Dispatchers.resetMain()
     }
 
-    protected fun createViewModel() = GameViewModel(Game(RemoteBoard(api, testDispatcher)))
+    protected fun createViewModel() = GameViewModel(
+        Game(
+            RemoteBoard(remoteBoardApi, testDispatcher),
+            StockfishEngine(stockfishEngineApi, testDispatcher)
+        )
+    )
 
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()
         .also {

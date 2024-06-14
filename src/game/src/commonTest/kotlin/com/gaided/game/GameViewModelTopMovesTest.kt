@@ -13,11 +13,14 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
         // GIVEN
         var apiPosition = FEN_POSITION_AT_START
 
-        api = mockk {
+        remoteBoardApi = mockk {
             coEvery { makeMoves(any(), any()) } returns Unit
             coEvery { isMoveCorrect(any(), any()) } returns true
             coEvery { getEvaluation(any()) } returns EVALUATION_50
             coEvery { getFenPosition() } answers { apiPosition }
+        }
+
+        stockfishEngineApi = mockk {
             coEvery { getTopMoves(FEN_POSITION_AT_START, 3) } returns TOP_MOVES_AT_START
             coEvery { getTopMoves(FEN_POSITION_AFTER_1ST_MOVE_G1F3, 3) } returns TOP_3_MOVES_AFTER_G1F3
             coEvery { getTopMoves(FEN_POSITION_AFTER_1ST_BLACK_MOVE_B7B6, 3) } returns TOP_3_MOVES_AFTER_B7B6
@@ -68,7 +71,8 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
                 Arrow("b1", "c3", Arrow.COLOR_SUGGESTION),
                 Arrow("e2", "e4", Arrow.COLOR_SUGGESTION),
                 Arrow("d2", "d4", Arrow.COLOR_SUGGESTION),
-            ) + setOf( // Old top moves colored according to evaluation
+            ) + setOf(
+                // Old top moves colored according to evaluation
                 Arrow("e7", "e6", Arrow.colorByTopMoveIndex(2)),
                 Arrow("e7", "e5", Arrow.colorByTopMoveIndex(0)),
                 Arrow("b7", "b6", Arrow.colorByTopMoveIndex(1)),
