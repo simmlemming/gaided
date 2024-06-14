@@ -1,7 +1,7 @@
 package com.gaided.game
 
 import com.gaided.game.Game.Player
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -18,7 +18,7 @@ class GameTest {
     @Test
     fun move() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
-        val engine = mockk<Engine>(relaxed = true) {
+        val engine = mockk<RemoteBoard>(relaxed = true) {
             coEvery { getFenPosition() } returns FEN_NOTATION_AFTER_1ST_BLACK_MOVE.fenString
             coEvery { getFenPosition() } returns FEN_NOTATION_AFTER_1ST_WHITE_MOVE.fenString
         }

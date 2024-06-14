@@ -1,6 +1,6 @@
 package com.gaided.game
 
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -19,7 +19,7 @@ internal class GameHistoryTest {
 
     @Before
     fun setUp() {
-        val engine = mockk<Engine>(relaxed = true) {
+        val engine = mockk<RemoteBoard>(relaxed = true) {
             coEvery { getFenPosition() } answers { fenNotationResponse }
         }
 

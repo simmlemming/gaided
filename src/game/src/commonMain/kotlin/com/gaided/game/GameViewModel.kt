@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
@@ -55,7 +55,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     @Suppress("OPT_IN_USAGE")
-    private val oldTopMoves: SharedFlow<Pair<Game.Player, List<Engine.TopMove>>> = game.history
+    private val oldTopMoves: SharedFlow<Pair<Game.Player, List<RemoteBoard.TopMove>>> = game.history
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
@@ -180,7 +180,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
         started: SharingStarted = SharingStarted.WhileSubscribed(5000)
     ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
-    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<Engine.TopMove>>> {
+    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<RemoteBoard.TopMove>>> {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
             null -> flowOf(Game.Player.White to emptyList())
             else -> game.getTopMoves(position.positionAfterMove).map {
@@ -195,14 +195,14 @@ class GameViewModel(private val game: Game) : ViewModel() {
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             val api = StockfishApi(serverUrl)
-            val engine = Engine(api)
+            val engine = RemoteBoard(api)
             val game = Game(engine)
             return GameViewModel(game) as T
         }
     }
 }
 
-private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): MakeMoveAction {
+private fun RemoteBoard.TopMove.toMakeMoveAction(position: FenNotation): MakeMoveAction {
     return { game, pendingMove ->
         pendingMove.value = move
         game.move(move, position.toNextMovePlayer())

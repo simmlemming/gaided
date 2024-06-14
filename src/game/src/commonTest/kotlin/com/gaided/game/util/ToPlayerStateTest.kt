@@ -1,9 +1,8 @@
 package com.gaided.game.util
 
 import com.gaided.game.Game
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
-import com.gaided.game.util.toPlayerState
 import com.gaided.game.ui.model.PlayerViewState
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -50,7 +49,7 @@ internal class ToPlayerStateTest {
             toPlayerState(
                 player = Game.Player.White,
                 position = FenNotation.START_POSITION,
-                topMoves = listOf(Engine.TopMove("a2a4", 0))
+                topMoves = listOf(RemoteBoard.TopMove("a2a4", 0))
             )
         )
     }

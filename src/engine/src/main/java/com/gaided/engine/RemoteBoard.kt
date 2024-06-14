@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-public class Engine(
+public class RemoteBoard(
     private val api: StockfishApi,
     private val ioContext: CoroutineContext = Dispatchers.IO
 ) {

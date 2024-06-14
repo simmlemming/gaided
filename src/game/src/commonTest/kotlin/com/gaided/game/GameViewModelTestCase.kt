@@ -2,7 +2,7 @@
 
 package com.gaided.game
 
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import com.gaided.engine.api.StockfishApi
 import com.gaided.game.ui.model.ChessBoardViewState
@@ -36,7 +36,7 @@ internal abstract class GameViewModelTestCase {
         Dispatchers.resetMain()
     }
 
-    protected fun createViewModel() = GameViewModel(Game(Engine(api, testDispatcher)))
+    protected fun createViewModel() = GameViewModel(Game(RemoteBoard(api, testDispatcher)))
 
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()
         .also {

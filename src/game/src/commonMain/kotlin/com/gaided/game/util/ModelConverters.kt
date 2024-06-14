@@ -1,6 +1,6 @@
 package com.gaided.game.util
 
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
@@ -12,8 +12,8 @@ import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.game.ui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.game.ui.model.PlayerViewState
 
-internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {
-    val comparator = Comparator<Engine.TopMove> { o1, o2 ->
+internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<RemoteBoard.TopMove>): Set<Arrow> {
+    val comparator = Comparator<RemoteBoard.TopMove> { o1, o2 ->
         if (player == Game.Player.White) {
             o2.centipawn - o1.centipawn
         } else {
@@ -28,7 +28,7 @@ internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopM
 }
 
 internal fun toTopMoveArrows(
-    topMoves: List<Engine.TopMove>,
+    topMoves: List<RemoteBoard.TopMove>,
     selectedSquare: SquareNotation?,
     pendingMove: MoveNotation?
 ): Set<Arrow> {
@@ -58,7 +58,7 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
-    topMoves: List<Engine.TopMove>
+    topMoves: List<RemoteBoard.TopMove>
 ): PlayerViewState {
     val nextMovePlayer = position.toNextMovePlayer()
 
@@ -82,7 +82,7 @@ internal fun toPlayerState(
     }
 }
 
-private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerViewState {
+private fun toPlayerViewState(position: FenNotation, topMoves: List<RemoteBoard.TopMove>): PlayerViewState {
     return PlayerViewState(
         progressVisible = topMoves.isEmpty(),
         movesStats = emptyList()
@@ -95,7 +95,7 @@ internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
     else -> Game.Player.None
 }
 
-internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
+internal fun RemoteBoard.TopMove.toArrow(color: Int) = Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
     color = color

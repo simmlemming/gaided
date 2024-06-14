@@ -1,6 +1,6 @@
 package com.gaided.game
 
-import com.gaided.engine.Engine
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.game.util.toNextMovePlayer
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
-class Game(private val engine: Engine) {
+class Game(private val remoteBoard: RemoteBoard) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
 
@@ -21,26 +21,26 @@ class Game(private val engine: Engine) {
     // Cold flow!
     // Each consumer triggers engine.getEvaluation()
     val evaluation = combine(_position, _started) { position, stared ->
-        if (stared) mapOf(position to engine.getEvaluation(position)) else emptyMap()
+        if (stared) mapOf(position to remoteBoard.getEvaluation(position)) else emptyMap()
     }
 
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
-    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
+    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<RemoteBoard.TopMove>>>(emptyMap())
 
     internal fun start() {
         _started.value = true
     }
 
-    internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
+    internal fun getTopMoves(position: FenNotation): Flow<List<RemoteBoard.TopMove>> =
         topMovesCache.combineTransform(started) { cache, started ->
             val cached = cache[position]
             emit(cached.orEmpty())
 
             if (cached == null && started) {
                 topMovesCache.update {
-                    it + (position to engine.getTopMoves(position, 3))
+                    it + (position to remoteBoard.getTopMoves(position, 3))
                 }
             }
         }
@@ -51,8 +51,8 @@ class Game(private val engine: Engine) {
             "Expected player to move $expectedPlayer, was $player"
         }
 
-        engine.move(_position.value, move)
-        val fenPosition = engine.getFenPosition()
+        remoteBoard.move(_position.value, move)
+        val fenPosition = remoteBoard.getFenPosition()
         _position.value = FenNotation.fromFenString(fenPosition)
 
         _history.update {
@@ -61,7 +61,7 @@ class Game(private val engine: Engine) {
     }
 
     internal suspend fun isMoveIfCorrect(move: MoveNotation) =
-        engine.isMoveCorrect(_position.value, move)
+        remoteBoard.isMoveCorrect(_position.value, move)
 
     data class HalfMove(
         val number: Int,
