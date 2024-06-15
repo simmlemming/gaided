@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import java.net.URL
 
 private const val OPEN_AI_API_KEY = "..."
-private const val MODEL = "gpt-4o"
+internal const val OPEN_AI_MODEL = "gpt-4o"
 
-public class OpenAiApi : HttpApi() {
+public class OpenAiEngineApi : HttpApi() {
 
     private val gson = Gson()
 
@@ -18,7 +18,7 @@ public class OpenAiApi : HttpApi() {
             parse = { gson.parseOpenAiResponse(it) }
             body = """
                 {
-                    "model": "$MODEL",
+                    "model": "$OPEN_AI_MODEL",
                     "messages": [
                         {
                             "role": "system",
@@ -52,7 +52,7 @@ public data class OpenAiResponse(
 }
 
 public fun main() {
-    val topMoves = OpenAiApi().getTopMoves(
+    val topMoves = OpenAiEngineApi().getTopMoves(
         position = "rnbqkb1r/1pp1pppp/p4n2/3P4/3P4/2N5/PP2PPPP/R1BQKBNR b KQkq - 0 4",
         numberOfMoves = 3
     )

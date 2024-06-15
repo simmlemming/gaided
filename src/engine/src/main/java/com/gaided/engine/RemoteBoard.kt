@@ -42,7 +42,7 @@ public class RemoteBoard(
         @SerializedName("Move")
         public val move: String,
         @SerializedName("Centipawn")
-        public val centipawn: Int
+        public val centipawn: Int? = null
     )
 
     public data class Evaluation(
