@@ -31,13 +31,13 @@ class Game(
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
-    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<RemoteBoard.TopMove>>>(emptyMap())
+    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
 
     internal fun start() {
         _started.value = true
     }
 
-    internal fun getTopMoves(position: FenNotation): Flow<List<RemoteBoard.TopMove>> =
+    internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
         topMovesCache.combineTransform(started) { cache, started ->
             val cached = cache[position]
             emit(cached.orEmpty())

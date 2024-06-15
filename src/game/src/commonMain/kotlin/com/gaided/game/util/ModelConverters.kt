@@ -1,9 +1,9 @@
 package com.gaided.game.util
 
+import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
-import com.gaided.engine.RemoteBoard
 import com.gaided.engine.SquareNotation
 import com.gaided.game.Game
 import com.gaided.game.getLastMove
@@ -13,10 +13,10 @@ import com.gaided.game.ui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.game.ui.model.PlayerViewState
 
 @Suppress("kotlin:S1135")
-internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<RemoteBoard.TopMove>): Set<Arrow> {
+internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {
     // TODO: Need to sort this list, or it is always sorted?
     //  Top moves from AI engines do not have centipawn evaluations.
-    val comparator = Comparator<RemoteBoard.TopMove> { o1, o2 ->
+    val comparator = Comparator<Engine.TopMove> { o1, o2 ->
         if (player == Game.Player.White) {
             (o2.centipawn ?: 0) - (o1.centipawn ?: 0)
         } else {
@@ -31,7 +31,7 @@ internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<RemoteBoard
 }
 
 internal fun toTopMoveArrows(
-    topMoves: List<RemoteBoard.TopMove>,
+    topMoves: List<Engine.TopMove>,
     selectedSquare: SquareNotation?,
     pendingMove: MoveNotation?
 ): Set<Arrow> {
@@ -61,7 +61,7 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
-    topMoves: List<RemoteBoard.TopMove>
+    topMoves: List<Engine.TopMove>
 ): PlayerViewState {
     val nextMovePlayer = position.toNextMovePlayer()
 
@@ -85,7 +85,7 @@ internal fun toPlayerState(
     }
 }
 
-private fun toPlayerViewState(position: FenNotation, topMoves: List<RemoteBoard.TopMove>): PlayerViewState {
+private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerViewState {
     return PlayerViewState(
         progressVisible = topMoves.isEmpty(),
         movesStats = emptyList()
@@ -98,7 +98,7 @@ internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
     else -> Game.Player.None
 }
 
-internal fun RemoteBoard.TopMove.toArrow(color: Int) = Arrow(
+internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
     color = color

@@ -4,7 +4,6 @@ package com.gaided.engine
 
 import com.gaided.engine.api.RemoteBoardApi
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -37,13 +36,6 @@ public class RemoteBoard(
     public suspend fun isMoveCorrect(position: FenNotation, move: MoveNotation): Boolean = withContext(ioContext) {
         api.isMoveCorrect(position.fenString, move)
     }
-
-    public data class TopMove(
-        @SerializedName("Move")
-        public val move: String,
-        @SerializedName("Centipawn")
-        public val centipawn: Int? = null
-    )
 
     public data class Evaluation(
         public val type: String,

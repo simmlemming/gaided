@@ -1,10 +1,9 @@
 package gaided
 
 import com.gaided.engine.Engine
+import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.FenNotation
 import com.gaided.engine.OpenAiEngine
-import com.gaided.engine.RemoteBoard
-import com.gaided.engine.RemoteBoard.TopMove
 import com.gaided.engine.api.OpenAiEngineApi
 import io.mockk.every
 import io.mockk.mockk
@@ -20,6 +19,7 @@ class OpenAiEngineTest {
     @Before
     fun setUp() {
         api = mockk<OpenAiEngineApi>()
+        sut = OpenAiEngine(api)
     }
 
     @Test
@@ -31,7 +31,7 @@ class OpenAiEngineTest {
     fun `full notation`() = runTest {
         testEngine(
             "a2a4, g1f3, b7xb6",
-            listOf(TopMove("a2a4"), TopMove("g1f3"), TopMove("b7b6"))
+            listOf(TopMove(sut.name, "a2a4"), TopMove(sut.name, "g1f3"), TopMove(sut.name, "b7b6"))
         )
     }
 
@@ -39,7 +39,7 @@ class OpenAiEngineTest {
     fun `full notation with dash`() = runTest {
         testEngine(
             "a2-a4",
-            listOf(TopMove("a2a4"))
+            listOf(TopMove(sut.name, "a2a4"))
         )
     }
 
@@ -56,7 +56,6 @@ class OpenAiEngineTest {
         expected: List<TopMove>
     ) {
         every { api.getTopMoves(any(), any()) } returns apiResponse
-        sut = OpenAiEngine(api)
 
         assertEquals(
             expected,

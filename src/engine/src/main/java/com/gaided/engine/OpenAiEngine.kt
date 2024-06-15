@@ -1,6 +1,6 @@
 package com.gaided.engine
 
-import com.gaided.engine.RemoteBoard.TopMove
+import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.api.OPEN_AI_MODEL
 import com.gaided.engine.api.OpenAiEngineApi
 import kotlinx.coroutines.Dispatchers
@@ -24,46 +24,46 @@ public class OpenAiEngine(
                 .firstNotNullOfOrNull { matcher -> matcher(move) }
         }
     }
-}
 
-private val matchers: List<((String) -> TopMove?)> = listOf(
-    ::matcher1,
-    ::matcher2,
-    ::matcher3
-)
+    private val matchers: List<((String) -> TopMove?)> = listOf(
+        ::matcher1,
+        ::matcher2,
+        ::matcher3
+    )
 
-private fun matcher3(move: String): TopMove? {
-    val regex = "([a-z][1-8])-([a-z][1-8])".toRegex()
-    val result = regex.find(move) ?: return null
-    val groups = result.groupValues
+    private fun matcher3(move: String): TopMove? {
+        val regex = "([a-z][1-8])-([a-z][1-8])".toRegex()
+        val result = regex.find(move) ?: return null
+        val groups = result.groupValues
 
-    if (groups.size != 3) {
-        return null
+        if (groups.size != 3) {
+            return null
+        }
+
+        return TopMove(name, "${groups[1]}${groups[2]}")
     }
 
-    return TopMove("${groups[1]}${groups[2]}")
-}
+    private fun matcher2(move: String): TopMove? {
+        val regex = "([a-z][1-8])x([a-z][1-8])".toRegex()
+        val result = regex.find(move) ?: return null
+        val groups = result.groupValues
 
-private fun matcher2(move: String): TopMove? {
-    val regex = "([a-z][1-8])x([a-z][1-8])".toRegex()
-    val result = regex.find(move) ?: return null
-    val groups = result.groupValues
+        if (groups.size != 3) {
+            return null
+        }
 
-    if (groups.size != 3) {
-        return null
+        return TopMove(name, "${groups[1]}${groups[2]}")
     }
 
-    return TopMove("${groups[1]}${groups[2]}")
-}
+    private fun matcher1(move: String): TopMove? {
+        val regex = "([a-z][1-8])([a-z][1-8])".toRegex()
+        val result = regex.find(move) ?: return null
+        val groups = result.groupValues
 
-private fun matcher1(move: String): TopMove? {
-    val regex = "([a-z][1-8])([a-z][1-8])".toRegex()
-    val result = regex.find(move) ?: return null
-    val groups = result.groupValues
+        if (groups.size != 3) {
+            return null
+        }
 
-    if (groups.size != 3) {
-        return null
+        return TopMove(name, "${groups[1]}${groups[2]}")
     }
-
-    return TopMove("${groups[1]}${groups[2]}")
 }

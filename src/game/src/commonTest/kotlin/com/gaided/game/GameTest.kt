@@ -1,9 +1,9 @@
 package com.gaided.game
 
 import com.gaided.engine.Engine
-import com.gaided.game.Game.Player
-import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
+import com.gaided.engine.RemoteBoard
+import com.gaided.game.Game.Player
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,11 +51,8 @@ class GameTest {
     }
 }
 
-
-@Suppress("PrivatePropertyName")
 private val FEN_NOTATION_AFTER_1ST_WHITE_MOVE =
     FenNotation.fromFenString("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1")
 
-@Suppress("PrivatePropertyName")
 private val FEN_NOTATION_AFTER_1ST_BLACK_MOVE =
     FenNotation.fromFenString("rnbqkbnr/pppp1ppp/4p3/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2")
