@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 
 class Game(
     private val remoteBoard: RemoteBoard,
-    private val engine: Engine
+    private val engines: List<Engine>
 ) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
@@ -44,7 +44,7 @@ class Game(
 
             if (cached == null && started) {
                 topMovesCache.update {
-                    it + (position to engine.getTopMoves(position, 3))
+                    it + (position to engines[0].getTopMoves(position, 3))
                 }
             }
         }

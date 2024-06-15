@@ -26,7 +26,7 @@ class GameTest {
 
         val engine = mockk<Engine>(relaxed = true)
 
-        val game = Game(remoteBoard, engine)
+        val game = Game(remoteBoard, listOf(engine))
         val history by game.history.lastValue(backgroundScope, emptySet())
 
         assertTrue(history.isEmpty())

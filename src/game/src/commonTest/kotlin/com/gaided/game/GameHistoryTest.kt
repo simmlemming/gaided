@@ -26,7 +26,7 @@ internal class GameHistoryTest {
 
         val engine = mockk<Engine>(relaxed = true)
 
-        game = Game(remoteBoard, engine)
+        game = Game(remoteBoard, listOf(engine))
     }
 
     @Test

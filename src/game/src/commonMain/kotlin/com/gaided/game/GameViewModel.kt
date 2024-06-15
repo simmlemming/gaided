@@ -202,7 +202,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
             val stockfishEngineApi = StockfishEngineApi(stockfishEngineUrl)
             val stockfishEngine = StockfishEngine(stockfishEngineApi)
 
-            val game = Game(remoteBoard, stockfishEngine)
+            val game = Game(remoteBoard, listOf(stockfishEngine))
             return GameViewModel(game) as T
         }
     }
