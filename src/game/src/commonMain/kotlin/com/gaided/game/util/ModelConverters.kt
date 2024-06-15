@@ -1,9 +1,9 @@
 package com.gaided.game.util
 
-import com.gaided.engine.RemoteBoard
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.PieceNotation
+import com.gaided.engine.RemoteBoard
 import com.gaided.engine.SquareNotation
 import com.gaided.game.Game
 import com.gaided.game.getLastMove
@@ -12,12 +12,15 @@ import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.game.ui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.game.ui.model.PlayerViewState
 
+@Suppress("kotlin:S1135")
 internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<RemoteBoard.TopMove>): Set<Arrow> {
+    // TODO: Need to sort this list, or it is always sorted?
+    //  Top moves from AI engines do not have centipawn evaluations.
     val comparator = Comparator<RemoteBoard.TopMove> { o1, o2 ->
         if (player == Game.Player.White) {
-            o2.centipawn - o1.centipawn
+            (o2.centipawn ?: 0) - (o1.centipawn ?: 0)
         } else {
-            o1.centipawn - o2.centipawn
+            (o1.centipawn ?: 0) - (o2.centipawn ?: 0)
         }
     }
 
