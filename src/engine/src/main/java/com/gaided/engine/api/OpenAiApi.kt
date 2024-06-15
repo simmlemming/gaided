@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import java.net.URL
 
 private const val OPEN_AI_API_KEY = "..."
+private const val MODEL = "gpt-4o"
 
 public class OpenAiApi : HttpApi() {
 
@@ -17,7 +18,7 @@ public class OpenAiApi : HttpApi() {
             parse = { gson.parseOpenAiResponse(it) }
             body = """
                 {
-                    "model": "gpt-3.5-turbo",
+                    "model": "$MODEL",
                     "messages": [
                         {
                             "role": "system",
