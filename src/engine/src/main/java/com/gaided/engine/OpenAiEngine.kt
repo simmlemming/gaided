@@ -19,10 +19,14 @@ public class OpenAiEngine(
         val response = api.getTopMoves(position.fenString, numberOfMoves)
         val movesAsText = response.split(",").take(numberOfMoves)
 
-        movesAsText.mapNotNull { move ->
-            matchers
-                .firstNotNullOfOrNull { matcher -> matcher(move) }
+        val topMoves = movesAsText.mapNotNull { move ->
+            matchers.firstNotNullOfOrNull { matcher -> matcher(move) }
         }
+
+        val parsedMoves = topMoves.map { it.move }
+        println("OpenAI: '$response' -> $parsedMoves")
+
+        topMoves
     }
 
     private val matchers: List<((String) -> TopMove?)> = listOf(

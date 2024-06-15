@@ -44,7 +44,7 @@ class Game(
 
             if (cached == null && started) {
                 topMovesCache.update {
-                    it + (position to engines[0].getTopMoves(position, 3))
+                    it + (position to engines.flatMap { engine -> engine.getTopMoves(position, 3) })
                 }
             }
         }

@@ -7,10 +7,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
+import com.gaided.engine.OpenAiEngine
 import com.gaided.engine.PieceNotation
 import com.gaided.engine.RemoteBoard
 import com.gaided.engine.SquareNotation
 import com.gaided.engine.StockfishEngine
+import com.gaided.engine.api.OpenAiEngineApi
 import com.gaided.engine.api.RemoteBoardApi
 import com.gaided.engine.api.StockfishEngineApi
 import com.gaided.game.ui.model.ChessBoardViewState
@@ -203,7 +205,10 @@ class GameViewModel(private val game: Game) : ViewModel() {
             val stockfishEngineApi = StockfishEngineApi(stockfishEngineUrl)
             val stockfishEngine = StockfishEngine(stockfishEngineApi)
 
-            val game = Game(remoteBoard, listOf(stockfishEngine))
+            val openAiEngineApi = OpenAiEngineApi()
+            val openAiEngine = OpenAiEngine(openAiEngineApi)
+
+            val game = Game(remoteBoard, listOf(stockfishEngine, openAiEngine))
             return GameViewModel(game) as T
         }
     }

@@ -22,6 +22,8 @@ class OpenAiEngineTest {
         sut = OpenAiEngine(api)
     }
 
+    // TODO: Re8, dxc5, O-O, e3, Bb4+, Bxb8, e2 to e4
+
     @Test
     fun `empty string`() = runTest {
         testEngine("", emptyList())
@@ -38,8 +40,8 @@ class OpenAiEngineTest {
     @Test
     fun `full notation with dash`() = runTest {
         testEngine(
-            "a2-a4",
-            listOf(TopMove(sut.name, "a2a4"))
+            "a2-a4, Qd1-d2",
+            listOf(TopMove(sut.name, "a2a4"), TopMove(sut.name, "d1d2"))
         )
     }
 
