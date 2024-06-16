@@ -46,6 +46,14 @@ class OpenAiEngineTest {
     }
 
     @Test
+    fun `full notation with to`() = runTest {
+        testEngine(
+            "a2 to a4",
+            listOf(TopMove(sut.name, "a2a4"))
+        )
+    }
+
+    @Test
     fun `invalid input`() = runTest {
         testEngine(
             "Nf3, invalid, ...d4",

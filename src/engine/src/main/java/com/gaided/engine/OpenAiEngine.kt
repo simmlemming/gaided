@@ -32,8 +32,21 @@ public class OpenAiEngine(
     private val matchers: List<((String) -> TopMove?)> = listOf(
         ::matcher1,
         ::matcher2,
-        ::matcher3
+        ::matcher3,
+        ::matcher4
     )
+
+    private fun matcher4(move: String): TopMove? {
+        val regex = "([a-z][1-8]) to ([a-z][1-8])".toRegex()
+        val result = regex.find(move) ?: return null
+        val groups = result.groupValues
+
+        if (groups.size != 3) {
+            return null
+        }
+
+        return TopMove(name, "${groups[1]}${groups[2]}")
+    }
 
     private fun matcher3(move: String): TopMove? {
         val regex = "([a-z][1-8])-([a-z][1-8])".toRegex()
