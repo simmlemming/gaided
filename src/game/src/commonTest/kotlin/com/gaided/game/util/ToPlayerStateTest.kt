@@ -19,7 +19,8 @@ internal class ToPlayerStateTest {
             toPlayerState(
                 player = Game.Player.Black,
                 position = FenNotation.START_POSITION,
-                topMoves = emptyList()
+                topMoves = emptyList(),
+                isLoading = false
             )
         )
     }
@@ -34,7 +35,8 @@ internal class ToPlayerStateTest {
             toPlayerState(
                 player = Game.Player.White,
                 position = FenNotation.START_POSITION,
-                topMoves = emptyList()
+                topMoves = emptyList(),
+                isLoading = true
             )
         )
     }
@@ -49,7 +51,8 @@ internal class ToPlayerStateTest {
             toPlayerState(
                 player = Game.Player.White,
                 position = FenNotation.START_POSITION,
-                topMoves = listOf(Engine.TopMove("any", "a2a4", 0))
+                topMoves = listOf(Engine.TopMove("any", "a2a4", 0)),
+                isLoading = false
             )
         )
     }

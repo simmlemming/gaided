@@ -31,21 +31,31 @@ class Game(
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
     val history: Flow<Set<HalfMove>> = _history.asStateFlow()
 
-    private val topMovesCache = MutableStateFlow<Map<FenNotation, List<Engine.TopMove>>>(emptyMap())
+    private val topMovesCache = MutableStateFlow<Map<FenNotation, TopMovesProgress>>(emptyMap())
 
     internal fun start() {
         _started.value = true
     }
 
-    internal fun getTopMoves(position: FenNotation): Flow<List<Engine.TopMove>> =
+    internal fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
         topMovesCache.combineTransform(started) { cache, started ->
             val cached = cache[position]
-            emit(cached.orEmpty())
+            emit(cached ?: TopMovesProgress(inProgress = true))
 
-            if (cached == null && started) {
-                topMovesCache.update {
-                    it + (position to engines.flatMap { engine -> engine.getTopMoves(position, 3) })
-                }
+            if (!started || cached != null) {
+                return@combineTransform
+            }
+
+            val allTopMoves = mutableListOf<Engine.TopMove>()
+            engines.forEach { engine ->
+                val topMoves = engine.getTopMoves(position, 3)
+                allTopMoves.addAll(topMoves)
+                emit(TopMovesProgress(moves = allTopMoves, inProgress = true))
+            }
+
+            emit(TopMovesProgress(moves = allTopMoves))
+            topMovesCache.update {
+                it + (position to TopMovesProgress(allTopMoves))
             }
         }
 
@@ -66,6 +76,11 @@ class Game(
 
     internal suspend fun isMoveIfCorrect(move: MoveNotation) =
         remoteBoard.isMoveCorrect(_position.value, move)
+
+    internal data class TopMovesProgress(
+        val moves: List<Engine.TopMove> = emptyList(),
+        val inProgress: Boolean = false
+    )
 
     data class HalfMove(
         val number: Int,

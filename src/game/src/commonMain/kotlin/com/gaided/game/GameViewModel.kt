@@ -84,7 +84,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
                     .let { if (pendingMove == null) it else it.move(pendingMove) }
                     .map { it.toPiece(selectedSquare, null) }
                     .toSet(),
-                arrows = toTopMoveArrows(topMoves, selectedSquare, pendingMove) +
+                arrows = toTopMoveArrows(topMoves.moves, selectedSquare, pendingMove) +
                         toLastTopMoveArrows(oldTopMoves.first, oldTopMoves.second),
                 overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
             )
@@ -92,12 +92,12 @@ class GameViewModel(private val game: Game) : ViewModel() {
 
     val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(Game.Player.White, position, topMoves)
+        toPlayerState(Game.Player.White, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val playerBlack = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(Game.Player.Black, position, topMoves)
+        toPlayerState(Game.Player.Black, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val evaluation =
@@ -114,7 +114,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
             .stateInThis(EvaluationViewState.INITIAL)
 
     private val topMoveStartSquares = combine(game.position, topMoves) { position, topMoves ->
-        topMoves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
+        topMoves.moves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
     private val position = game.position
@@ -189,7 +189,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
             null -> flowOf(Game.Player.White to emptyList())
             else -> game.getTopMoves(position.positionAfterMove).map {
-                position.positionAfterMove.toNextMovePlayer() to it
+                position.positionAfterMove.toNextMovePlayer() to it.moves
             }
         }
     }
@@ -208,7 +208,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
             val openAiEngineApi = OpenAiEngineApi()
             val openAiEngine = OpenAiEngine(openAiEngineApi)
 
-            val game = Game(remoteBoard, listOf(stockfishEngine, openAiEngine))
+            val game = Game(remoteBoard, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T
         }
     }

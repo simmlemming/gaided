@@ -61,7 +61,8 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
-    topMoves: List<Engine.TopMove>
+    topMoves: List<Engine.TopMove>,
+    isLoading: Boolean
 ): PlayerViewState {
     val nextMovePlayer = position.toNextMovePlayer()
 
@@ -70,7 +71,7 @@ internal fun toPlayerState(
             PlayerViewState.EMPTY
 
         nextMovePlayer == player ->
-            toPlayerViewState(position, topMoves)
+            toPlayerViewState(position, isLoading)
 
         nextMovePlayer == player ->
             PlayerViewState.EMPTY
@@ -85,9 +86,9 @@ internal fun toPlayerState(
     }
 }
 
-private fun toPlayerViewState(position: FenNotation, topMoves: List<Engine.TopMove>): PlayerViewState {
+private fun toPlayerViewState(position: FenNotation, isLoading: Boolean): PlayerViewState {
     return PlayerViewState(
-        progressVisible = topMoves.isEmpty(),
+        progressVisible = isLoading,
         movesStats = emptyList()
     )
 }
