@@ -22,9 +22,13 @@ public class StockfishEngine(
             val moves = stockfishApi.getTopMoves(position.fenString, numberOfMoves)
 
             val type = object : TypeToken<List<StockfishApiTopMove>>() {}.type
-            gson
+            val topMoves = gson
                 .fromJson<List<StockfishApiTopMove>>(moves, type)
                 .map { TopMove(name, it.move, it.centipawn) }
+
+            println("$name: ${topMoves.map { it.move }}")
+
+            topMoves
         }
 }
 

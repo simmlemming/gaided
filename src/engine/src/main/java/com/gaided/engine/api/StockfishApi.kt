@@ -31,8 +31,6 @@ public sealed class StockfishApi protected constructor(
             }
             """.trimIndent()
 
-        println(requestBody)
-
         return post {
             url = this@StockfishApi.url
             headers["Content-Type"] = "application/json"
