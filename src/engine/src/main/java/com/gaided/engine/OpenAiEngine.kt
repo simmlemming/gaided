@@ -26,9 +26,16 @@ public class OpenAiEngine(
         val response = api.getTopMoves(position.fenString, numberOfMoves)
         val movesAsText = response.split(",").take(numberOfMoves)
 
-        val topMoves = movesAsText.mapNotNull { move ->
-            matchers.firstNotNullOfOrNull { matcher -> matcher(position, move.trim()) }
-        }
+        val topMoves = movesAsText
+            .map { it.trim() }
+            .mapNotNull { move ->
+                val result1 = matchers2.firstNotNullOfOrNull { (regex, matcher) ->
+                    val groups = regex.matchEntire(move)?.groupValues.orEmpty()
+                    val topMove = matcher(position, move, groups)
+                    topMove
+                }
+                result1
+            }
 
         val parsedMoves = topMoves.map { it.move }
         logger.i("$name: '$response' -> $parsedMoves")
@@ -36,21 +43,17 @@ public class OpenAiEngine(
         topMoves
     }
 
-    private val matchers: List<((FenNotation, String) -> TopMove?)> = listOf(
-        ::matcher1,
-        ::matcher2,
-        ::matcher3,
-        ::matcher4,
-        ::shortNotationPawnMoves,
-        ::shortNotationPawnTakes,
-        ::shortNotationRookMoves
+    private val matchers2: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
+        "[A-Z]?([a-z][1-8])x([a-z][1-8])".toRegex() to ::fullNotation,
+        "[A-Z]?([a-z][1-8])([a-z][1-8])".toRegex() to ::fullNotation,
+        "[A-Z]?([a-z][1-8])-([a-z][1-8])".toRegex() to ::fullNotation,
+        "([a-z][1-8]) to ([a-z][1-8])".toRegex() to ::fullNotation,
+        "([a-z][1-8])".toRegex() to ::shortNotationPawnMoves,
+        "([a-z])x([a-z][1-8])".toRegex() to ::shortNotationPawnTakes,
+        "R([a-z][1-8])".toRegex() to ::shortNotationRookMoves,
     )
 
-    private fun shortNotationRookMoves(position: FenNotation, move: String): TopMove? {
-        val regex = "R([a-z][1-8])".toRegex()
-        val result = regex.matchEntire(move) ?: return null
-        val groups = result.groupValues
-
+    private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
         }
@@ -98,11 +101,7 @@ public class OpenAiEngine(
     }
 
     @Suppress("MoveLambdaOutsideParentheses")
-    private fun shortNotationPawnTakes(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z])x([a-z][1-8])".toRegex()
-        val result = regex.matchEntire(move) ?: return null
-        val groups = result.groupValues
-
+    private fun shortNotationPawnTakes(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null
         }
@@ -128,11 +127,7 @@ public class OpenAiEngine(
         return from?.let { TopMove(name, "$it$to") }
     }
 
-    private fun shortNotationPawnMoves(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z][1-8])".toRegex()
-        val result = regex.matchEntire(move) ?: return null
-        val groups = result.groupValues
-
+    private fun shortNotationPawnMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
         }
@@ -182,47 +177,7 @@ public class OpenAiEngine(
         return entry?.first
     }
 
-    private fun matcher4(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z][1-8]) to ([a-z][1-8])".toRegex()
-        val result = regex.find(move) ?: return null
-        val groups = result.groupValues
-
-        if (groups.size != 3) {
-            return null
-        }
-
-        return TopMove(name, "${groups[1]}${groups[2]}")
-    }
-
-    private fun matcher3(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z][1-8])-([a-z][1-8])".toRegex()
-        val result = regex.find(move) ?: return null
-        val groups = result.groupValues
-
-        if (groups.size != 3) {
-            return null
-        }
-
-        return TopMove(name, "${groups[1]}${groups[2]}")
-    }
-
-    private fun matcher2(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z][1-8])x([a-z][1-8])".toRegex()
-        val result = regex.find(move) ?: return null
-        val groups = result.groupValues
-
-        if (groups.size != 3) {
-            return null
-        }
-
-        return TopMove(name, "${groups[1]}${groups[2]}")
-    }
-
-    private fun matcher1(position: FenNotation, move: String): TopMove? {
-        val regex = "([a-z][1-8])([a-z][1-8])".toRegex()
-        val result = regex.find(move) ?: return null
-        val groups = result.groupValues
-
+    private fun fullNotation(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null
         }
