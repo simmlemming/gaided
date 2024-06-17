@@ -66,6 +66,15 @@ class OpenAiEngineTest {
     }
 
     @Test
+    fun `short notation white rook moves with check`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "Ra5+, Rg1+",
+            listOf(TopMove(sut.name, "a1a5"), TopMove(sut.name, "a1g1"))
+        )
+    }
+
+    @Test
     fun `short notation white pawn takes`() = runTest {
         testEngine(
             FEN_POSITION_START,

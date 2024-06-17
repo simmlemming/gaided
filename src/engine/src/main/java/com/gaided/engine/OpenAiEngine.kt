@@ -44,14 +44,14 @@ public class OpenAiEngine(
     }
 
     private val matchers2: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
-        "[A-Z]?([a-z][1-8])x([a-z][1-8])".toRegex() to ::fullNotation,
-        "[A-Z]?([a-z][1-8])([a-z][1-8])".toRegex() to ::fullNotation,
-        "[A-Z]?([a-z][1-8])-([a-z][1-8])".toRegex() to ::fullNotation,
+        "[A-Z]?([a-z][1-8])x([a-z][1-8])\\+?".toRegex() to ::fullNotation,
+        "[A-Z]?([a-z][1-8])([a-z][1-8])\\+?".toRegex() to ::fullNotation,
+        "[A-Z]?([a-z][1-8])-([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "([a-z][1-8]) to ([a-z][1-8])".toRegex() to ::fullNotation,
-        "([a-z][1-8])".toRegex() to ::shortNotationPawnMoves,
-        "([a-z])x([a-z][1-8])".toRegex() to ::shortNotationPawnTakes,
-        "R([a-z][1-8])".toRegex() to ::shortNotationRookMoves,
-        "Rx([a-z][1-8])".toRegex() to ::shortNotationRookMoves,
+        "([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnMoves,
+        "([a-z])x([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnTakes,
+        "R([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
+        "Rx([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
     )
 
     private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
