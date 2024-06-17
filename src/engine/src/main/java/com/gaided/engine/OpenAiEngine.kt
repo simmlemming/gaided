@@ -12,7 +12,12 @@ public class OpenAiEngine(
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val logger: Logger = DefaultLogger
 ) : Engine {
-    override val name: String = "OpenAI $OPEN_AI_MODEL"
+
+    public companion object {
+        public const val NAME: String = "OpenAI $OPEN_AI_MODEL"
+    }
+
+    override val name: String = NAME
 
     override suspend fun getTopMoves(
         position: FenNotation, numberOfMoves: Int
@@ -25,7 +30,7 @@ public class OpenAiEngine(
         }
 
         val parsedMoves = topMoves.map { it.move }
-        logger.i("OpenAI: '$response' -> $parsedMoves")
+        logger.i("$name: '$response' -> $parsedMoves")
 
         topMoves
     }

@@ -26,7 +26,8 @@ data class ChessBoardViewState(
         val start: SquareNotation,
         val end: SquareNotation,
         val color: Int,
-        val weight: Float = 1f
+        val weight: Float = 1f,
+        val strong: Boolean = true
     ) {
 
         companion object {

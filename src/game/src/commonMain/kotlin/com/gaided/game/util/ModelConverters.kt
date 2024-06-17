@@ -3,6 +3,7 @@ package com.gaided.game.util
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
+import com.gaided.engine.OpenAiEngine
 import com.gaided.engine.PieceNotation
 import com.gaided.engine.SquareNotation
 import com.gaided.game.Game
@@ -102,7 +103,8 @@ internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
 internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
-    color = color
+    color = color,
+    strong = (this.source != OpenAiEngine.NAME)
 )
 
 internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?, pendingMove: MoveNotation?) =

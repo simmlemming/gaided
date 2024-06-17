@@ -14,7 +14,12 @@ public class StockfishEngine(
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val logger: Logger = DefaultLogger
 ) : Engine {
-    override val name: String = "Stockfish"
+
+    public companion object {
+        public const val NAME: String = "Stockfish 15"
+    }
+
+    override val name: String = NAME
 
     private val gson = Gson()
 

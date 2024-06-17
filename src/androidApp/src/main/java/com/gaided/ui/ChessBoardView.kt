@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
@@ -159,12 +160,13 @@ private fun DrawScope.drawArrows(arrows: Set<ChessBoardViewState.Arrow>) {
             color = Color(it.color),
             from = squares[it.start]!!.center,
             to = squares[it.end]!!.center,
-            weight = it.weight
+            weight = it.weight,
+            isStrong = it.strong
         )
     }
 }
 
-private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: Float) {
+private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: Float, isStrong: Boolean) {
     val angleRad: Float
 
     //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
@@ -183,6 +185,7 @@ private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: 
         start = from,
         end = Offset(x, y),
         strokeWidth = 16f * weight,
+        pathEffect = if (!isStrong) PathEffect.dashPathEffect(floatArrayOf(16f * weight, 16f * weight)) else null
     )
 
     //the triangle
@@ -201,7 +204,7 @@ private fun DrawScope.drawArrow(color: Color, from: Offset, to: Offset, weight: 
 
     drawPath(
         path = path,
-        color = color
+        color = color,
     )
 }
 
