@@ -199,14 +199,14 @@ class GameViewModel(private val game: Game) : ViewModel() {
 
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-            val remoteBoardApi = RemoteBoardApi(remoteBoardUrl)
+            val remoteBoardApi = RemoteBoardApi(remoteBoardUrl, logger = Logger)
             val remoteBoard = RemoteBoard(remoteBoardApi)
 
-            val stockfishEngineApi = StockfishEngineApi(stockfishEngineUrl)
-            val stockfishEngine = StockfishEngine(stockfishEngineApi)
+            val stockfishEngineApi = StockfishEngineApi(stockfishEngineUrl, logger = Logger)
+            val stockfishEngine = StockfishEngine(stockfishEngineApi, logger = Logger)
 
-            val openAiEngineApi = OpenAiEngineApi()
-            val openAiEngine = OpenAiEngine(openAiEngineApi)
+            val openAiEngineApi = OpenAiEngineApi(logger = Logger)
+            val openAiEngine = OpenAiEngine(openAiEngineApi, logger = Logger)
 
             val game = Game(remoteBoard, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T

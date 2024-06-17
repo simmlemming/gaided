@@ -9,7 +9,8 @@ import kotlin.coroutines.CoroutineContext
 
 public class OpenAiEngine(
     private val api: OpenAiEngineApi,
-    private val ioContext: CoroutineContext = Dispatchers.IO
+    private val ioContext: CoroutineContext = Dispatchers.IO,
+    private val logger: Logger = DefaultLogger
 ) : Engine {
     override val name: String = "OpenAI $OPEN_AI_MODEL"
 
@@ -24,7 +25,7 @@ public class OpenAiEngine(
         }
 
         val parsedMoves = topMoves.map { it.move }
-        println("OpenAI: '$response' -> $parsedMoves")
+        logger.i("OpenAI: '$response' -> $parsedMoves")
 
         topMoves
     }

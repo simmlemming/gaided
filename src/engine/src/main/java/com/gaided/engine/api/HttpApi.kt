@@ -1,5 +1,7 @@
 package com.gaided.engine.api
 
+import com.gaided.engine.DefaultLogger
+import com.gaided.engine.Logger
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
@@ -9,7 +11,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 public sealed class HttpApi protected constructor(
-    protected val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection }
+    protected val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
+    protected val logger: Logger = DefaultLogger
 ) {
 
     internal fun <T> post(request: PostRequest<T>.() -> Unit): T {
@@ -22,23 +25,23 @@ public sealed class HttpApi protected constructor(
         var connection: HttpURLConnection? = null
 
         try {
+            logger.d("> ${request.asString()}")
+
             connection = openConnection(request.url!!).apply {
                 doOutput = request is PostRequest
                 request.headers.forEach { setRequestProperty(it.key, it.value) }
             }
 
             if (request is PostRequest) {
+                logger.v("> ${request.body}")
                 DataOutputStream(connection.outputStream).use {
                     it.writeBytes(request.body!!)
                 }
             }
 
             val response = connection.inputStream.readAdString()
-            if (request.logRawResponse) {
-                println("Raw response")
-                println(response)
-                println()
-            }
+            logger.d("< ${request.asString()}")
+            logger.v("< $response")
             return request.parse!!.invoke(response)
         } catch (e: Exception) {
             val errorMessage = connection?.errorStream?.readAdString()
@@ -52,7 +55,7 @@ public sealed class HttpApi protected constructor(
         internal var url: URL? = null
         internal val headers = mutableMapOf<String, String>()
         internal var parse: ((String) -> T)? = null
-        internal var logRawResponse: Boolean = false
+        internal var asString: () -> String = { this@Request.toString() }
 
         internal open fun validate() {
             checkNotNull(url) { "url is null" }
@@ -70,6 +73,10 @@ public sealed class HttpApi protected constructor(
         override fun validate() {
             super.validate()
             checkNotNull(body) { "body is null" }
+        }
+
+        override fun toString(): String {
+            return "POST ${url.toString()}"
         }
     }
 

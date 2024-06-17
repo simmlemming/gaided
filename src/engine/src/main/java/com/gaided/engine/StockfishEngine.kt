@@ -11,7 +11,8 @@ import kotlin.coroutines.CoroutineContext
 
 public class StockfishEngine(
     private val stockfishApi: StockfishEngineApi,
-    private val ioContext: CoroutineContext = Dispatchers.IO
+    private val ioContext: CoroutineContext = Dispatchers.IO,
+    private val logger: Logger = DefaultLogger
 ) : Engine {
     override val name: String = "Stockfish"
 
@@ -26,7 +27,7 @@ public class StockfishEngine(
                 .fromJson<List<StockfishApiTopMove>>(moves, type)
                 .map { TopMove(name, it.move, it.centipawn) }
 
-            println("$name: ${topMoves.map { it.move }}")
+            logger.i("$name: ${topMoves.map { it.move }}")
 
             topMoves
         }

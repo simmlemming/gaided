@@ -2,6 +2,8 @@
 
 package com.gaided.engine.api
 
+import com.gaided.engine.DefaultLogger
+import com.gaided.engine.Logger
 import com.gaided.engine.MoveNotation
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
@@ -9,8 +11,9 @@ import java.net.URL
 
 public open class RemoteBoardApi(
     baseUrl: String,
-    openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection }
-) : StockfishApi(baseUrl, openConnection) {
+    openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
+    logger: Logger = DefaultLogger
+) : StockfishApi(baseUrl, openConnection, logger) {
 
     public suspend fun getFenPosition(): String = mutex.withLock {
         call("get_fen_position")
