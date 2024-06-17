@@ -41,10 +41,42 @@ public class OpenAiEngine(
         ::matcher2,
         ::matcher3,
         ::matcher4,
-        ::matcher5
+        ::shortNotationPawnMoves,
+        ::shortNotationPawnTakes
     )
 
-    private fun matcher5(position: FenNotation, move: String): TopMove? {
+    @Suppress("MoveLambdaOutsideParentheses")
+    private fun shortNotationPawnTakes(position: FenNotation, move: String): TopMove? {
+        val regex = "([a-z])x([a-z][1-8])".toRegex()
+        val result = regex.matchEntire(move) ?: return null
+        val groups = result.groupValues
+
+        if (groups.size != 3) {
+            return null
+        }
+
+        val fromFile = groups[1]
+        val to = groups[2]
+        var from: String? = null
+
+        if (position.nextMoveColor == "w") {
+            from = findFromSquare(
+                position, to, 'P',
+                listOf({ _, row -> "$fromFile${row - 1}" })
+            )
+        }
+
+        if (position.nextMoveColor == "b") {
+            from = findFromSquare(
+                position, to, 'p',
+                listOf({ _, row -> "$fromFile${row + 1}" })
+            )
+        }
+
+        return from?.let { TopMove(name, "$it$to") }
+    }
+
+    private fun shortNotationPawnMoves(position: FenNotation, move: String): TopMove? {
         val regex = "([a-z][1-8])".toRegex()
         val result = regex.matchEntire(move) ?: return null
         val groups = result.groupValues
