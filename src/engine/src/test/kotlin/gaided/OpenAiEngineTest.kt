@@ -22,13 +22,30 @@ class OpenAiEngineTest {
         sut = OpenAiEngine(api)
     }
 
-    // TODO: Re8, O-O, Bb4+, Bxb8
+    // TODO: O-O, Bb4+, Bxb8
 
     @Test
     fun `empty string`() = runTest {
         testEngine(FEN_POSITION_START, "", emptyList())
     }
 
+    @Test
+    fun `short notation black rook moves`() = runTest {
+        testEngine(
+            FEN_POSITION_AFTER_1ST_MOVE_G1F3,
+            "Ra5, Rg8",
+            listOf(TopMove(sut.name, "a8a5"), TopMove(sut.name, "a8g8"))
+        )
+    }
+
+    @Test
+    fun `short notation white rook moves`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "Ra5, Rg1",
+            listOf(TopMove(sut.name, "a1a5"), TopMove(sut.name, "a1g1"))
+        )
+    }
 
     @Test
     fun `short notation white pawn takes`() = runTest {

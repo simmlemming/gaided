@@ -42,8 +42,60 @@ public class OpenAiEngine(
         ::matcher3,
         ::matcher4,
         ::shortNotationPawnMoves,
-        ::shortNotationPawnTakes
+        ::shortNotationPawnTakes,
+        ::shortNotationRookMoves
     )
+
+    private fun shortNotationRookMoves(position: FenNotation, move: String): TopMove? {
+        val regex = "R([a-z][1-8])".toRegex()
+        val result = regex.matchEntire(move) ?: return null
+        val groups = result.groupValues
+
+        if (groups.size != 2) {
+            return null
+        }
+
+        val to = groups[1]
+        val expectedPiece = if (position.nextMoveColor == "w") 'R' else 'r'
+
+        val from = findFromSquare(
+            position, to, expectedPiece,
+            listOf(
+                { file, row -> "$file${row - 1}" },
+                { file, row -> "$file${row - 2}" },
+                { file, row -> "$file${row - 3}" },
+                { file, row -> "$file${row - 4}" },
+                { file, row -> "$file${row - 5}" },
+                { file, row -> "$file${row - 6}" },
+                { file, row -> "$file${row - 7}" },
+                { file, row -> "$file${row + 1}" },
+                { file, row -> "$file${row + 2}" },
+                { file, row -> "$file${row + 3}" },
+                { file, row -> "$file${row + 4}" },
+                { file, row -> "$file${row + 5}" },
+                { file, row -> "$file${row + 6}" },
+                { file, row -> "$file${row + 7}" },
+                { file, row -> "${file - 1}$row" },
+                { file, row -> "${file - 2}$row" },
+                { file, row -> "${file - 3}$row" },
+                { file, row -> "${file - 4}$row" },
+                { file, row -> "${file - 5}$row" },
+                { file, row -> "${file - 6}$row" },
+                { file, row -> "${file - 7}$row" },
+                { file, row -> "${file - 8}$row" },
+                { file, row -> "${file + 1}$row" },
+                { file, row -> "${file + 2}$row" },
+                { file, row -> "${file + 3}$row" },
+                { file, row -> "${file + 4}$row" },
+                { file, row -> "${file + 5}$row" },
+                { file, row -> "${file + 6}$row" },
+                { file, row -> "${file + 7}$row" },
+                { file, row -> "${file + 8}$row" },
+            )
+        )
+
+        return from?.let { TopMove(name, "$it$to") }
+    }
 
     @Suppress("MoveLambdaOutsideParentheses")
     private fun shortNotationPawnTakes(position: FenNotation, move: String): TopMove? {
@@ -109,17 +161,22 @@ public class OpenAiEngine(
         position: FenNotation,
         toSquare: SquareNotation,
         expectedPiece: PieceNotation,
-        candidates: List<(String, Int) -> SquareNotation>
+        candidates: List<(Char, Int) -> SquareNotation>
     ): SquareNotation? {
-        val toRow = toSquare.take(1)
+        val toRow = toSquare.take(1)[0]
         val toFile = toSquare.takeLast(1).toInt()
 
-        val entry = candidates
+        val map = candidates
             .map {
                 val candidateSquare = it.invoke(toRow, toFile)
-                val piece = position.pieceAt(candidateSquare)
+                val piece = try {
+                    position.pieceAt(candidateSquare)
+                } catch (e: Exception) {
+                    null
+                }
                 candidateSquare to piece
             }
+        val entry = map
             .firstOrNull { it.second == expectedPiece }
 
         return entry?.first
