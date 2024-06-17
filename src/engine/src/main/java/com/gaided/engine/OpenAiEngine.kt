@@ -51,6 +51,7 @@ public class OpenAiEngine(
         "([a-z][1-8])".toRegex() to ::shortNotationPawnMoves,
         "([a-z])x([a-z][1-8])".toRegex() to ::shortNotationPawnTakes,
         "R([a-z][1-8])".toRegex() to ::shortNotationRookMoves,
+        "Rx([a-z][1-8])".toRegex() to ::shortNotationRookMoves,
     )
 
     private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
@@ -61,44 +62,59 @@ public class OpenAiEngine(
         val to = groups[1]
         val expectedPiece = if (position.nextMoveColor == "w") 'R' else 'r'
 
-        val from = findFromSquare(
-            position, to, expectedPiece,
-            listOf(
-                { file, row -> "$file${row - 1}" },
-                { file, row -> "$file${row - 2}" },
-                { file, row -> "$file${row - 3}" },
-                { file, row -> "$file${row - 4}" },
-                { file, row -> "$file${row - 5}" },
-                { file, row -> "$file${row - 6}" },
-                { file, row -> "$file${row - 7}" },
-                { file, row -> "$file${row + 1}" },
-                { file, row -> "$file${row + 2}" },
-                { file, row -> "$file${row + 3}" },
-                { file, row -> "$file${row + 4}" },
-                { file, row -> "$file${row + 5}" },
-                { file, row -> "$file${row + 6}" },
-                { file, row -> "$file${row + 7}" },
-                { file, row -> "${file - 1}$row" },
-                { file, row -> "${file - 2}$row" },
-                { file, row -> "${file - 3}$row" },
-                { file, row -> "${file - 4}$row" },
-                { file, row -> "${file - 5}$row" },
-                { file, row -> "${file - 6}$row" },
-                { file, row -> "${file - 7}$row" },
-                { file, row -> "${file - 8}$row" },
-                { file, row -> "${file + 1}$row" },
-                { file, row -> "${file + 2}$row" },
-                { file, row -> "${file + 3}$row" },
-                { file, row -> "${file + 4}$row" },
-                { file, row -> "${file + 5}$row" },
-                { file, row -> "${file + 6}$row" },
-                { file, row -> "${file + 7}$row" },
-                { file, row -> "${file + 8}$row" },
-            )
-        )
-
+        val from = (findInRow(position, to, expectedPiece) ?: findInFile(position, to, expectedPiece))
         return from?.let { TopMove(name, "$it$to") }
     }
+
+    private fun findInRow(
+        position: FenNotation,
+        to: String,
+        expectedPiece: Char
+    ) = findFromSquare(
+        position, to, expectedPiece,
+        listOf(
+            { file, row -> "$file${row - 1}" },
+            { file, row -> "$file${row - 2}" },
+            { file, row -> "$file${row - 3}" },
+            { file, row -> "$file${row - 4}" },
+            { file, row -> "$file${row - 5}" },
+            { file, row -> "$file${row - 6}" },
+            { file, row -> "$file${row - 7}" },
+            { file, row -> "$file${row + 1}" },
+            { file, row -> "$file${row + 2}" },
+            { file, row -> "$file${row + 3}" },
+            { file, row -> "$file${row + 4}" },
+            { file, row -> "$file${row + 5}" },
+            { file, row -> "$file${row + 6}" },
+            { file, row -> "$file${row + 7}" },
+        )
+    )
+
+    private fun findInFile(
+        position: FenNotation,
+        to: String,
+        expectedPiece: Char
+    ) = findFromSquare(
+        position, to, expectedPiece,
+        listOf(
+            { file, row -> "${file - 1}$row" },
+            { file, row -> "${file - 2}$row" },
+            { file, row -> "${file - 3}$row" },
+            { file, row -> "${file - 4}$row" },
+            { file, row -> "${file - 5}$row" },
+            { file, row -> "${file - 6}$row" },
+            { file, row -> "${file - 7}$row" },
+            { file, row -> "${file - 8}$row" },
+            { file, row -> "${file + 1}$row" },
+            { file, row -> "${file + 2}$row" },
+            { file, row -> "${file + 3}$row" },
+            { file, row -> "${file + 4}$row" },
+            { file, row -> "${file + 5}$row" },
+            { file, row -> "${file + 6}$row" },
+            { file, row -> "${file + 7}$row" },
+            { file, row -> "${file + 8}$row" },
+        )
+    )
 
     @Suppress("MoveLambdaOutsideParentheses")
     private fun shortNotationPawnTakes(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {

@@ -30,6 +30,24 @@ class OpenAiEngineTest {
     }
 
     @Test
+    fun `short notation white rook takes`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "Rxa5",
+            listOf(TopMove(sut.name, "a1a5"))
+        )
+    }
+
+    @Test
+    fun `short notation black rook takes`() = runTest {
+        testEngine(
+            FEN_POSITION_AFTER_1ST_MOVE_G1F3,
+            "Rxa5",
+            listOf(TopMove(sut.name, "a8a5"))
+        )
+    }
+
+    @Test
     fun `short notation black rook moves`() = runTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
