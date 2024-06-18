@@ -1,8 +1,9 @@
 package com.gaided.game
 
+import com.gaided.engine.Engine
+import com.gaided.engine.FenNotation
 import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import io.mockk.coEvery
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -11,20 +12,16 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
     @Test
     fun `top moves arrows`() = runTest {
         // GIVEN
-        var apiPosition = FEN_POSITION_AT_START
+        var position = POSITION_AT_START
 
-        remoteBoardApi = mockk {
-            coEvery { makeMoves(any(), any()) } returns Unit
-            coEvery { isMoveCorrect(any(), any()) } returns true
-            coEvery { getEvaluation(any()) } returns EVALUATION_50
-            coEvery { getFenPosition() } answers { apiPosition }
-        }
+        coEvery { board.move(any(), any()) } returns Unit
+        coEvery { board.isMoveCorrect(any(), any()) } returns true
+        coEvery { board.getEvaluation(any()) } returns EVALUATION_50
+        coEvery { board.getPosition() } answers { position }
 
-        stockfishEngineApi = mockk {
-            coEvery { getTopMoves(FEN_POSITION_AT_START, 3) } returns TOP_MOVES_AT_START
-            coEvery { getTopMoves(FEN_POSITION_AFTER_1ST_MOVE_G1F3, 3) } returns TOP_3_MOVES_AFTER_G1F3
-            coEvery { getTopMoves(FEN_POSITION_AFTER_1ST_BLACK_MOVE_B7B6, 3) } returns TOP_3_MOVES_AFTER_B7B6
-        }
+        coEvery { engine1.getTopMoves(POSITION_AT_START, any()) } returns TOP_MOVES_AT_START
+        coEvery { engine1.getTopMoves(POSITION_AFTER_1ST_MOVE_G1F3, any()) } returns TOP_3_MOVES_AFTER_G1F3
+        coEvery { engine1.getTopMoves(POSITION_AFTER_1ST_BLACK_MOVE_B7B6, any()) } returns TOP_3_MOVES_AFTER_B7B6
 
         val viewModel = createViewModelAndCollectState()
 
@@ -42,7 +39,7 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
         )
 
         // WHEN white moves
-        apiPosition = FEN_POSITION_AFTER_1ST_MOVE_G1F3
+        position = POSITION_AFTER_1ST_MOVE_G1F3
         viewModel.onSquareClick("g1")
 
         // THEN top moves include new response and old moves colored by evaluation
@@ -61,7 +58,7 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
         )
 
         // WHEN black moves
-        apiPosition = FEN_POSITION_AFTER_1ST_BLACK_MOVE_B7B6
+        position = POSITION_AFTER_1ST_BLACK_MOVE_B7B6
         viewModel.onSquareClick("b7")
 
         // THEN top moves include new response and old moves colored by evaluation
@@ -82,21 +79,17 @@ internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
     }
 }
 
-private val TOP_3_MOVES_AFTER_G1F3 = """
-    [
-        {'Move': 'e7e6', 'Centipawn': 23, 'Mate': None},
-        {'Move': 'e7e5', 'Centipawn': -23, 'Mate': None},
-        {'Move': 'b7b6', 'Centipawn': 7, 'Mate': None}
-    ]
-""".trimIndent()
+private val TOP_3_MOVES_AFTER_G1F3 = listOf(
+    Engine.TopMove("engine-1", "e7e6", 23),
+    Engine.TopMove("engine-1", "e7e5", -23),
+    Engine.TopMove("engine-1", "b7b6", 7),
+)
 
-private val TOP_3_MOVES_AFTER_B7B6 = """
-    [
-        {'Move': 'b1c3', 'Centipawn': 55, 'Mate': None},
-        {'Move': 'e2e4', 'Centipawn': 47, 'Mate': None},
-        {'Move': 'd2d4', 'Centipawn': 37, 'Mate': None}
-    ]
-""".trimIndent()
+private val TOP_3_MOVES_AFTER_B7B6 = listOf(
+    Engine.TopMove("engine-1", "b1c3", 55),
+    Engine.TopMove("engine-1", "e2e4", 47),
+    Engine.TopMove("engine-1", "d2d4", 37),
+)
 
-private const val FEN_POSITION_AFTER_1ST_BLACK_MOVE_B7B6 =
-    "rnbqkbnr/p1pppppp/1p6/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2"
+private val POSITION_AFTER_1ST_BLACK_MOVE_B7B6 =
+    FenNotation.fromFenString("rnbqkbnr/p1pppppp/1p6/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2")

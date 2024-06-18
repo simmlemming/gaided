@@ -9,7 +9,7 @@ import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
 import com.gaided.engine.OpenAiEngine
 import com.gaided.engine.PieceNotation
-import com.gaided.engine.RemoteBoard
+import com.gaided.engine.Board
 import com.gaided.engine.SquareNotation
 import com.gaided.engine.StockfishEngine
 import com.gaided.game.ui.model.ChessBoardViewState
@@ -196,11 +196,11 @@ class GameViewModel(private val game: Game) : ViewModel() {
 
     class Factory(private val config: Config) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-            val remoteBoard = RemoteBoard(url = config.remoteBoardUrl, logger = Logger)
+            val board = Board(url = config.remoteBoardUrl, logger = Logger)
             val stockfishEngine = StockfishEngine(url = config.stockfishEngineUrl, logger = Logger)
             val openAiEngine = OpenAiEngine(apiKey = config.openAiApiKey, logger = Logger)
 
-            val game = Game(remoteBoard, listOf(openAiEngine, stockfishEngine))
+            val game = Game(board, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T
         }
 

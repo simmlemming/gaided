@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-public sealed class HttpApi protected constructor(
+internal open class HttpApi(
     protected val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
     protected val logger: Logger = DefaultLogger
 ) {

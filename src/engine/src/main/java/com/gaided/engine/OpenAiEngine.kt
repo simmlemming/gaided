@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("UNUSED_PARAMETER")
-public class OpenAiEngine(
+public class OpenAiEngine internal constructor(
     private val api: OpenAiEngineApi,
     private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,

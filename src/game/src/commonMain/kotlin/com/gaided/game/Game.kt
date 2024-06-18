@@ -3,7 +3,7 @@ package com.gaided.game
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
-import com.gaided.engine.RemoteBoard
+import com.gaided.engine.Board
 import com.gaided.game.util.toNextMovePlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
 class Game(
-    private val remoteBoard: RemoteBoard,
+    private val board: Board,
     private val engines: List<Engine>
 ) {
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
@@ -25,7 +25,7 @@ class Game(
     // Cold flow!
     // Each consumer triggers engine.getEvaluation()
     val evaluation = combine(_position, _started) { position, stared ->
-        if (stared) mapOf(position to remoteBoard.getEvaluation(position)) else emptyMap()
+        if (stared) mapOf(position to board.getEvaluation(position)) else emptyMap()
     }
 
     private val _history = MutableStateFlow<Set<HalfMove>>(emptySet())
@@ -65,17 +65,17 @@ class Game(
             "Expected player to move $expectedPlayer, was $player"
         }
 
-        remoteBoard.move(_position.value, move)
-        val fenPosition = remoteBoard.getFenPosition()
-        _position.value = FenNotation.fromFenString(fenPosition)
+        board.move(_position.value, move)
+        val position = board.getPosition()
+        _position.value = position
 
         _history.update {
-            it.add(player, move, fenPosition)
+            it.add(player, move, position.fenString)
         }
     }
 
     internal suspend fun isMoveIfCorrect(move: MoveNotation) =
-        remoteBoard.isMoveCorrect(_position.value, move)
+        board.isMoveCorrect(_position.value, move)
 
     internal data class TopMovesProgress(
         val moves: List<Engine.TopMove> = emptyList(),

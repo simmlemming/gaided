@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
 import java.net.URL
 
-public open class RemoteBoardApi(
+internal open class RemoteBoardApi(
     url: String,
     openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
     logger: Logger = DefaultLogger

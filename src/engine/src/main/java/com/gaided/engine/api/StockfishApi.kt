@@ -7,7 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
 import java.net.URL
 
-public sealed class StockfishApi protected constructor(
+internal open class StockfishApi protected constructor(
     url: String,
     openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
     logger: Logger = DefaultLogger

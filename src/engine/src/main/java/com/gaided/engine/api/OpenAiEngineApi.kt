@@ -7,14 +7,14 @@ import java.net.URL
 
 internal const val OPEN_AI_MODEL = "gpt-4o"
 
-public class OpenAiEngineApi(
+internal class OpenAiEngineApi(
     private val apiKey: String,
     logger: Logger = DefaultLogger
 ) : HttpApi(logger = logger) {
 
     private val gson = Gson()
 
-    public fun getTopMoves(position: String, numberOfMoves: Int): String {
+    fun getTopMoves(position: String, numberOfMoves: Int): String {
         return post {
             url = URL("https://api.openai.com/v1/chat/completions")
             headers["Authorization"] = "Bearer $apiKey"

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-public class RemoteBoard(
+public class Board internal constructor(
     private val api: RemoteBoardApi,
     private val ioContext: CoroutineContext = Dispatchers.IO
 ) {
@@ -24,16 +24,16 @@ public class RemoteBoard(
 
     private val gson = Gson()
 
-    public suspend fun getFenPosition(): String = withContext(ioContext) {
-        val response = api.getFenPosition()
-        response
+    public suspend fun getPosition(): FenNotation = withContext(ioContext) {
+        val position = api.getFenPosition()
+        FenNotation.fromFenString(position)
     }
 
     public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {
         api.makeMoves(position.fenString, listOf(move))
     }
 
-    public suspend fun setFenPosition(position: FenNotation): Unit = withContext(ioContext) {
+    public suspend fun setPosition(position: FenNotation): Unit = withContext(ioContext) {
         api.setFenPosition(position.fenString)
     }
 

@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 
 @ExperimentalCoroutinesApi
-internal class RemoteBoardApiTest {
+internal class BoardApiTest {
 
     private lateinit var api: ApiUnderTest
 

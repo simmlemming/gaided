@@ -1,6 +1,5 @@
 package gaided
 
-import com.gaided.engine.Engine
 import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.FenNotation
 import com.gaided.engine.OpenAiEngine

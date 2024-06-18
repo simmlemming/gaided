@@ -2,7 +2,7 @@ package com.gaided.game
 
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
-import com.gaided.engine.RemoteBoard
+import com.gaided.engine.Board
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,17 +16,17 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 internal class GameHistoryTest {
     private lateinit var game: Game
-    private lateinit var fenNotationResponse: String
+    private lateinit var position: FenNotation
 
     @Before
     fun setUp() {
-        val remoteBoard = mockk<RemoteBoard>(relaxed = true) {
-            coEvery { getFenPosition() } answers { fenNotationResponse }
+        val board = mockk<Board>(relaxed = true) {
+            coEvery { getPosition() } answers { position }
         }
 
         val engine = mockk<Engine>(relaxed = true)
 
-        game = Game(remoteBoard, listOf(engine))
+        game = Game(board, listOf(engine))
     }
 
     @Test
@@ -51,22 +51,15 @@ internal class GameHistoryTest {
         move: Game.HalfMove,
         getLastHistoryValue: () -> Set<Game.HalfMove>
     ) {
-        fenNotationResponse = move.positionAfterMove.fenString
+        this@GameHistoryTest.position = move.positionAfterMove
         move(move.move, move.player)
         assertEquals(move, getLastHistoryValue().getLastMove())
     }
 }
 
-@Suppress("PrivatePropertyName")
 private val FEN_1W = FenNotation.fromFenString("pieces1 b KQkq - 1 2")
-
-@Suppress("PrivatePropertyName")
 private val FEN_1B = FenNotation.fromFenString("pieces2 w KQkq - 1 2")
-
-@Suppress("PrivatePropertyName")
 private val FEN_2W = FenNotation.fromFenString("pieces3 b KQkq - 1 2")
-
-@Suppress("PrivatePropertyName")
 private val FEN_2B = FenNotation.fromFenString("pieces4 w KQkq - 1 2")
 
 private val move1w = Game.HalfMove(1, "e2e4", Game.Player.White, FEN_1W)

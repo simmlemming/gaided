@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-public class StockfishEngine(
+public class StockfishEngine internal constructor(
     private val api: StockfishEngineApi,
     private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
