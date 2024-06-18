@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+val gaidedOpenAiApiKey: String? by project
+
 android {
     namespace = "com.gaided"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
@@ -16,6 +18,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val apiKey: String = gaidedOpenAiApiKey ?: "\"api-key\""
+        buildConfigField("String", "OPEN_AI_API_KEY", apiKey)
     }
 
     buildTypes {

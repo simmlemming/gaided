@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gaided.BuildConfig
 import com.gaided.game.GameViewModel
 import com.gaided.ui.theme.GameTheme
 
@@ -33,7 +34,7 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
                 config = GameViewModel.Factory.Config(
                     remoteBoardUrl = "http://10.0.2.2:8080",
                     stockfishEngineUrl = "http://10.0.2.2:8081",
-                    openAiApiKey = "..."
+                    openAiApiKey = BuildConfig.OPEN_AI_API_KEY
                 )
             )
         )
