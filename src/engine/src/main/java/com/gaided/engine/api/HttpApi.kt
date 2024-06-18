@@ -23,6 +23,7 @@ public sealed class HttpApi protected constructor(
     private fun <T> call(request: Request<T>): T {
         request.validate()
         var connection: HttpURLConnection? = null
+        val startTime = System.currentTimeMillis()
 
         try {
             logger.d("> ${request.asString()}")
@@ -40,7 +41,9 @@ public sealed class HttpApi protected constructor(
             }
 
             val response = connection.inputStream.readAdString()
-            logger.d("< ${request.asString()}")
+            val duration = System.currentTimeMillis() - startTime
+
+            logger.d("< ${request.asString()} ($duration ms)")
             logger.v("< $response")
             return request.parse!!.invoke(response)
         } catch (e: Exception) {
