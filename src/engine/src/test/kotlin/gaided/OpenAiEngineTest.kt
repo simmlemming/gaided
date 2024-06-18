@@ -22,7 +22,8 @@ class OpenAiEngineTest {
         sut = OpenAiEngine(api = api)
     }
 
-    // TODO: O-O, Bb4+, Bxb8, Queen a4 to f4, Bishop takes d5, 1. e4, 1. d4, 1. Nf3, 1. ... Ng8f6, 1. ... Ng8h6, 1. ... Nb8c6
+    // TODO: O-O, Bb4+, Bxb8+, Bxb8, Queen a4 to f4, Bishop takes d5,
+    //  1. e4, 1. d4, 1. Nf3, 1. ... Ng8f6, 1. ... Ng8h6, 1. ... Nb8c6
 
     @Test
     fun `empty string`() = runTest {
@@ -155,11 +156,9 @@ class OpenAiEngineTest {
 
         assertEquals(
             expected,
-            sut.getTopMoves(position)
+            sut.getTopMoves(position, 3)
         )
     }
-
-    private suspend fun Engine.getTopMoves(position: FenNotation) = getTopMoves(position, 3)
 }
 
 private val FEN_POSITION_START = FenNotation.START_POSITION
