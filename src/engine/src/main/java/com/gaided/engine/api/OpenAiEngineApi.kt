@@ -5,17 +5,19 @@ import com.gaided.engine.Logger
 import com.google.gson.Gson
 import java.net.URL
 
-private const val OPEN_AI_API_KEY = "..."
 internal const val OPEN_AI_MODEL = "gpt-4o"
 
-public class OpenAiEngineApi(logger: Logger = DefaultLogger) : HttpApi(logger = logger) {
+public class OpenAiEngineApi(
+    private val apiKey: String,
+    logger: Logger = DefaultLogger
+) : HttpApi(logger = logger) {
 
     private val gson = Gson()
 
     public fun getTopMoves(position: String, numberOfMoves: Int): String {
         return post {
             url = URL("https://api.openai.com/v1/chat/completions")
-            headers["Authorization"] = "Bearer $OPEN_AI_API_KEY"
+            headers["Authorization"] = "Bearer $apiKey"
             headers["Content-Type"] = "application/json"
             parse = { gson.parseOpenAiResponse(it) }
             body = """
@@ -53,10 +55,10 @@ public data class OpenAiResponse(
     )
 }
 
-public fun main() {
-    val topMoves = OpenAiEngineApi().getTopMoves(
-        position = "rnbqkb1r/1pp1pppp/p4n2/3P4/3P4/2N5/PP2PPPP/R1BQKBNR b KQkq - 0 4",
-        numberOfMoves = 3
-    )
-    println(topMoves)
-}
+//public fun main() {
+//    val topMoves = OpenAiEngineApi().getTopMoves(
+//        position = "rnbqkb1r/1pp1pppp/p4n2/3P4/3P4/2N5/PP2PPPP/R1BQKBNR b KQkq - 0 4",
+//        numberOfMoves = 3
+//    )
+//    println(topMoves)
+//}

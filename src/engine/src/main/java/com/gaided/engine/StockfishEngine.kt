@@ -10,10 +10,20 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 public class StockfishEngine(
-    private val stockfishApi: StockfishEngineApi,
+    private val api: StockfishEngineApi,
+    private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
-    private val logger: Logger = DefaultLogger
 ) : Engine {
+
+    public constructor(
+        url: String,
+        logger: Logger = DefaultLogger,
+        ioContext: CoroutineContext = Dispatchers.IO,
+    ) : this(
+        api = StockfishEngineApi(url = url, logger = logger),
+        logger = logger,
+        ioContext = ioContext
+    )
 
     public companion object {
         public const val NAME: String = "Stockfish 15"
@@ -25,7 +35,7 @@ public class StockfishEngine(
 
     override suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> =
         withContext(ioContext) {
-            val moves = stockfishApi.getTopMoves(position.fenString, numberOfMoves)
+            val moves = api.getTopMoves(position.fenString, numberOfMoves)
 
             val type = object : TypeToken<List<StockfishApiTopMove>>() {}.type
             val topMoves = gson

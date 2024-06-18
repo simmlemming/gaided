@@ -41,8 +41,8 @@ internal abstract class GameViewModelTestCase {
 
     protected fun createViewModel() = GameViewModel(
         Game(
-            RemoteBoard(remoteBoardApi, testDispatcher),
-            listOf(StockfishEngine(stockfishEngineApi, testDispatcher))
+            RemoteBoard(api = remoteBoardApi, ioContext = testDispatcher),
+            listOf(StockfishEngine(api = stockfishEngineApi, ioContext = testDispatcher))
         )
     )
 

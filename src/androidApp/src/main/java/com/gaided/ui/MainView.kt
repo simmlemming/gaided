@@ -29,7 +29,13 @@ fun MainView(modifier: Modifier = Modifier) = GameTheme {
     Surface {
         val viewModel: GameViewModel = viewModel(
             GameViewModel::class,
-            factory = GameViewModel.Factory()
+            factory = GameViewModel.Factory(
+                config = GameViewModel.Factory.Config(
+                    remoteBoardUrl = "http://10.0.2.2:8080",
+                    stockfishEngineUrl = "http://10.0.2.2:8081",
+                    openAiApiKey = "..."
+                )
+            )
         )
 
         val boardViewState by viewModel.board.collectAsState()

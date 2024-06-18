@@ -12,9 +12,6 @@ import com.gaided.engine.PieceNotation
 import com.gaided.engine.RemoteBoard
 import com.gaided.engine.SquareNotation
 import com.gaided.engine.StockfishEngine
-import com.gaided.engine.api.OpenAiEngineApi
-import com.gaided.engine.api.RemoteBoardApi
-import com.gaided.engine.api.StockfishEngineApi
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.EvaluationViewState
 import com.gaided.game.ui.model.PlayerViewState
@@ -197,20 +194,21 @@ class GameViewModel(private val game: Game) : ViewModel() {
     private fun Set<Game.HalfMove>.toOneBeforeLastPosition(): FenNotation =
         oneBeforeLastHalfMoveOrNull()?.positionAfterMove ?: FenNotation.START_POSITION
 
-    class Factory : ViewModelProvider.Factory {
+    class Factory(private val config: Config) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-            val remoteBoardApi = RemoteBoardApi(remoteBoardUrl, logger = Logger)
-            val remoteBoard = RemoteBoard(remoteBoardApi)
-
-            val stockfishEngineApi = StockfishEngineApi(stockfishEngineUrl, logger = Logger)
-            val stockfishEngine = StockfishEngine(stockfishEngineApi, logger = Logger)
-
-            val openAiEngineApi = OpenAiEngineApi(logger = Logger)
-            val openAiEngine = OpenAiEngine(openAiEngineApi, logger = Logger)
+            val remoteBoard = RemoteBoard(url = config.remoteBoardUrl, logger = Logger)
+            val stockfishEngine = StockfishEngine(url = config.stockfishEngineUrl, logger = Logger)
+            val openAiEngine = OpenAiEngine(apiKey = config.openAiApiKey, logger = Logger)
 
             val game = Game(remoteBoard, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T
         }
+
+        data class Config(
+            val remoteBoardUrl: String,
+            val stockfishEngineUrl: String,
+            val openAiApiKey: String
+        )
     }
 }
 

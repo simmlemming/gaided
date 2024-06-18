@@ -13,6 +13,15 @@ public class RemoteBoard(
     private val ioContext: CoroutineContext = Dispatchers.IO
 ) {
 
+    public constructor(
+        url: String,
+        logger: Logger = DefaultLogger,
+        ioContext: CoroutineContext = Dispatchers.IO
+    ) : this(
+        api = RemoteBoardApi(url = url, logger = logger),
+        ioContext = ioContext
+    )
+
     private val gson = Gson()
 
     public suspend fun getFenPosition(): String = withContext(ioContext) {

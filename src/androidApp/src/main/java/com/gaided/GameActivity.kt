@@ -13,7 +13,9 @@ import com.gaided.view.player.PlayerView
 
 internal class GameActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<GameViewModel>(factoryProducer = { GameViewModel.Factory() })
+    private val viewModel by viewModels<GameViewModel>(factoryProducer = { GameViewModel.Factory(
+        config = GameViewModel.Factory.Config("", "", "")
+    ) })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

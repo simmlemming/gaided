@@ -10,9 +10,19 @@ import kotlin.coroutines.CoroutineContext
 @Suppress("UNUSED_PARAMETER")
 public class OpenAiEngine(
     private val api: OpenAiEngineApi,
+    private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
-    private val logger: Logger = DefaultLogger
 ) : Engine {
+
+    public constructor(
+        apiKey: String,
+        logger: Logger = DefaultLogger,
+        ioContext: CoroutineContext = Dispatchers.IO,
+    ) : this(
+        api = OpenAiEngineApi(apiKey = apiKey, logger = logger),
+        logger = logger,
+        ioContext = ioContext
+    )
 
     public companion object {
         public const val NAME: String = "OpenAI $OPEN_AI_MODEL"

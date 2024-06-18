@@ -10,10 +10,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 public open class RemoteBoardApi(
-    baseUrl: String,
-    openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
+    url: String,
+    openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
     logger: Logger = DefaultLogger
-) : StockfishApi(baseUrl, openConnection, logger) {
+) : StockfishApi(url, openConnection, logger) {
 
     public suspend fun getFenPosition(): String = mutex.withLock {
         call("get_fen_position")

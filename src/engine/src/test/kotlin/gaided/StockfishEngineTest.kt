@@ -29,7 +29,7 @@ class StockfishEngineTest {
                 any()
             )
         } returns "[{'Move': 'f1g2', 'Centipawn': -580, 'Mate': None}, {'Move': 'f1g1', 'Centipawn': -736, 'Mate': None}, {'Move': 'f1e1', 'Centipawn': -949, 'Mate': None}]"
-        sut = StockfishEngine(api)
+        sut = StockfishEngine(api = api)
 
         assertEquals(
             listOf(

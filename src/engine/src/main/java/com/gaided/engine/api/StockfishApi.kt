@@ -8,12 +8,12 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 public sealed class StockfishApi protected constructor(
-    baseUrl: String,
-    openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
+    url: String,
+    openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
     logger: Logger = DefaultLogger
 ) : HttpApi(openConnection, logger) {
 
-    private val url: URL = URL("$baseUrl/call")
+    private val endpoint: URL = URL("$url/call")
     private var lastSetPosition: String? = null
     protected val mutex: Mutex = Mutex()
 
@@ -35,7 +35,7 @@ public sealed class StockfishApi protected constructor(
             """.trimIndent()
 
         return post {
-            url = this@StockfishApi.url
+            url = this@StockfishApi.endpoint
             headers["Content-Type"] = "application/json"
             body = requestBody
             parse = { it }
