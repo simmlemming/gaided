@@ -29,6 +29,7 @@ public class OpenAiEngine(
     }
 
     override val name: String = NAME
+    override val recommendedNumberOfMoves: Int = 1
 
     override suspend fun getTopMoves(
         position: FenNotation, numberOfMoves: Int

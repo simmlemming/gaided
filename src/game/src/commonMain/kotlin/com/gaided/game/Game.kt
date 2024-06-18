@@ -48,7 +48,7 @@ class Game(
 
             val allTopMoves = mutableListOf<Engine.TopMove>()
             engines.forEach { engine ->
-                val topMoves = engine.getTopMoves(position, 3)
+                val topMoves = engine.getTopMoves(position)
                 allTopMoves.addAll(topMoves)
                 emit(TopMovesProgress(moves = allTopMoves, inProgress = true))
             }

@@ -30,6 +30,7 @@ public class StockfishEngine(
     }
 
     override val name: String = NAME
+    override val recommendedNumberOfMoves: Int = 3
 
     private val gson = Gson()
 
