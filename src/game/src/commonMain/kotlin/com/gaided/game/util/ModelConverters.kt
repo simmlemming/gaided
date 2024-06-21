@@ -3,7 +3,7 @@ package com.gaided.game.util
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
-import com.gaided.engine.OpenAiEngine
+import com.gaided.engine.OPEN_AI_ENGINE_NAME
 import com.gaided.engine.PieceNotation
 import com.gaided.engine.SquareNotation
 import com.gaided.game.Game
@@ -104,7 +104,7 @@ internal fun Engine.TopMove.toArrow(color: Int) = Arrow(
     start = this.move.take(2),
     end = this.move.takeLast(2),
     color = color,
-    strong = (this.source != OpenAiEngine.NAME)
+    strong = (this.source != OPEN_AI_ENGINE_NAME)
 )
 
 internal fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotation?, pendingMove: MoveNotation?) =

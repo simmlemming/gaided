@@ -9,29 +9,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-public class StockfishEngine internal constructor(
+public fun createStockfishEngine(
+    url: String,
+    logger: Logger = DefaultLogger,
+    ioContext: CoroutineContext = Dispatchers.IO,
+): Engine = StockfishEngine(
+    api = StockfishEngineApi(url = url, logger = logger),
+    logger = logger,
+    ioContext = ioContext
+)
+
+public const val STOCKFISH_ENGINE_NAME: String = "Stockfish 15"
+
+internal class StockfishEngine internal constructor(
     private val api: StockfishEngineApi,
     private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
 ) : Engine {
 
-    public constructor(
-        url: String,
-        logger: Logger = DefaultLogger,
-        ioContext: CoroutineContext = Dispatchers.IO,
-    ) : this(
-        api = StockfishEngineApi(url = url, logger = logger),
-        logger = logger,
-        ioContext = ioContext
-    )
-
-    public companion object {
-        public const val NAME: String = "Stockfish 15"
-    }
-
-    override val name: String = NAME
+    override val name: String = STOCKFISH_ENGINE_NAME
     override val recommendedNumberOfMoves: Int = 3
-
     private val gson = Gson()
 
     override suspend fun getTopMoves(position: FenNotation, numberOfMoves: Int): List<TopMove> =

@@ -7,28 +7,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-@Suppress("UNUSED_PARAMETER")
-public class OpenAiEngine internal constructor(
+public fun createOpenAiEngine(
+    apiKey: String,
+    logger: Logger = DefaultLogger,
+    ioContext: CoroutineContext = Dispatchers.IO,
+): Engine = OpenAiEngine(
+    api = OpenAiEngineApi(apiKey = apiKey, logger = logger),
+    logger = logger,
+    ioContext = ioContext
+)
+
+public const val OPEN_AI_ENGINE_NAME: String = "OpenAI $OPEN_AI_MODEL"
+
+internal class OpenAiEngine internal constructor(
     private val api: OpenAiEngineApi,
     private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
 ) : Engine {
 
-    public constructor(
-        apiKey: String,
-        logger: Logger = DefaultLogger,
-        ioContext: CoroutineContext = Dispatchers.IO,
-    ) : this(
-        api = OpenAiEngineApi(apiKey = apiKey, logger = logger),
-        logger = logger,
-        ioContext = ioContext
-    )
-
-    public companion object {
-        public const val NAME: String = "OpenAI $OPEN_AI_MODEL"
-    }
-
-    override val name: String = NAME
+    override val name: String = OPEN_AI_ENGINE_NAME
     override val recommendedNumberOfMoves: Int = 1
 
     override suspend fun getTopMoves(
@@ -40,7 +37,7 @@ public class OpenAiEngine internal constructor(
         val topMoves = movesAsText
             .map { it.trim() }
             .mapNotNull { move ->
-                val result1 = matchers2.firstNotNullOfOrNull { (regex, matcher) ->
+                val result1 = matchers.firstNotNullOfOrNull { (regex, matcher) ->
                     val groups = regex.matchEntire(move)?.groupValues.orEmpty()
                     val topMove = matcher(position, move, groups)
                     topMove
@@ -54,7 +51,7 @@ public class OpenAiEngine internal constructor(
         topMoves
     }
 
-    private val matchers2: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
+    private val matchers: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
         "[A-Z]?([a-z][1-8])x([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "[A-Z]?([a-z][1-8])([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "[A-Z]?([a-z][1-8])-([a-z][1-8])\\+?".toRegex() to ::fullNotation,
@@ -65,6 +62,7 @@ public class OpenAiEngine internal constructor(
         "Rx([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
     )
 
+    @Suppress("UNUSED_PARAMETER")
     private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
@@ -127,7 +125,7 @@ public class OpenAiEngine internal constructor(
         )
     )
 
-    @Suppress("MoveLambdaOutsideParentheses")
+    @Suppress("MoveLambdaOutsideParentheses", "UNUSED_PARAMETER")
     private fun shortNotationPawnTakes(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null
@@ -154,6 +152,7 @@ public class OpenAiEngine internal constructor(
         return from?.let { TopMove(name, "$it$to") }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun shortNotationPawnMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
@@ -204,6 +203,7 @@ public class OpenAiEngine internal constructor(
         return entry?.first
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun fullNotation(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null

@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.gaided.engine.Board
 import com.gaided.engine.Engine
 import com.gaided.engine.FenNotation
 import com.gaided.engine.MoveNotation
-import com.gaided.engine.OpenAiEngine
 import com.gaided.engine.PieceNotation
-import com.gaided.engine.Board
 import com.gaided.engine.SquareNotation
-import com.gaided.engine.StockfishEngine
+import com.gaided.engine.createOpenAiEngine
+import com.gaided.engine.createStockfishEngine
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.EvaluationViewState
 import com.gaided.game.ui.model.PlayerViewState
@@ -197,8 +197,8 @@ class GameViewModel(private val game: Game) : ViewModel() {
     class Factory(private val config: Config) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             val board = Board(url = config.remoteBoardUrl, logger = Logger)
-            val stockfishEngine = StockfishEngine(url = config.stockfishEngineUrl, logger = Logger)
-            val openAiEngine = OpenAiEngine(apiKey = config.openAiApiKey, logger = Logger)
+            val stockfishEngine = createStockfishEngine(url = config.stockfishEngineUrl, logger = Logger)
+            val openAiEngine = createOpenAiEngine(apiKey = config.openAiApiKey, logger = Logger)
 
             val game = Game(board, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T
