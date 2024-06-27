@@ -1,9 +1,9 @@
 package gaided
 
 import com.gaided.engine.Engine.TopMove
-import com.gaided.engine.FenNotation
 import com.gaided.engine.OpenAiEngine
 import com.gaided.engine.api.OpenAiEngineApi
+import com.gaided.model.FenNotation
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

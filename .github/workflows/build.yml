@@ -18,11 +18,8 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Test engine
-        run: ./gradlew :engine:test
-
-      - name: Test game
-        run: ./gradlew :game:allTest
+      - name: Test all modules
+        run: ./gradlew test allTest
 
       - name: Build desktop app
         run: ./gradlew :desktopApp:build

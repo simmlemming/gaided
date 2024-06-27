@@ -3,6 +3,10 @@ package com.gaided.engine
 import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.api.OPEN_AI_MODEL
 import com.gaided.engine.api.OpenAiEngineApi
+import com.gaided.model.FenNotation
+import com.gaided.model.MoveNotation
+import com.gaided.model.PieceNotation
+import com.gaided.model.SquareNotation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext

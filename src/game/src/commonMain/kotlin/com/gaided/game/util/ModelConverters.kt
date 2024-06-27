@@ -1,17 +1,17 @@
 package com.gaided.game.util
 
 import com.gaided.engine.Engine
-import com.gaided.engine.FenNotation
-import com.gaided.engine.MoveNotation
 import com.gaided.engine.OPEN_AI_ENGINE_NAME
-import com.gaided.engine.PieceNotation
-import com.gaided.engine.SquareNotation
 import com.gaided.game.Game
 import com.gaided.game.getLastMove
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.game.ui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.model.FenNotation
+import com.gaided.model.MoveNotation
+import com.gaided.model.PieceNotation
+import com.gaided.model.SquareNotation
 
 @Suppress("kotlin:S1135")
 internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {

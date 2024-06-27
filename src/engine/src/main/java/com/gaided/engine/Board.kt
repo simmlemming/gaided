@@ -3,6 +3,8 @@
 package com.gaided.engine
 
 import com.gaided.engine.api.RemoteBoardApi
+import com.gaided.model.FenNotation
+import com.gaided.model.MoveNotation
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

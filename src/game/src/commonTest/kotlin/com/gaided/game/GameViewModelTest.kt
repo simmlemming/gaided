@@ -1,11 +1,11 @@
 package com.gaided.game
 
 import com.gaided.engine.Engine
-import com.gaided.engine.SquareNotation
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.game.ui.model.EvaluationViewState
 import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.model.SquareNotation
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll

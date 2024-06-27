@@ -1,10 +1,10 @@
 package com.gaided.game
 
 import com.gaided.engine.Engine
-import com.gaided.engine.FenNotation
-import com.gaided.engine.MoveNotation
 import com.gaided.engine.Board
 import com.gaided.game.util.toNextMovePlayer
+import com.gaided.model.FenNotation
+import com.gaided.model.MoveNotation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

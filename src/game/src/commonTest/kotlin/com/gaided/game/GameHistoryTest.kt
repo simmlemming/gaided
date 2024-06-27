@@ -1,14 +1,15 @@
 package com.gaided.game
 
 import com.gaided.engine.Engine
-import com.gaided.engine.FenNotation
 import com.gaided.engine.Board
+import com.gaided.model.FenNotation
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

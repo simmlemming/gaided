@@ -1,8 +1,8 @@
 package com.gaided.game.ui.model
 
 import androidx.compose.runtime.Immutable
-import com.gaided.engine.SquareNotation
 import com.gaided.game.util.Color
+import com.gaided.model.SquareNotation
 
 @Immutable
 data class ChessBoardViewState(

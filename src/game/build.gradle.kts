@@ -18,6 +18,7 @@ kotlin {
         val desktopMain by getting
 
         commonMain.dependencies {
+            api(project(":data-model"))
             api(project(":engine"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodel)

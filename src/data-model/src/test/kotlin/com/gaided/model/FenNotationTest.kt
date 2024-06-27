@@ -1,8 +1,7 @@
 @file:Suppress("SpellCheckingInspection")
 
-package gaided
+package com.gaided.model
 
-import com.gaided.engine.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,8 +1,8 @@
 package com.gaided.game
 
 import com.gaided.engine.Engine
-import com.gaided.engine.FenNotation
 import com.gaided.game.ui.model.ChessBoardViewState.Arrow
+import com.gaided.model.FenNotation
 import io.mockk.coEvery
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

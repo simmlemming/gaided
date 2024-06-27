@@ -1,9 +1,9 @@
 package com.gaided.game.util
 
 import com.gaided.engine.Engine
-import com.gaided.engine.FenNotation
 import com.gaided.game.Game
 import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.model.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

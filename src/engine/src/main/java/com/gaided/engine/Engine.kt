@@ -1,5 +1,7 @@
 package com.gaided.engine
 
+import com.gaided.model.FenNotation
+
 public interface Engine {
     public val name: String
     public val recommendedNumberOfMoves: Int

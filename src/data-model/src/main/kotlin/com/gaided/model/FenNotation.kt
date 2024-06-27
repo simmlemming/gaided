@@ -1,4 +1,4 @@
-package com.gaided.engine
+package com.gaided.model
 
 public data class FenNotation private constructor(
     public val fenString: String,

@@ -2,9 +2,9 @@ package gaided
 
 import com.gaided.engine.Engine
 import com.gaided.engine.Engine.TopMove
-import com.gaided.engine.FenNotation
 import com.gaided.engine.StockfishEngine
 import com.gaided.engine.api.StockfishEngineApi
+import com.gaided.model.FenNotation
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

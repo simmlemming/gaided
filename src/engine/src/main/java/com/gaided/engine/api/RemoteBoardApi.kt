@@ -4,7 +4,7 @@ package com.gaided.engine.api
 
 import com.gaided.engine.DefaultLogger
 import com.gaided.engine.Logger
-import com.gaided.engine.MoveNotation
+import com.gaided.model.MoveNotation
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
 import java.net.URL
