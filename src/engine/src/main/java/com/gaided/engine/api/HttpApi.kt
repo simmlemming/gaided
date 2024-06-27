@@ -1,7 +1,6 @@
 package com.gaided.engine.api
 
-import com.gaided.engine.DefaultLogger
-import com.gaided.engine.Logger
+import com.gaided.logger.Logger
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
@@ -12,7 +11,6 @@ import java.net.URL
 
 internal open class HttpApi(
     protected val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
-    protected val logger: Logger = DefaultLogger
 ) {
 
     internal fun <T> post(request: PostRequest<T>.() -> Unit): T {
@@ -26,7 +24,7 @@ internal open class HttpApi(
         val startTime = System.currentTimeMillis()
 
         try {
-            logger.d("> ${request.asString()}")
+            Logger.d("> ${request.asString()}")
 
             connection = openConnection(request.url!!).apply {
                 doOutput = request is PostRequest
@@ -34,7 +32,7 @@ internal open class HttpApi(
             }
 
             if (request is PostRequest) {
-                logger.v("> ${request.body}")
+                Logger.v("> ${request.body}")
                 DataOutputStream(connection.outputStream).use {
                     it.writeBytes(request.body!!)
                 }
@@ -43,8 +41,8 @@ internal open class HttpApi(
             val response = connection.inputStream.readAdString()
             val duration = System.currentTimeMillis() - startTime
 
-            logger.d("< ${request.asString()} ($duration ms)")
-            logger.v("< $response")
+            Logger.d("< ${request.asString()} ($duration ms)")
+            Logger.v("< $response")
             return request.parse!!.invoke(response)
         } catch (e: Exception) {
             val errorMessage = connection?.errorStream?.readAdString()

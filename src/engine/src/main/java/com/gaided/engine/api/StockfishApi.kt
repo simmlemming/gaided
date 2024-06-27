@@ -1,7 +1,5 @@
 package com.gaided.engine.api
 
-import com.gaided.engine.DefaultLogger
-import com.gaided.engine.Logger
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
@@ -10,8 +8,7 @@ import java.net.URL
 internal open class StockfishApi protected constructor(
     url: String,
     openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
-    logger: Logger = DefaultLogger
-) : HttpApi(openConnection, logger) {
+) : HttpApi(openConnection) {
 
     private val endpoint: URL = URL("$url/call")
     private var lastSetPosition: String? = null

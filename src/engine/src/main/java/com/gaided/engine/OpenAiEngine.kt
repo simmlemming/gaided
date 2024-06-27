@@ -3,6 +3,7 @@ package com.gaided.engine
 import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.api.OPEN_AI_MODEL
 import com.gaided.engine.api.OpenAiEngineApi
+import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
@@ -13,11 +14,9 @@ import kotlin.coroutines.CoroutineContext
 
 public fun createOpenAiEngine(
     apiKey: String,
-    logger: Logger = DefaultLogger,
     ioContext: CoroutineContext = Dispatchers.IO,
 ): Engine = OpenAiEngine(
-    api = OpenAiEngineApi(apiKey = apiKey, logger = logger),
-    logger = logger,
+    api = OpenAiEngineApi(apiKey = apiKey),
     ioContext = ioContext
 )
 
@@ -25,7 +24,6 @@ public const val OPEN_AI_ENGINE_NAME: String = "OpenAI $OPEN_AI_MODEL"
 
 internal class OpenAiEngine internal constructor(
     private val api: OpenAiEngineApi,
-    private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
 ) : Engine {
 
@@ -50,7 +48,7 @@ internal class OpenAiEngine internal constructor(
             }
 
         val parsedMoves = topMoves.map { it.move }
-        logger.i("$name: '$response' -> $parsedMoves")
+        Logger.i("$name: '$response' -> $parsedMoves")
 
         topMoves
     }

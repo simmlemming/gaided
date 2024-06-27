@@ -20,6 +20,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":data-model"))
             api(project(":engine"))
+            api(project(":logger"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.compose.runtime)

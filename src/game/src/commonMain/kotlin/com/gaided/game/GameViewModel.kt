@@ -17,6 +17,7 @@ import com.gaided.game.util.toNextMovePlayer
 import com.gaided.game.util.toPiece
 import com.gaided.game.util.toPlayerState
 import com.gaided.game.util.toTopMoveArrows
+import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
@@ -43,7 +44,7 @@ import kotlin.reflect.KClass
 
 class GameViewModel(private val game: Game) : ViewModel() {
     private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
-        loge("", e)
+        Logger.e("", e)
         _userMessage.value = e.message ?: "Error"
     }
 
@@ -196,9 +197,9 @@ class GameViewModel(private val game: Game) : ViewModel() {
 
     class Factory(private val config: Config) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-            val board = Board(url = config.remoteBoardUrl, logger = Logger)
-            val stockfishEngine = createStockfishEngine(url = config.stockfishEngineUrl, logger = Logger)
-            val openAiEngine = createOpenAiEngine(apiKey = config.openAiApiKey, logger = Logger)
+            val board = Board(url = config.remoteBoardUrl)
+            val stockfishEngine = createStockfishEngine(url = config.stockfishEngineUrl)
+            val openAiEngine = createOpenAiEngine(apiKey = config.openAiApiKey)
 
             val game = Game(board, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T

@@ -2,6 +2,7 @@ package com.gaided.engine
 
 import com.gaided.engine.Engine.TopMove
 import com.gaided.engine.api.StockfishEngineApi
+import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -12,11 +13,9 @@ import kotlin.coroutines.CoroutineContext
 
 public fun createStockfishEngine(
     url: String,
-    logger: Logger = DefaultLogger,
     ioContext: CoroutineContext = Dispatchers.IO,
 ): Engine = StockfishEngine(
-    api = StockfishEngineApi(url = url, logger = logger),
-    logger = logger,
+    api = StockfishEngineApi(url = url),
     ioContext = ioContext
 )
 
@@ -24,7 +23,6 @@ public const val STOCKFISH_ENGINE_NAME: String = "Stockfish 15"
 
 internal class StockfishEngine internal constructor(
     private val api: StockfishEngineApi,
-    private val logger: Logger = DefaultLogger,
     private val ioContext: CoroutineContext = Dispatchers.IO,
 ) : Engine {
 
@@ -41,7 +39,7 @@ internal class StockfishEngine internal constructor(
                 .fromJson<List<StockfishApiTopMove>>(moves, type)
                 .map { TopMove(name, it.move, it.centipawn) }
 
-            logger.i("$name: ${topMoves.map { it.move }}")
+            Logger.i("$name: ${topMoves.map { it.move }}")
 
             topMoves
         }

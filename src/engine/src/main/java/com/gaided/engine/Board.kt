@@ -17,10 +17,9 @@ public class Board internal constructor(
 
     public constructor(
         url: String,
-        logger: Logger = DefaultLogger,
         ioContext: CoroutineContext = Dispatchers.IO
     ) : this(
-        api = RemoteBoardApi(url = url, logger = logger),
+        api = RemoteBoardApi(url = url),
         ioContext = ioContext
     )
 

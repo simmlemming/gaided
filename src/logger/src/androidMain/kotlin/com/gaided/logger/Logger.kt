@@ -1,4 +1,4 @@
-package com.gaided.game
+package com.gaided.logger
 
 import android.util.Log
 

@@ -1,7 +1,5 @@
 package com.gaided.engine.api
 
-import com.gaided.engine.DefaultLogger
-import com.gaided.engine.Logger
 import com.google.gson.Gson
 import java.net.URL
 
@@ -9,8 +7,7 @@ internal const val OPEN_AI_MODEL = "gpt-4o"
 
 internal class OpenAiEngineApi(
     private val apiKey: String,
-    logger: Logger = DefaultLogger
-) : HttpApi(logger = logger) {
+) : HttpApi() {
 
     private val gson = Gson()
 

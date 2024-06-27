@@ -1,4 +1,4 @@
-package com.gaided.game
+package com.gaided.logger
 
 actual fun logv(message: String) {
     log("VERBOSE", message, null)
