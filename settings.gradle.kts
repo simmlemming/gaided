@@ -17,9 +17,14 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Gaided"
-include(":engine", ":game", ":androidApp", ":desktopApp")
 
-// All projects are in src folder.
+// Include all directories in src.
+File("src")
+    .listFiles { file -> file.isDirectory }
+    .orEmpty()
+    .forEach { include(it.name) }
+
+// Change root project dir for all children.
 rootProject.children.forEach {
     it.projectDir = File("src/${it.name}")
 }
