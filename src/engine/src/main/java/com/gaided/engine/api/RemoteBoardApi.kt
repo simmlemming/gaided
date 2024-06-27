@@ -3,6 +3,7 @@
 package com.gaided.engine.api
 
 import com.gaided.model.MoveNotation
+import com.gaided.network.StockfishApi
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
 import java.net.URL

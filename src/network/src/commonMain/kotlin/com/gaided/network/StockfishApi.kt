@@ -1,11 +1,11 @@
-package com.gaided.engine.api
+package com.gaided.network
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
 import java.net.URL
 
-internal open class StockfishApi protected constructor(
+public open class StockfishApi protected constructor(
     url: String,
     openConnection: ((URL) -> HttpURLConnection) = { it.openConnection() as HttpURLConnection },
 ) : HttpApi(openConnection) {

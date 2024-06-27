@@ -1,5 +1,6 @@
 package com.gaided.engine.api
 
+import com.gaided.network.StockfishApi
 import java.net.HttpURLConnection
 import java.net.URL
 

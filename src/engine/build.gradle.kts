@@ -22,7 +22,8 @@ kotlin {
 
 dependencies {
     api(project(":data-model"))
-    api(project(":logger"))
+    implementation(project(":logger"))
+    implementation(project(":network"))
     implementation(libs.coroutines.core)
     implementation(libs.gson)
 

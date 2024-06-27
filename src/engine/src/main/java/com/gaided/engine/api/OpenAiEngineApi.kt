@@ -1,5 +1,6 @@
 package com.gaided.engine.api
 
+import com.gaided.network.HttpApi
 import com.google.gson.Gson
 import java.net.URL
 

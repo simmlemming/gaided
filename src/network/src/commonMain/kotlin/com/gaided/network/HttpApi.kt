@@ -1,4 +1,4 @@
-package com.gaided.engine.api
+package com.gaided.network
 
 import com.gaided.logger.Logger
 import java.io.BufferedReader
@@ -9,11 +9,11 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-internal open class HttpApi(
+public open class HttpApi(
     protected val openConnection: ((URL) -> HttpURLConnection) = { url -> url.openConnection() as HttpURLConnection },
 ) {
 
-    internal fun <T> post(request: PostRequest<T>.() -> Unit): T {
+    public fun <T> post(request: PostRequest<T>.() -> Unit): T {
         val postRequest = PostRequest<T>().apply(request)
         return call(postRequest)
     }
@@ -52,11 +52,11 @@ internal open class HttpApi(
         }
     }
 
-    internal sealed class Request<T> {
-        internal var url: URL? = null
-        internal val headers = mutableMapOf<String, String>()
-        internal var parse: ((String) -> T)? = null
-        internal var asString: () -> String = { this@Request.toString() }
+    public sealed class Request<T> {
+        public var url: URL? = null
+        public val headers: MutableMap<String, String> = mutableMapOf()
+        public var parse: ((String) -> T)? = null
+        public var asString: () -> String = { this@Request.toString() }
 
         internal open fun validate() {
             checkNotNull(url) { "url is null" }
@@ -64,8 +64,8 @@ internal open class HttpApi(
         }
     }
 
-    internal class PostRequest<T> : Request<T>() {
-        internal var body: String? = null
+    public class PostRequest<T> : Request<T>() {
+        public var body: String? = null
             set(value) {
                 field = value
                 headers["Content-Length"] = (value?.length ?: 0).toString()
