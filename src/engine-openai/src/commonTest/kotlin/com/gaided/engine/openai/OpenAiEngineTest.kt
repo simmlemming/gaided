@@ -19,7 +19,7 @@ class OpenAiEngineTest {
         sut = OpenAiEngine(api = api)
     }
 
-    // TODO: O-O, Bb4+, Bxb8+, Bxb8, Queen a4 to f4, Bishop takes d5,
+    // TODO: O-O, Queen a4 to f4, Bishop takes d5,
     //  1. e4, 1. d4, 1. Nf3, 1. ... Ng8f6, 1. ... Ng8h6, 1. ... Nb8c6
 
     @Test
@@ -28,11 +28,56 @@ class OpenAiEngineTest {
     }
 
     @Test
+    fun `short notation black bishop takes`() = runTest {
+        testEngine(
+            FEN_POSITION_AFTER_1ST_MOVE_G1F3,
+            "Bxh6, Bxb7+",
+            listOf(Engine.TopMove(sut.name, "f8h6"), Engine.TopMove(sut.name, "c8b7"))
+        )
+    }
+
+    @Test
+    fun `short notation black bishop moves`() = runTest {
+        testEngine(
+            FEN_POSITION_AFTER_1ST_MOVE_G1F3,
+            "Bh6, Bb7+",
+            listOf(Engine.TopMove(sut.name, "f8h6"), Engine.TopMove(sut.name, "c8b7"))
+        )
+    }
+
+    @Test
+    fun `short notation white bishop takes`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "Bxa3, Bxg5+",
+            listOf(Engine.TopMove(sut.name, "c1a3"), Engine.TopMove(sut.name, "c1g5"))
+        )
+    }
+
+    @Test
+    fun `short notation white bishop moves`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "Ba3+, Bg5",
+            listOf(Engine.TopMove(sut.name, "c1a3"), Engine.TopMove(sut.name, "c1g5"))
+        )
+    }
+
+    @Test
+    fun `1 e4`() = runTest {
+        testEngine(
+            FEN_POSITION_START,
+            "1. e4, 3. d4+",
+            listOf(Engine.TopMove(sut.name, "e2e4"), Engine.TopMove(sut.name, "d2d4"))
+        )
+    }
+
+    @Test
     fun `short notation white rook takes`() = runTest {
         testEngine(
             FEN_POSITION_START,
-            "Rxa5",
-            listOf(Engine.TopMove(sut.name, "a1a5"))
+            "Rxa5, Rxa6+",
+            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1a6"))
         )
     }
 

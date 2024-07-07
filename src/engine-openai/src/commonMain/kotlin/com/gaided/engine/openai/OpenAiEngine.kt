@@ -53,15 +53,29 @@ internal class OpenAiEngine internal constructor(
     }
 
     private val matchers: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
+        "\\d\\. ([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnMoves,
         "[A-Z]?([a-z][1-8])x([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "[A-Z]?([a-z][1-8])([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "[A-Z]?([a-z][1-8])-([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "([a-z][1-8]) to ([a-z][1-8])".toRegex() to ::fullNotation,
         "([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnMoves,
         "([a-z])x([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnTakes,
-        "R([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
-        "Rx([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
+        "Rx?([a-z][1-8])\\+?".toRegex() to ::shortNotationRookMoves,
+        "Bx?([a-z][1-8])\\+?".toRegex() to ::shortNotationBishopMoves,
     )
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun shortNotationBishopMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+        if (groups.size != 2) {
+            return null
+        }
+
+        val to = groups[1]
+        val expectedPiece = if (position.nextMoveColor == "w") 'B' else 'b'
+
+        val from = findOnDiagonal(position, to, expectedPiece)
+        return from?.let { TopMove(name, "$it$to") }
+    }
 
     @Suppress("UNUSED_PARAMETER")
     private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
@@ -75,6 +89,44 @@ internal class OpenAiEngine internal constructor(
         val from = (findInRow(position, to, expectedPiece) ?: findInFile(position, to, expectedPiece))
         return from?.let { TopMove(name, "$it$to") }
     }
+
+    private fun findOnDiagonal(
+        position: FenNotation,
+        to: String,
+        expectedPiece: Char
+    ) = findFromSquare(
+        position, to, expectedPiece,
+        listOf(
+            { file, row -> "${file - 1}${row - 1}" },
+            { file, row -> "${file - 2}${row - 2}" },
+            { file, row -> "${file - 3}${row - 3}" },
+            { file, row -> "${file - 4}${row - 4}" },
+            { file, row -> "${file - 5}${row - 5}" },
+            { file, row -> "${file - 6}${row - 6}" },
+            { file, row -> "${file - 7}${row - 7}" },
+            { file, row -> "${file + 1}${row + 1}" },
+            { file, row -> "${file + 2}${row + 2}" },
+            { file, row -> "${file + 3}${row + 3}" },
+            { file, row -> "${file + 4}${row + 4}" },
+            { file, row -> "${file + 5}${row + 5}" },
+            { file, row -> "${file + 6}${row + 6}" },
+            { file, row -> "${file + 7}${row + 7}" },
+            { file, row -> "${file + 1}${row - 1}" },
+            { file, row -> "${file + 2}${row - 2}" },
+            { file, row -> "${file + 3}${row - 3}" },
+            { file, row -> "${file + 4}${row - 4}" },
+            { file, row -> "${file + 5}${row - 5}" },
+            { file, row -> "${file + 6}${row - 6}" },
+            { file, row -> "${file + 7}${row - 7}" },
+            { file, row -> "${file - 1}${row + 1}" },
+            { file, row -> "${file - 2}${row + 2}" },
+            { file, row -> "${file - 3}${row + 3}" },
+            { file, row -> "${file - 4}${row + 4}" },
+            { file, row -> "${file - 5}${row + 5}" },
+            { file, row -> "${file - 6}${row + 6}" },
+            { file, row -> "${file - 7}${row + 7}" },
+        )
+    )
 
     private fun findInRow(
         position: FenNotation,
