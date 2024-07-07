@@ -22,12 +22,4 @@ kotlin {
 
 dependencies {
     api(project(":data-model"))
-    implementation(project(":logger"))
-    implementation(project(":network"))
-    implementation(libs.coroutines.core)
-    implementation(libs.gson)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.coroutines.test)
 }

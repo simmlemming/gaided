@@ -1,7 +1,7 @@
 package com.gaided.game.util
 
 import com.gaided.engine.Engine
-import com.gaided.engine.OPEN_AI_ENGINE_NAME
+import com.gaided.engine.openai.OPEN_AI_ENGINE_NAME
 import com.gaided.game.Game
 import com.gaided.game.getLastMove
 import com.gaided.game.ui.model.ChessBoardViewState

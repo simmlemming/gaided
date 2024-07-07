@@ -1,8 +1,7 @@
-package com.gaided.engine
+package com.gaided.engine.openai
 
+import com.gaided.engine.Engine
 import com.gaided.engine.Engine.TopMove
-import com.gaided.engine.api.OPEN_AI_MODEL
-import com.gaided.engine.api.OpenAiEngineApi
 import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation

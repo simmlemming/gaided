@@ -1,10 +1,13 @@
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
 }
 
 kotlin {
-    jvm("desktop")
+    jvm()
+    explicitApi = ExplicitApiMode.Strict
 
     androidTarget {
         compilations.all {
@@ -15,32 +18,25 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
-
         commonMain.dependencies {
-            api(project(":board-stockfish"))
-            api(project(":data-model"))
-            api(project(":engine"))
-            api(project(":engine-openai"))
-            api(project(":engine-stockfish"))
-            api(project(":logger"))
+            implementation(project(":data-model"))
+            implementation(project(":engine"))
+            implementation(project(":logger"))
+            implementation(project(":network"))
             implementation(libs.coroutines.core)
-            implementation(libs.lifecycle.viewmodel)
-            implementation(libs.compose.runtime)
+            implementation(libs.gson)
         }
 
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.junit)
             implementation(libs.coroutines.test)
+            implementation(libs.junit)
             implementation(libs.mockk)
-            implementation(libs.turbine)
         }
     }
 }
 
 android {
-    namespace = "com.gaided.engine"
+    namespace = "com.gaided.engine.openai"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.min.sdk.get().toInt()

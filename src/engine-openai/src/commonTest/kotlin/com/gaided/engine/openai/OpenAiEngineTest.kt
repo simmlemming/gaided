@@ -1,13 +1,11 @@
-package gaided
+package com.gaided.engine.openai
 
-import com.gaided.engine.Engine.TopMove
-import com.gaided.engine.OpenAiEngine
-import com.gaided.engine.api.OpenAiEngineApi
+import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -34,7 +32,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Rxa5",
-            listOf(TopMove(sut.name, "a1a5"))
+            listOf(Engine.TopMove(sut.name, "a1a5"))
         )
     }
 
@@ -43,7 +41,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Rxa5",
-            listOf(TopMove(sut.name, "a8a5"))
+            listOf(Engine.TopMove(sut.name, "a8a5"))
         )
     }
 
@@ -52,7 +50,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Ra5, Rg8",
-            listOf(TopMove(sut.name, "a8a5"), TopMove(sut.name, "a8g8"))
+            listOf(Engine.TopMove(sut.name, "a8a5"), Engine.TopMove(sut.name, "a8g8"))
         )
     }
 
@@ -61,7 +59,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Ra5, Rg1",
-            listOf(TopMove(sut.name, "a1a5"), TopMove(sut.name, "a1g1"))
+            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1g1"))
         )
     }
 
@@ -70,7 +68,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Ra5+, Rg1+",
-            listOf(TopMove(sut.name, "a1a5"), TopMove(sut.name, "a1g1"))
+            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1g1"))
         )
     }
 
@@ -79,7 +77,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "cxb3",
-            listOf(TopMove(sut.name, "c2b3"))
+            listOf(Engine.TopMove(sut.name, "c2b3"))
         )
     }
 
@@ -88,7 +86,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "dxe6",
-            listOf(TopMove(sut.name, "d7e6"))
+            listOf(Engine.TopMove(sut.name, "d7e6"))
         )
     }
 
@@ -97,7 +95,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a3, b4",
-            listOf(TopMove(sut.name, "a2a3"), TopMove(sut.name, "b2b4"))
+            listOf(Engine.TopMove(sut.name, "a2a3"), Engine.TopMove(sut.name, "b2b4"))
         )
     }
 
@@ -106,7 +104,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "a6, c5",
-            listOf(TopMove(sut.name, "a7a6"), TopMove(sut.name, "c7c5"))
+            listOf(Engine.TopMove(sut.name, "a7a6"), Engine.TopMove(sut.name, "c7c5"))
         )
     }
 
@@ -115,7 +113,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2a4, g1f3, b7xb6",
-            listOf(TopMove(sut.name, "a2a4"), TopMove(sut.name, "g1f3"), TopMove(sut.name, "b7b6"))
+            listOf(Engine.TopMove(sut.name, "a2a4"), Engine.TopMove(sut.name, "g1f3"), Engine.TopMove(sut.name, "b7b6"))
         )
     }
 
@@ -124,7 +122,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2-a4, Qd1-d2",
-            listOf(TopMove(sut.name, "a2a4"), TopMove(sut.name, "d1d2"))
+            listOf(Engine.TopMove(sut.name, "a2a4"), Engine.TopMove(sut.name, "d1d2"))
         )
     }
 
@@ -133,7 +131,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2 to a4",
-            listOf(TopMove(sut.name, "a2a4"))
+            listOf(Engine.TopMove(sut.name, "a2a4"))
         )
     }
 
@@ -149,11 +147,11 @@ class OpenAiEngineTest {
     private suspend fun testEngine(
         position: FenNotation,
         apiResponse: String,
-        expected: List<TopMove>
+        expected: List<Engine.TopMove>
     ) {
         every { api.getTopMoves(any(), any()) } returns apiResponse
 
-        assertEquals(
+        Assert.assertEquals(
             expected,
             sut.getTopMoves(position, 3)
         )

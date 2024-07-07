@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.gaided.board.stockfish.Board
 import com.gaided.engine.Engine
-import com.gaided.engine.createOpenAiEngine
+import com.gaided.engine.openai.createOpenAiEngine
 import com.gaided.engine.stockfish.createStockfishEngine
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.EvaluationViewState
@@ -21,7 +22,6 @@ import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
-import com.gaided.board.stockfish.Board
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.gaided.engine.api
+package com.gaided.engine.openai
 
 import com.gaided.network.HttpApi
 import com.google.gson.Gson
