@@ -1,6 +1,6 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package com.gaided.stockfish.board
+package com.gaided.board.stockfish
 
 import com.gaided.model.MoveNotation
 import com.gaided.network.StockfishApi

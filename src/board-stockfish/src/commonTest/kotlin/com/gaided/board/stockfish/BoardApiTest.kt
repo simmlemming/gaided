@@ -1,11 +1,11 @@
-package com.gaided.stockfish.board
+package com.gaided.board.stockfish
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.io.ByteArrayInputStream
@@ -31,7 +31,7 @@ internal class BoardApiTest {
         )
 
         for (case in cases) {
-            assertEquals(case.value, api.formatArgs(case.key))
+            Assert.assertEquals(case.value, api.formatArgs(case.key))
         }
     }
 
@@ -131,7 +131,7 @@ internal class BoardApiTest {
     private fun assertRequestBody(connection: HttpURLConnection, expected: String) {
         val requestBodyStream = connection.outputStream as ByteArrayOutputStream
         val actual = String(requestBodyStream.toByteArray())
-        assertEquals(expected, actual)
+        Assert.assertEquals(expected, actual)
     }
 }
 

@@ -34,7 +34,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.gaided.stockfish.board"
+    namespace = "com.gaided.board.stockfish"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.min.sdk.get().toInt()

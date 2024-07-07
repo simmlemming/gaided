@@ -5,7 +5,7 @@ package com.gaided.game
 import com.gaided.engine.Engine
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.model.FenNotation
-import com.gaided.stockfish.board.Board
+import com.gaided.board.stockfish.Board
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

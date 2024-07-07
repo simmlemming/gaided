@@ -21,7 +21,7 @@ kotlin {
             api(project(":data-model"))
             api(project(":engine"))
             api(project(":logger"))
-            api(project(":stockfish-board"))
+            api(project(":board-stockfish"))
             api(project(":engine-stockfish"))
             implementation(libs.coroutines.core)
             implementation(libs.lifecycle.viewmodel)

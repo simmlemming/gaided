@@ -4,7 +4,7 @@ import com.gaided.engine.Engine
 import com.gaided.game.util.toNextMovePlayer
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
-import com.gaided.stockfish.board.Board
+import com.gaided.board.stockfish.Board
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

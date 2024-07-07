@@ -3,7 +3,7 @@ package com.gaided.game
 import com.gaided.engine.Engine
 import com.gaided.game.Game.Player
 import com.gaided.model.FenNotation
-import com.gaided.stockfish.board.Board
+import com.gaided.board.stockfish.Board
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -21,7 +21,7 @@ import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
-import com.gaided.stockfish.board.Board
+import com.gaided.board.stockfish.Board
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
