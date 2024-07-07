@@ -1,4 +1,4 @@
-package com.gaided.engine.api
+package com.gaided.engine.stockfish
 
 import com.gaided.network.StockfishApi
 import java.net.HttpURLConnection

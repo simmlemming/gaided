@@ -5,6 +5,7 @@
       <module name="Gaided.app" target="17" />
       <module name="Gaided.src.androidApp" target="17" />
       <module name="Gaided.src.game" target="17" />
+      <module name="Gaided.stockfish-engine" target="17" />
       <module name="src.Gaided.androidApp" target="17" />
       <module name="src.Gaided.game" target="17" />
     </bytecodeTargetLevel>

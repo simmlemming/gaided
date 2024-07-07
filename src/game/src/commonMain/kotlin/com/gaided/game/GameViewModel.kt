@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.engine.Engine
 import com.gaided.engine.createOpenAiEngine
-import com.gaided.engine.createStockfishEngine
+import com.gaided.engine.stockfish.createStockfishEngine
 import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.game.ui.model.EvaluationViewState
 import com.gaided.game.ui.model.PlayerViewState
