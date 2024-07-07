@@ -19,8 +19,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(project(":engine"))
             implementation(project(":data-model"))
-            implementation(project(":engine"))
             implementation(project(":logger"))
             implementation(project(":network"))
             implementation(libs.coroutines.core)

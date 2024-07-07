@@ -45,9 +45,6 @@ android {
 
 dependencies {
     implementation(project(":game"))
-    implementation(project(":logger"))
-    implementation(libs.fragment.ktx)
-    implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity.compose)
     implementation(libs.compose.foundation)

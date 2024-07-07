@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
+    jvm()
 
     androidTarget {
         compilations.all {
@@ -15,12 +15,9 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
-
         commonMain.dependencies {
             api(project(":board-stockfish"))
             api(project(":data-model"))
-            api(project(":engine"))
             api(project(":engine-openai"))
             api(project(":engine-stockfish"))
             api(project(":logger"))
@@ -40,7 +37,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.gaided.engine"
+    namespace = "com.gaided.game"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.min.sdk.get().toInt()
