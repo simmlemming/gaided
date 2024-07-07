@@ -19,7 +19,7 @@ jobs:
           cache: gradle
 
       - name: Test all modules
-        run: ./gradlew test allTest
+        run: ./gradlew clean test
 
       - name: Build desktop app
         run: ./gradlew :app-desktop:build
