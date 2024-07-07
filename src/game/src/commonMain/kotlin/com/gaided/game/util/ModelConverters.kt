@@ -13,21 +13,27 @@ import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
 
-@Suppress("kotlin:S1135")
 internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<Arrow> {
-    // TODO: Need to sort this list, or it is always sorted?
-    //  Top moves from AI engines do not have centipawn evaluations.
     val comparator = Comparator<Engine.TopMove> { o1, o2 ->
         if (player == Game.Player.White) {
-            (o2.centipawn ?: 0) - (o1.centipawn ?: 0)
+            o2.centipawn!! - o1.centipawn!!
         } else {
-            (o1.centipawn ?: 0) - (o2.centipawn ?: 0)
+            o1.centipawn!! - o2.centipawn!!
         }
     }
 
-    return topMoves
+    val movesWithEvaluation = topMoves
+        .filter { it.centipawn != null }
         .sortedWith(comparator)
-        .mapIndexed { index, move -> move.toArrow(Arrow.colorByTopMoveIndex(index)) }
+
+    val movesWithoutEvaluation = topMoves
+        .filter { it.centipawn == null }
+
+    return (movesWithEvaluation + movesWithoutEvaluation)
+        .mapIndexed { index, move ->
+            val color = if (move.centipawn == null) Arrow.COLOR_SUGGESTION else Arrow.colorByTopMoveIndex(index)
+            move.toArrow(color)
+        }
         .toSet()
 }
 
