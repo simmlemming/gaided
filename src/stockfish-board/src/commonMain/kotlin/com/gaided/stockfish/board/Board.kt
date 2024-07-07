@@ -1,8 +1,7 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package com.gaided.engine
+package com.gaided.stockfish.board
 
-import com.gaided.engine.api.RemoteBoardApi
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.google.gson.Gson

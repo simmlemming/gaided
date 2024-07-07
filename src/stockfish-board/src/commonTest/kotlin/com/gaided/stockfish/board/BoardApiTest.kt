@@ -1,6 +1,5 @@
-package gaided.api
+package com.gaided.stockfish.board
 
-import com.gaided.engine.api.RemoteBoardApi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
