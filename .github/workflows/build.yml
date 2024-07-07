@@ -22,7 +22,7 @@ jobs:
         run: ./gradlew test allTest
 
       - name: Build desktop app
-        run: ./gradlew :desktopApp:build
+        run: ./gradlew :app-desktop:build
 
       - name: Build Android app
-        run: ./gradlew :androidApp:build
+        run: ./gradlew :app-android:build
