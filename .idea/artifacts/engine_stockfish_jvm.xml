@@ -1,8 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="engine-stockfish-jvm">
     <output-path>$PROJECT_DIR$/src/engine-stockfish/build/libs</output-path>
-    <root id="archive" name="engine-stockfish-jvm.jar">
-      <element id="module-output" name="Gaided.engine-stockfish.jvmMain" />
-    </root>
+    <root id="archive" name="engine-stockfish-jvm.jar" />
   </artifact>
 </component>
