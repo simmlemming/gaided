@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+// Defined in gradle.properties
 val gaidedOpenAiApiKey: String? by project
 
 android {
