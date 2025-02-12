@@ -1,11 +1,12 @@
 @file:Suppress("PropertyName")
 
-package com.gaided.game
+package com.gaided
 
 import com.gaided.engine.Engine
-import com.gaided.game.ui.model.ChessBoardViewState
 import com.gaided.model.FenNotation
 import com.gaided.board.stockfish.Board
+import com.gaided.chessui.model.ChessBoardViewState
+import com.gaided.game.Game
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

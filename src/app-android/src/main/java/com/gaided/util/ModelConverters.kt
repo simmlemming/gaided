@@ -1,4 +1,4 @@
-package com.gaided.ui.util
+package com.gaided.util
 
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.chessui.model.ChessBoardViewState.OverlaySquare
@@ -11,7 +11,7 @@ import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
 
-fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
+internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
     val comparator = Comparator<Engine.TopMove> { o1, o2 ->
         if (player == Game.Player.White) {
             o2.centipawn!! - o1.centipawn!!
@@ -38,7 +38,7 @@ fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Se
         .toSet()
 }
 
-fun toTopMoveArrows(
+internal fun toTopMoveArrows(
     topMoves: List<Engine.TopMove>,
     selectedSquare: SquareNotation?,
     pendingMove: MoveNotation?
@@ -53,7 +53,7 @@ fun toTopMoveArrows(
         .toSet()
 }
 
-fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
+internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
     val lastMove = this.getLastMove() ?: return emptySet()
     return setOf(
         OverlaySquare(lastMove.move.take(2), OverlaySquare.COLOR_LAST_MOVE),
@@ -73,12 +73,12 @@ internal fun Set<Game.HalfMove>.sorted(): List<Game.HalfMove> = sortedWith { o1,
     }
 }
 
-fun MoveNotation.toLastMoveSquares() = setOf(
+internal fun MoveNotation.toLastMoveSquares() = setOf(
     OverlaySquare(this.take(2), OverlaySquare.COLOR_LAST_MOVE),
     OverlaySquare(this.takeLast(2), OverlaySquare.COLOR_LAST_MOVE)
 )
 
-fun toPlayerState(
+internal fun toPlayerState(
     player: Game.Player,
     position: FenNotation,
     topMoves: List<Engine.TopMove>,

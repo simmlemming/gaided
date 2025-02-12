@@ -1,7 +1,7 @@
-package com.gaided.game
+package com.gaided
 
+import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
-import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.model.FenNotation
 import io.mockk.coEvery
 import kotlinx.coroutines.test.runTest

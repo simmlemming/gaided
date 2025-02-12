@@ -1,8 +1,8 @@
-package com.gaided.game.util
+package com.gaided.util
 
+import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.game.Game
-import com.gaided.game.ui.model.PlayerViewState
 import com.gaided.model.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test

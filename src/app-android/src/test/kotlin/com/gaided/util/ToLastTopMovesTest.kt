@@ -1,8 +1,8 @@
-package com.gaided.game.util
+package com.gaided.util
 
+import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
 import com.gaided.game.Game
-import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import org.junit.Test
 import kotlin.test.assertEquals
 

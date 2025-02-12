@@ -1,8 +1,8 @@
-package com.gaided.game
+package com.gaided
 
+import com.gaided.chessui.model.ChessBoardViewState
+import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
-import com.gaided.game.ui.model.ChessBoardViewState
-import com.gaided.game.ui.model.ChessBoardViewState.Arrow
 import com.gaided.model.SquareNotation
 import io.mockk.Runs
 import io.mockk.clearMocks
