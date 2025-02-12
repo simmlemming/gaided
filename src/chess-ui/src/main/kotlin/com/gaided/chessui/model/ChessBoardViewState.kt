@@ -1,7 +1,6 @@
-package com.gaided.game.ui.model
+package com.gaided.chessui.model
 
 import androidx.compose.runtime.Immutable
-import com.gaided.game.util.Color
 import com.gaided.model.SquareNotation
 
 @Immutable
@@ -31,7 +30,7 @@ data class ChessBoardViewState(
     ) {
 
         companion object {
-            internal const val COLOR_SUGGESTION: Int = Color.GRAY
+            const val COLOR_SUGGESTION: Int = Color.GRAY
 
             fun colorByTopMoveIndex(index: Int) = when (index) {
                 0 -> Color.GREEN

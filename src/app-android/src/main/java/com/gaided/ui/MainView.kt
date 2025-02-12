@@ -22,7 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gaided.BuildConfig
-import com.gaided.game.GameViewModel
+import com.gaided.GameViewModel
+import com.gaided.chessui.ChessBoardView
+import com.gaided.chessui.EvaluationView
+import com.gaided.chessui.PlayerView
 import com.gaided.ui.theme.GameTheme
 
 @Composable

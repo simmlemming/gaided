@@ -1,10 +1,9 @@
 package com.gaided.game
 
+import com.gaided.board.stockfish.Board
 import com.gaided.engine.Engine
-import com.gaided.game.util.toNextMovePlayer
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
-import com.gaided.board.stockfish.Board
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,11 +32,11 @@ class Game(
 
     private val topMovesCache = MutableStateFlow<Map<FenNotation, TopMovesProgress>>(emptyMap())
 
-    internal fun start() {
+    fun start() {
         _started.value = true
     }
 
-    internal fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
+    fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
         topMovesCache.combineTransform(started) { cache, started ->
             val cached = cache[position]
             emit(cached ?: TopMovesProgress(inProgress = true))
@@ -59,7 +58,7 @@ class Game(
             }
         }
 
-    internal suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
+    suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
         val expectedPlayer = _position.value.toNextMovePlayer()
         check(expectedPlayer == player) {
             "Expected player to move $expectedPlayer, was $player"
@@ -74,10 +73,16 @@ class Game(
         }
     }
 
-    internal suspend fun isMoveIfCorrect(move: MoveNotation) =
+    private fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
+        "w" -> Game.Player.White
+        "b" -> Game.Player.Black
+        else -> Game.Player.None
+    }
+
+    suspend fun isMoveIfCorrect(move: MoveNotation) =
         board.isMoveCorrect(_position.value, move)
 
-    internal data class TopMovesProgress(
+    data class TopMovesProgress(
         val moves: List<Engine.TopMove> = emptyList(),
         val inProgress: Boolean = false
     )

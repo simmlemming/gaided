@@ -1,4 +1,4 @@
-package com.gaided.game.ui.model
+package com.gaided.chessui.model
 
 import androidx.compose.runtime.Immutable
 

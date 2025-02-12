@@ -1,4 +1,4 @@
-package com.gaided.ui
+package com.gaided.chessui
 
 internal data class RectF(val left: Float, val top: Float, val right: Float, val bottom: Float) {
     fun contains(x: Float, y: Float) =

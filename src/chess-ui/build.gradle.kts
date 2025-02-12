@@ -1,25 +1,16 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
 }
 
-val gaidedOpenAiApiKey: String? by project
-
 android {
-    namespace = "com.gaided"
+    namespace = "com.gaided.chessui"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.gaided"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        val apiKey: String = gaidedOpenAiApiKey ?: "\"api-key\""
-        buildConfigField("String", "OPEN_AI_API_KEY", apiKey)
     }
 
     buildTypes {
@@ -44,16 +35,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":game"))
-    implementation(project(":chess-ui"))
-    implementation(libs.material)
-    implementation(libs.activity.compose)
+    implementation(project(":data-model"))
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
-    implementation(libs.lifecycle.runtimeKtx)
-    implementation(libs.lifecycle.viewmodelKtx)
-    implementation(libs.lifecycle.viewmodelCompose)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
 }

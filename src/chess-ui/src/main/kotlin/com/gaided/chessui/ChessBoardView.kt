@@ -1,4 +1,4 @@
-package com.gaided.ui
+package com.gaided.chessui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -24,8 +24,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import com.gaided.R
-import com.gaided.game.ui.model.ChessBoardViewState
+import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.model.SquareNotation
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -42,7 +41,7 @@ private val DrawScope.borderSize
     get() = size.width / 24
 
 @Composable
-internal fun ChessBoardView(
+fun ChessBoardView(
     modifier: Modifier = Modifier,
     state: ChessBoardViewState,
     onSquareTap: (SquareNotation) -> Unit = {},

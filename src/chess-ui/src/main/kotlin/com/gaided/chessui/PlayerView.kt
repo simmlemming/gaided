@@ -1,4 +1,4 @@
-package com.gaided.ui
+package com.gaided.chessui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gaided.game.ui.model.PlayerViewState
+import com.gaided.chessui.model.PlayerViewState
 
 @Composable
 fun PlayerView(state: PlayerViewState, modifier: Modifier = Modifier) {

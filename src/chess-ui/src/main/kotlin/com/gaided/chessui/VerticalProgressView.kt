@@ -1,4 +1,4 @@
-package com.gaided.ui
+package com.gaided.chessui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

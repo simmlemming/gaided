@@ -1,4 +1,4 @@
-package com.gaided.game.util
+package com.gaided.chessui.model
 
 
 internal object Color {
