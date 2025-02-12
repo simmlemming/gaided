@@ -22,7 +22,6 @@
             <option value="$PROJECT_DIR$/src/network" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
