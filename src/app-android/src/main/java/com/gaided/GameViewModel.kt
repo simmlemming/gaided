@@ -127,11 +127,6 @@ class GameViewModel(private val game: Game) : ViewModel() {
         game.start()
     }
 
-    @Deprecated("Use onSquareClick().")
-    fun onMoveClick(player: Game.Player, move: MoveNotation) = launch {
-        game.move(move, player)
-    }
-
     fun onSquareClick(square: SquareNotation) = launch {
         when {
             selectedSquare.value == null && topMoveStartSquares.value.getMovesFromSquare(square).isNotEmpty() -> {
@@ -198,6 +193,7 @@ class GameViewModel(private val game: Game) : ViewModel() {
         oneBeforeLastHalfMoveOrNull()?.positionAfterMove ?: FenNotation.START_POSITION
 
     class Factory(private val config: Config) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             val board = Board(url = config.remoteBoardUrl)
             val stockfishEngine = createStockfishEngine(url = config.stockfishEngineUrl)
