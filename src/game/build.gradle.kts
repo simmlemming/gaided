@@ -22,8 +22,6 @@ kotlin {
             api(project(":engine-stockfish"))
             api(project(":logger"))
             implementation(libs.coroutines.core)
-            implementation(libs.lifecycle.viewmodel)
-            implementation(libs.compose.runtime)
         }
 
         commonTest.dependencies {
@@ -31,7 +29,6 @@ kotlin {
             implementation(libs.junit)
             implementation(libs.coroutines.test)
             implementation(libs.mockk)
-            implementation(libs.turbine)
         }
     }
 }
