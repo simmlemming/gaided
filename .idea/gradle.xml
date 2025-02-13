@@ -11,6 +11,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/src/app-android" />
+            <option value="$PROJECT_DIR$/src/app-common" />
             <option value="$PROJECT_DIR$/src/app-desktop" />
             <option value="$PROJECT_DIR$/src/board-stockfish" />
             <option value="$PROJECT_DIR$/src/chess-ui" />

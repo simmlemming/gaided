@@ -2,8 +2,9 @@ package com.gaided
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.gaided.app.common.util.toPiece
+import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.chessui.model.EvaluationViewState
@@ -12,7 +13,6 @@ import com.gaided.engine.Engine
 import com.gaided.engine.openai.createOpenAiEngine
 import com.gaided.engine.stockfish.createStockfishEngine
 import com.gaided.game.Game
-import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
@@ -21,17 +21,13 @@ import com.gaided.util.sorted
 import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toLastTopMoveArrows
 import com.gaided.util.toNextMovePlayer
-import com.gaided.util.toPiece
 import com.gaided.util.toPlayerState
 import com.gaided.util.toTopMoveArrows
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -39,18 +35,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlin.reflect.KClass
 
-class GameViewModel(private val game: Game) : ViewModel() {
-    private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
-        Logger.e("", e)
-        _userMessage.value = e.message ?: "Error"
-    }
-
-    private val safeViewModelScope: CoroutineScope = viewModelScope + exceptionsHandler
+class GameViewModel(private val game: Game) : ChessViewModel() {
     private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
     private val pendingMove = MutableStateFlow<MoveNotation?>(null)
 
@@ -120,9 +107,6 @@ class GameViewModel(private val game: Game) : ViewModel() {
     private val position = game.position
         .stateInThis(FenNotation.START_POSITION, SharingStarted.Eagerly)
 
-    private val _userMessage = MutableStateFlow("")
-    val userMessage = _userMessage.asStateFlow()
-
     fun start() {
         game.start()
     }
@@ -167,18 +151,6 @@ class GameViewModel(private val game: Game) : ViewModel() {
     fun onSquareLongClick(square: SquareNotation) {
         selectedSquare.value = square
     }
-
-    fun onUserMessageShown() {
-        _userMessage.value = ""
-    }
-
-    private fun launch(block: suspend CoroutineScope.() -> Unit) =
-        safeViewModelScope.launch(block = block)
-
-    private fun <T> Flow<T>.stateInThis(
-        initialValue: T,
-        started: SharingStarted = SharingStarted.WhileSubscribed(5000)
-    ): StateFlow<T> = stateIn(safeViewModelScope, started, initialValue)
 
     private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<Engine.TopMove>>> {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {

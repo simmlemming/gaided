@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="app-common-jvm">
+    <output-path>$PROJECT_DIR$/src/app-common/build/libs</output-path>
+    <root id="archive" name="app-common-jvm.jar">
+      <element id="module-output" name="Gaided.app-common.jvmMain" />
+    </root>
+  </artifact>
+</component>

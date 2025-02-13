@@ -5,12 +5,12 @@ import com.gaided.model.SquareNotation
 
 @Immutable
 data class ChessBoardViewState(
-    val pieces: Set<Piece>,
-    val arrows: Set<Arrow>,
-    val overlaySquares: Set<OverlaySquare>
+    val pieces: Set<Piece> = emptySet(),
+    val arrows: Set<Arrow> = emptySet(),
+    val overlaySquares: Set<OverlaySquare> = emptySet()
 ) {
     companion object {
-        val EMPTY = ChessBoardViewState(setOf(), setOf(), setOf())
+        val EMPTY = ChessBoardViewState()
     }
 
     @Immutable
