@@ -18,6 +18,8 @@
             <option value="$PROJECT_DIR$/src/engine" />
             <option value="$PROJECT_DIR$/src/engine-openai" />
             <option value="$PROJECT_DIR$/src/engine-stockfish" />
+            <option value="$PROJECT_DIR$/src/fortress-app-android" />
+            <option value="$PROJECT_DIR$/src/fortress-game" />
             <option value="$PROJECT_DIR$/src/game" />
             <option value="$PROJECT_DIR$/src/logger" />
             <option value="$PROJECT_DIR$/src/network" />
