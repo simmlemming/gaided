@@ -26,3 +26,6 @@ jobs:
 
       - name: Build Android app
         run: ./gradlew :app-android:build
+
+      - name: Build Android Fortress app
+        run: ./gradlew :fortress-app-android:build
