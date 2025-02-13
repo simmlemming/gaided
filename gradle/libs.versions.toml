@@ -10,6 +10,7 @@ androidx-lifecycle = "2.8.1"
 
 compose = "1.6.7"
 compose-material3 = "1.2.1"
+lifecycleRuntimeComposeAndroid = "2.8.7"
 
 
 [libraries]
@@ -40,6 +41,7 @@ lifecycle-viewmodelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx"
 lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.0.0" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
+lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 
 
 [plugins]
