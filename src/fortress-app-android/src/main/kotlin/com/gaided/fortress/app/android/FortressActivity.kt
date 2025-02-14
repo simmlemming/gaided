@@ -21,13 +21,13 @@ class FortressActivity : ComponentActivity() {
 
 @Composable
 private fun FortressApp() {
-    val viewModel: FortressGameViewModel = viewModel(
-        FortressGameViewModel::class,
-        factory = FortressGameViewModel.Factory()
+    val viewModel: FortressViewModel = viewModel(
+        FortressViewModel::class,
+        factory = FortressViewModel.Factory()
     )
 
     val chessBoard by viewModel.chessBoardViewState.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
-    GameScreen(
+    FortressScreen(
         chessBoard = chessBoard,
         onSquareClick = viewModel::onSquareClick,
         onSquareLongClick = viewModel::onSquareLongClick,

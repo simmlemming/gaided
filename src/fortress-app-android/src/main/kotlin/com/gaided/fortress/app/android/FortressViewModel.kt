@@ -6,15 +6,15 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.app.common.util.toPiece
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
+import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.engine.stockfish.createStockfishEngine
-import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlin.reflect.KClass
 
-internal class FortressGameViewModel(private val game: ChessGame) : ChessViewModel(game) {
+internal class FortressViewModel(private val game: ChessGame) : ChessViewModel(game) {
     override val position: StateFlow<FenNotation> =
         game.position.stateInThis(FenNotation.START_POSITION)
 
@@ -43,7 +43,7 @@ internal class FortressGameViewModel(private val game: ChessGame) : ChessViewMod
                 board = Board(url = remoteBoardUrl),
                 engines = listOf(createStockfishEngine(url = stockfishEngineUrl))
             )
-            return FortressGameViewModel(game) as T
+            return FortressViewModel(game) as T
         }
     }
 }

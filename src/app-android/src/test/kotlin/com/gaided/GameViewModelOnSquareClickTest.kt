@@ -22,7 +22,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class ChessGameViewModelOnSquareClickTest : ChessGameViewModelTestCase() {
+internal class GameViewModelOnSquareClickTest : GameViewModelTestCase() {
 
     @Test
     fun `empty square`() = runTest {

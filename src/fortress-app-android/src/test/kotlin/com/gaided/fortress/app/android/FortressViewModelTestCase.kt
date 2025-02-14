@@ -23,10 +23,10 @@ import org.junit.After
 import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal abstract class FortressChessGameViewModelTestCase {
+internal abstract class FortressViewModelTestCase {
     protected lateinit var board: Board
     protected lateinit var engine1: Engine
-    protected lateinit var viewModel: FortressGameViewModel
+    protected lateinit var viewModel: FortressViewModel
     private lateinit var testDispatcher: TestDispatcher
 
     @Before
@@ -45,7 +45,7 @@ internal abstract class FortressChessGameViewModelTestCase {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = FortressGameViewModel(
+    private fun createViewModel() = FortressViewModel(
         ChessGame(board, listOf(engine1))
     )
 

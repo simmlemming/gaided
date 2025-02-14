@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-internal class ChessGameViewModelTopMovesTest : ChessGameViewModelTestCase() {
+internal class GameViewModelTopMovesTest : GameViewModelTestCase() {
     @Test
     fun `top moves arrows`() = runTest {
         // GIVEN

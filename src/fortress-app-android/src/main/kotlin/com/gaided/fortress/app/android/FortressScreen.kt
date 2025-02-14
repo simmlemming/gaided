@@ -14,7 +14,7 @@ import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.model.SquareNotation
 
 @Composable
-internal fun GameScreen(
+internal fun FortressScreen(
     chessBoard: ChessBoardViewState,
     onSquareClick: (SquareNotation) -> Unit = {},
     onSquareLongClick: (SquareNotation) -> Unit = {},
@@ -38,6 +38,6 @@ internal fun GameScreen(
 
 @Preview
 @Composable
-fun AppPreview() {
-    GameScreen(ChessBoardViewState.EMPTY)
+fun FortressScreenPreview() {
+    FortressScreen(ChessBoardViewState.EMPTY)
 }

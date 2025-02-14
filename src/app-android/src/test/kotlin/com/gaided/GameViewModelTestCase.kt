@@ -23,7 +23,7 @@ import org.junit.After
 import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal abstract class ChessGameViewModelTestCase {
+internal abstract class GameViewModelTestCase {
     protected lateinit var board: Board
     protected lateinit var engine1: Engine
     protected lateinit var viewModel: GameViewModel
