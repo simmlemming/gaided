@@ -11,9 +11,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.gaided.chessui.ChessBoardView
 import com.gaided.chessui.model.ChessBoardViewState
+import com.gaided.model.SquareNotation
 
 @Composable
-internal fun GameScreen(chessBoard: ChessBoardViewState) {
+internal fun GameScreen(
+    chessBoard: ChessBoardViewState,
+    onSquareClick: (SquareNotation) -> Unit = {},
+    onSquareLongClick: (SquareNotation) -> Unit = {},
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -22,6 +27,8 @@ internal fun GameScreen(chessBoard: ChessBoardViewState) {
     ) {
         ChessBoardView(
             state = chessBoard,
+            onSquareTap = onSquareClick,
+            onSquareLongPress = onSquareLongClick,
             modifier = Modifier
                 .fillMaxSize()
                 .aspectRatio(1f)

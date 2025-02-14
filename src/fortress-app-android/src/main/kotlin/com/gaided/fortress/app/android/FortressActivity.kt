@@ -27,5 +27,9 @@ private fun FortressApp() {
     )
 
     val chessBoard by viewModel.chessBoardViewState.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
-    GameScreen(chessBoard)
+    GameScreen(
+        chessBoard = chessBoard,
+        onSquareClick = viewModel::onSquareClick,
+        onSquareLongClick = viewModel::onSquareLongClick,
+    )
 }

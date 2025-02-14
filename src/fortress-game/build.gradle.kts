@@ -18,6 +18,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":board-stockfish"))
             api(project(":data-model"))
+            api(project(":engine"))
             api(project(":logger"))
             implementation(libs.coroutines.core)
         }

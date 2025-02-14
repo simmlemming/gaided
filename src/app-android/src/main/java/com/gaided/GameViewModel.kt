@@ -37,9 +37,10 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlin.reflect.KClass
 
-class GameViewModel(private val game: Game) : ChessViewModel() {
-    private val selectedSquare = MutableStateFlow<SquareNotation?>(null)
-    private val pendingMove = MutableStateFlow<MoveNotation?>(null)
+class GameViewModel(private val game: Game) : ChessViewModel(
+    isMoveCorrect = game::isMoveCorrect,
+    move = game::move
+) {
 
     @Suppress("OPT_IN_USAGE")
     private val topMoves = game.position
@@ -104,38 +105,25 @@ class GameViewModel(private val game: Game) : ChessViewModel() {
         topMoves.moves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
-    private val position = game.position
+    override val position = game.position
         .stateInThis(FenNotation.START_POSITION, SharingStarted.Eagerly)
 
     fun start() {
         game.start()
     }
 
-    fun onSquareClick(square: SquareNotation) = launch {
+    override fun onSquareClick(square: SquareNotation) = launch {
         when {
-            selectedSquare.value == null && topMoveStartSquares.value.getMovesFromSquare(square).isNotEmpty() -> {
+            selectedSquare.value == null && square.hasArrow() -> {
                 onArrowClick(square)
             }
 
-            selectedSquare.value == square -> {
-                selectedSquare.value = null
-            }
-
-            selectedSquare.value == null && position.value.allPieces().containsKey(square) -> {
-                selectedSquare.value = square
-            }
-
-            selectedSquare.value != null && selectedSquare.value != square -> {
-                val move = "${selectedSquare.value}$square"
-                pendingMove.value = move
-                if (game.isMoveIfCorrect(move)) {
-                    game.move(move)
-                }
-                selectedSquare.value = null
-                pendingMove.value = null
-            }
+            else -> super.onSquareClick(square)
         }
     }
+
+    private fun SquareNotation.hasArrow() =
+        topMoveStartSquares.value.getMovesFromSquare(this).isNotEmpty()
 
     private suspend fun onArrowClick(square: SquareNotation) {
         val topMovesFromSquare = topMoveStartSquares.value.getMovesFromSquare(square)
@@ -146,10 +134,6 @@ class GameViewModel(private val game: Game) : ChessViewModel() {
         } else {
             selectedSquare.value = square
         }
-    }
-
-    fun onSquareLongClick(square: SquareNotation) {
-        selectedSquare.value = square
     }
 
     private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<Engine.TopMove>>> {
@@ -229,16 +213,5 @@ private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
             args[4] as T5,
             args[5] as T6,
         )
-    }
-}
-
-private fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
-    return this.toMutableMap().let {
-        if (!it.containsKey(move.take(2))) {
-            return@let it
-        }
-
-        it[move.takeLast(2)] = checkNotNull(it.remove(move.take(2)))
-        it.toMap()
     }
 }

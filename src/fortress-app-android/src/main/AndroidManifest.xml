@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".fortress.app.android.FortressActivity"
+            android:name=".app.android.FortressActivity"
             android:exported="true"
             android:label="Fortress">
             <intent-filter>

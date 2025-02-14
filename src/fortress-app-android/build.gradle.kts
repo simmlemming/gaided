@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.gaided"
+    namespace = "com.gaided.fortress"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.gaided"
+        applicationId = "com.gaided.fortress"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = 1

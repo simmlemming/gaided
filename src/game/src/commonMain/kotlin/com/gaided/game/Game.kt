@@ -79,7 +79,7 @@ class Game(
         else -> Game.Player.None
     }
 
-    suspend fun isMoveIfCorrect(move: MoveNotation) =
+    suspend fun isMoveCorrect(move: MoveNotation) =
         board.isMoveCorrect(_position.value, move)
 
     data class TopMovesProgress(

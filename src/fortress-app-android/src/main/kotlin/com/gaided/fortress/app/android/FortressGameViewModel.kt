@@ -7,19 +7,31 @@ import com.gaided.app.common.util.toPiece
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.fortress.game.FortressGame
+import com.gaided.model.FenNotation
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlin.reflect.KClass
 
-internal class FortressGameViewModel(private val game: FortressGame) : ChessViewModel() {
+internal class FortressGameViewModel(
+    private val game: FortressGame
+) : ChessViewModel(
+    isMoveCorrect = { true },
+    move = {}
+) {
+    override val position: StateFlow<FenNotation> =
+        game.position.stateInThis(FenNotation.START_POSITION)
 
-    val chessBoardViewState: Flow<ChessBoardViewState> = game.position.map { position ->
-        ChessBoardViewState(
-            pieces = position.allPieces()
-                .map { it.toPiece(null, null) }
-                .toSet()
-        )
-    }
+    val chessBoardViewState: StateFlow<ChessBoardViewState> =
+        combine(position, selectedSquare, pendingMove) { position, selectedSquare, pendingMove ->
+            ChessBoardViewState(
+                pieces = position
+                    .allPieces()
+                    .let { if (pendingMove == null) it else it.move(pendingMove) }
+                    .map { it.toPiece(selectedSquare, null) }
+                    .toSet(),
+            )
+        }.stateInThis(ChessBoardViewState.EMPTY)
 
     internal class Factory : ViewModelProvider.Factory {
         @Suppress("kotlin:S6530", "UNCHECKED_CAST")
