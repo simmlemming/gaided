@@ -23,10 +23,10 @@ import org.junit.After
 import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal abstract class GameViewModelTestCase {
+internal abstract class GaidedViewModelTestCase {
     protected lateinit var board: Board
     protected lateinit var engine1: Engine
-    protected lateinit var viewModel: GameViewModel
+    protected lateinit var viewModel: GaidedViewModel
     private lateinit var testDispatcher: TestDispatcher
 
     @Before
@@ -45,7 +45,7 @@ internal abstract class GameViewModelTestCase {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = GameViewModel(
+    private fun createViewModel() = GaidedViewModel(
         ChessGame(board, listOf(engine1))
     )
 

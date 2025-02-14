@@ -5,16 +5,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.gaided.logger.Logger
-import com.gaided.ui.MainView
+import com.gaided.ui.GaidedView
 
-internal class GameActivity : AppCompatActivity() {
+internal class GaidedActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Logger.enabled = true
         enableEdgeToEdge()
         setContent {
-            MainView()
+            GaidedView()
         }
     }
 }

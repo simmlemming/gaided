@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlin.reflect.KClass
 
-class GameViewModel(private val game: ChessGame) : ChessViewModel(game) {
+class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
 
     @Suppress("OPT_IN_USAGE")
     private val topMoves = game.position
@@ -152,7 +152,7 @@ class GameViewModel(private val game: ChessGame) : ChessViewModel(game) {
             val openAiEngine = createOpenAiEngine(apiKey = config.openAiApiKey)
 
             val game = ChessGame(board, listOf(openAiEngine, stockfishEngine))
-            return GameViewModel(game) as T
+            return GaidedViewModel(game) as T
         }
 
         data class Config(

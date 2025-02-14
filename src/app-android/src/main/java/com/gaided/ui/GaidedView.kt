@@ -22,19 +22,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gaided.BuildConfig
-import com.gaided.GameViewModel
+import com.gaided.GaidedViewModel
 import com.gaided.chessui.ChessBoardView
 import com.gaided.chessui.EvaluationView
 import com.gaided.chessui.PlayerView
 import com.gaided.ui.theme.GameTheme
 
 @Composable
-fun MainView(modifier: Modifier = Modifier) = GameTheme {
+fun GaidedView(modifier: Modifier = Modifier) = GameTheme {
     Surface {
-        val viewModel: GameViewModel = viewModel(
-            GameViewModel::class,
-            factory = GameViewModel.Factory(
-                config = GameViewModel.Factory.Config(
+        val viewModel: GaidedViewModel = viewModel(
+            GaidedViewModel::class,
+            factory = GaidedViewModel.Factory(
+                config = GaidedViewModel.Factory.Config(
                     remoteBoardUrl = "http://10.0.2.2:8080",
                     stockfishEngineUrl = "http://10.0.2.2:8081",
                     openAiApiKey = BuildConfig.OPEN_AI_API_KEY
