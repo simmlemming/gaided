@@ -2,7 +2,7 @@ package com.gaided.util
 
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
-import com.gaided.game.Game
+import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,7 +17,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = Game.Player.Black,
+                player = ChessGame.Player.Black,
                 position = FenNotation.START_POSITION,
                 topMoves = emptyList(),
                 isLoading = false
@@ -33,7 +33,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = Game.Player.White,
+                player = ChessGame.Player.White,
                 position = FenNotation.START_POSITION,
                 topMoves = emptyList(),
                 isLoading = true
@@ -49,7 +49,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = Game.Player.White,
+                player = ChessGame.Player.White,
                 position = FenNotation.START_POSITION,
                 topMoves = listOf(Engine.TopMove("any", "a2a4", 0)),
                 isLoading = false

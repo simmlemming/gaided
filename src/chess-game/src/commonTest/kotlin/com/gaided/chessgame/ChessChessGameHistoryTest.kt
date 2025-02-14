@@ -1,4 +1,4 @@
-package com.gaided.game
+package com.gaided.chessgame
 
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
@@ -14,8 +14,8 @@ import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class GameHistoryTest {
-    private lateinit var game: Game
+internal class ChessChessGameHistoryTest {
+    private lateinit var game: ChessGame
     private lateinit var position: FenNotation
 
     @Before
@@ -26,7 +26,7 @@ internal class GameHistoryTest {
 
         val engine = mockk<Engine>(relaxed = true)
 
-        game = Game(board, listOf(engine))
+        game = ChessGame(board, listOf(engine))
     }
 
     @Test
@@ -47,11 +47,11 @@ internal class GameHistoryTest {
         )
     }
 
-    private suspend fun Game.moveAndAssert(
-        move: Game.HalfMove,
-        getLastHistoryValue: () -> Set<Game.HalfMove>
+    private suspend fun ChessGame.moveAndAssert(
+        move: ChessGame.HalfMove,
+        getLastHistoryValue: () -> Set<ChessGame.HalfMove>
     ) {
-        this@GameHistoryTest.position = move.positionAfterMove
+        this@ChessChessGameHistoryTest.position = move.positionAfterMove
         move(move.move, move.player)
         assertEquals(move, getLastHistoryValue().getLastMove())
     }
@@ -62,7 +62,7 @@ private val FEN_1B = FenNotation.fromFenString("pieces2 w KQkq - 1 2")
 private val FEN_2W = FenNotation.fromFenString("pieces3 b KQkq - 1 2")
 private val FEN_2B = FenNotation.fromFenString("pieces4 w KQkq - 1 2")
 
-private val move1w = Game.HalfMove(1, "e2e4", Game.Player.White, FEN_1W)
-private val move1b = Game.HalfMove(1, "e7e6", Game.Player.Black, FEN_1B)
-private val move2w = Game.HalfMove(2, "a2a3", Game.Player.White, FEN_2W)
-private val move2b = Game.HalfMove(2, "h7h5", Game.Player.Black, FEN_2B)
+private val move1w = ChessGame.HalfMove(1, "e2e4", ChessGame.Player.White, FEN_1W)
+private val move1b = ChessGame.HalfMove(1, "e7e6", ChessGame.Player.Black, FEN_1B)
+private val move2w = ChessGame.HalfMove(2, "a2a3", ChessGame.Player.White, FEN_2W)
+private val move2b = ChessGame.HalfMove(2, "h7h5", ChessGame.Player.Black, FEN_2B)

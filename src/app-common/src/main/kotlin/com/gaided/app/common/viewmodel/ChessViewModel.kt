@@ -2,6 +2,7 @@ package com.gaided.app.common.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gaided.chessgame.ChessGame
 import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
@@ -19,8 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 abstract class ChessViewModel(
-    private val isMoveCorrect: suspend (MoveNotation) -> Boolean,
-    private val move: suspend (MoveNotation) -> Unit,
+    private val game: ChessGame
 ) : ViewModel() {
     private val exceptionsHandler = CoroutineExceptionHandler { _, e ->
         Logger.e("", e)
@@ -52,8 +52,8 @@ abstract class ChessViewModel(
             selectedSquare.value != null && selectedSquare.value != square -> {
                 val move = "${selectedSquare.value}$square"
                 pendingMove.value = move
-                if (isMoveCorrect(move)) {
-                    move(move)
+                if (game.isMoveCorrect(move)) {
+                    game.move(move)
                 }
                 selectedSquare.value = null
                 pendingMove.value = null

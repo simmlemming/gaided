@@ -6,7 +6,7 @@ import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
 import com.gaided.board.stockfish.Board
 import com.gaided.chessui.model.ChessBoardViewState
-import com.gaided.game.Game
+import com.gaided.chessgame.ChessGame
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import org.junit.After
 import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal abstract class GameViewModelTestCase {
+internal abstract class ChessGameViewModelTestCase {
     protected lateinit var board: Board
     protected lateinit var engine1: Engine
     protected lateinit var viewModel: GameViewModel
@@ -46,7 +46,7 @@ internal abstract class GameViewModelTestCase {
     }
 
     private fun createViewModel() = GameViewModel(
-        Game(board, listOf(engine1))
+        ChessGame(board, listOf(engine1))
     )
 
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()

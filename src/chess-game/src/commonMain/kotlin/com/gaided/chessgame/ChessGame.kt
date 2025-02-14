@@ -1,4 +1,4 @@
-package com.gaided.game
+package com.gaided.chessgame
 
 import com.gaided.board.stockfish.Board
 import com.gaided.engine.Engine
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.update
 
-class Game(
+class ChessGame(
     private val board: Board,
     private val engines: List<Engine>
 ) {
@@ -74,9 +74,9 @@ class Game(
     }
 
     private fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
-        "w" -> Game.Player.White
-        "b" -> Game.Player.Black
-        else -> Game.Player.None
+        "w" -> ChessGame.Player.White
+        "b" -> ChessGame.Player.Black
+        else -> ChessGame.Player.None
     }
 
     suspend fun isMoveCorrect(move: MoveNotation) =
@@ -137,15 +137,15 @@ class Game(
     }
 }
 
-internal fun Set<Game.HalfMove>.sorted(): List<Game.HalfMove> = sortedWith { o1, o2 ->
+internal fun Set<ChessGame.HalfMove>.sorted(): List<ChessGame.HalfMove> = sortedWith { o1, o2 ->
     when {
         o1.number != o2.number -> o1.number - o2.number
-        o1.player == Game.Player.White -> -1
-        o2.player == Game.Player.White -> 1
+        o1.player == ChessGame.Player.White -> -1
+        o2.player == ChessGame.Player.White -> 1
         else -> 0
     }
 }
 
-internal fun Set<Game.HalfMove>.getLastMove(): Game.HalfMove? =
+internal fun Set<ChessGame.HalfMove>.getLastMove(): ChessGame.HalfMove? =
     sorted().lastOrNull()
 

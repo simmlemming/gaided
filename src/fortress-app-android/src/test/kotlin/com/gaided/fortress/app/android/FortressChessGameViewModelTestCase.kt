@@ -3,9 +3,9 @@
 package com.gaided.fortress.app.android
 
 import com.gaided.board.stockfish.Board
+import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.engine.Engine
-import com.gaided.fortress.game.FortressGame
 import com.gaided.model.FenNotation
 import io.mockk.every
 import io.mockk.mockk
@@ -23,7 +23,7 @@ import org.junit.After
 import org.junit.Before
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal abstract class FortressGameViewModelTestCase {
+internal abstract class FortressChessGameViewModelTestCase {
     protected lateinit var board: Board
     protected lateinit var engine1: Engine
     protected lateinit var viewModel: FortressGameViewModel
@@ -46,7 +46,7 @@ internal abstract class FortressGameViewModelTestCase {
     }
 
     private fun createViewModel() = FortressGameViewModel(
-        FortressGame()
+        ChessGame(board, listOf(engine1))
     )
 
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()

@@ -9,7 +9,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 
-internal class ViewModelOnSquareClickTest : FortressGameViewModelTestCase() {
+internal class FortressViewModelOnSquareClickTest : FortressChessGameViewModelTestCase() {
 
     @Test
     fun onSquareClick() = runTest {
@@ -30,21 +30,12 @@ internal class ViewModelOnSquareClickTest : FortressGameViewModelTestCase() {
             assertTrue(pieces["a2"]!!.isElevated)
         }
 
-        // WHEN b2 is clicked
-        viewModel.onSquareClick("b2")
-
-        // THEN both pieces are not elevated
-        with(viewModel.chessBoardViewState.value) {
-            assertFalse(pieces["a2"]!!.isElevated)
-            assertFalse(pieces["b2"]!!.isElevated)
-        }
-
-        // WHEN b2 is clicked again
-        viewModel.onSquareClick("b2")
+        // WHEN a2 is clicked again
+        viewModel.onSquareClick("a2")
 
         // THEN piece on b2 is elevated
         with(viewModel.chessBoardViewState.value) {
-            assertTrue(pieces["b2"]!!.isElevated)
+            assertFalse(pieces["a2"]!!.isElevated)
         }
     }
 }

@@ -23,7 +23,7 @@ android {
 dependencies {
     implementation(project(":chess-ui"))
     implementation(project(":data-model"))
-    implementation(project(":engine"))
+    implementation(project(":chess-game"))
     implementation(project(":logger"))
     implementation(libs.coroutines.core)
     implementation(libs.lifecycle.runtimeKtx)

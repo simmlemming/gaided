@@ -12,10 +12,9 @@ import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.engine.openai.createOpenAiEngine
 import com.gaided.engine.stockfish.createStockfishEngine
-import com.gaided.game.Game
+import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
-import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
 import com.gaided.util.sorted
 import com.gaided.util.toLastMoveSquares
@@ -37,10 +36,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlin.reflect.KClass
 
-class GameViewModel(private val game: Game) : ChessViewModel(
-    isMoveCorrect = game::isMoveCorrect,
-    move = game::move
-) {
+class GameViewModel(private val game: ChessGame) : ChessViewModel(game) {
 
     @Suppress("OPT_IN_USAGE")
     private val topMoves = game.position
@@ -48,7 +44,7 @@ class GameViewModel(private val game: Game) : ChessViewModel(
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     @Suppress("OPT_IN_USAGE")
-    private val oldTopMoves: SharedFlow<Pair<Game.Player, List<Engine.TopMove>>> = game.history
+    private val oldTopMoves: SharedFlow<Pair<ChessGame.Player, List<Engine.TopMove>>> = game.history
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
@@ -80,12 +76,12 @@ class GameViewModel(private val game: Game) : ChessViewModel(
 
     val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(Game.Player.White, position, topMoves.moves, topMoves.inProgress)
+        toPlayerState(ChessGame.Player.White, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val playerBlack = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(Game.Player.Black, position, topMoves.moves, topMoves.inProgress)
+        toPlayerState(ChessGame.Player.Black, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val evaluation =
@@ -136,16 +132,16 @@ class GameViewModel(private val game: Game) : ChessViewModel(
         }
     }
 
-    private fun Set<Game.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<Game.Player, List<Engine.TopMove>>> {
+    private fun Set<ChessGame.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<ChessGame.Player, List<Engine.TopMove>>> {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
-            null -> flowOf(Game.Player.White to emptyList())
+            null -> flowOf(ChessGame.Player.White to emptyList())
             else -> game.getTopMoves(position.positionAfterMove).map {
                 position.positionAfterMove.toNextMovePlayer() to it.moves
             }
         }
     }
 
-    private fun Set<Game.HalfMove>.toOneBeforeLastPosition(): FenNotation =
+    private fun Set<ChessGame.HalfMove>.toOneBeforeLastPosition(): FenNotation =
         oneBeforeLastHalfMoveOrNull()?.positionAfterMove ?: FenNotation.START_POSITION
 
     class Factory(private val config: Config) : ViewModelProvider.Factory {
@@ -155,7 +151,7 @@ class GameViewModel(private val game: Game) : ChessViewModel(
             val stockfishEngine = createStockfishEngine(url = config.stockfishEngineUrl)
             val openAiEngine = createOpenAiEngine(apiKey = config.openAiApiKey)
 
-            val game = Game(board, listOf(openAiEngine, stockfishEngine))
+            val game = ChessGame(board, listOf(openAiEngine, stockfishEngine))
             return GameViewModel(game) as T
         }
 
@@ -179,15 +175,15 @@ private fun Map<MoveNotation, MakeMoveAction>.getMovesFromSquare(square: SquareN
     filter { it.key.take(2) == square }
 
 
-private typealias MakeMoveAction = suspend (Game, MutableStateFlow<MoveNotation?>) -> Unit
+private typealias MakeMoveAction = suspend (ChessGame, MutableStateFlow<MoveNotation?>) -> Unit
 
-private fun Set<Game.HalfMove>.oneBeforeLastHalfMoveOrNull(): Game.HalfMove? {
+private fun Set<ChessGame.HalfMove>.oneBeforeLastHalfMoveOrNull(): ChessGame.HalfMove? {
     if (this.isEmpty()) {
         return null
     }
 
     if (this.size == 1) {
-        return Game.HalfMove(0, "", Game.Player.White, FenNotation.START_POSITION)
+        return ChessGame.HalfMove(0, "", ChessGame.Player.White, FenNotation.START_POSITION)
     }
 
     val sortedHistory = this.sorted()

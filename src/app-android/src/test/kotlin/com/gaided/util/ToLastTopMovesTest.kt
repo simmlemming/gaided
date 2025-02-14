@@ -2,7 +2,7 @@ package com.gaided.util
 
 import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
-import com.gaided.game.Game
+import com.gaided.chessgame.ChessGame
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -10,7 +10,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for black without evaluation`() {
         val arrows = toLastTopMoveArrows(
-            Game.Player.Black,
+            ChessGame.Player.Black,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -33,7 +33,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for white without evaluation`() {
         val arrows = toLastTopMoveArrows(
-            Game.Player.White,
+            ChessGame.Player.White,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -56,7 +56,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for white`() {
         val arrows = toLastTopMoveArrows(
-            Game.Player.White,
+            ChessGame.Player.White,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -75,7 +75,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for black`() {
         val arrows = toLastTopMoveArrows(
-            Game.Player.Black,
+            ChessGame.Player.Black,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),

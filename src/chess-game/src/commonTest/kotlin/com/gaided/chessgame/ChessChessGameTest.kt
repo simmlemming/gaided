@@ -1,7 +1,7 @@
-package com.gaided.game
+package com.gaided.chessgame
 
 import com.gaided.engine.Engine
-import com.gaided.game.Game.Player
+import com.gaided.chessgame.ChessGame.Player
 import com.gaided.model.FenNotation
 import com.gaided.board.stockfish.Board
 import io.mockk.coEvery
@@ -14,7 +14,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class GameTest {
+class ChessChessGameTest {
 
     @Test
     fun move() = runTest(UnconfinedTestDispatcher()) {
@@ -26,14 +26,14 @@ class GameTest {
 
         val engine = mockk<Engine>(relaxed = true)
 
-        val game = Game(board, listOf(engine))
+        val game = ChessGame(board, listOf(engine))
         val history by game.history.lastValue(backgroundScope, emptySet())
 
         assertTrue(history.isEmpty())
         game.move("e2e4", Player.White)
 
         assertEquals(
-            setOf(Game.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE)),
+            setOf(ChessGame.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE)),
             history
         )
 
@@ -43,8 +43,8 @@ class GameTest {
         // THEN
         assertEquals(
             setOf(
-                Game.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE),
-                Game.HalfMove(1, "e7e6", Player.Black, FenNotation.START_POSITION)
+                ChessGame.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE),
+                ChessGame.HalfMove(1, "e7e6", Player.Black, FenNotation.START_POSITION)
             ),
             history
         )

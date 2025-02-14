@@ -17,7 +17,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-internal class GameViewModelTest : GameViewModelTestCase() {
+internal class ChessGameViewModelTest : ChessGameViewModelTestCase() {
     @Test
     fun `initial state`() = runTest {
         viewModel = createViewModelAndCollectState()

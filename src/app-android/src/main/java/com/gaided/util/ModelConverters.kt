@@ -5,15 +5,14 @@ import com.gaided.chessui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.engine.openai.OPEN_AI_ENGINE_NAME
-import com.gaided.game.Game
+import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
-import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
 
-internal fun toLastTopMoveArrows(player: Game.Player, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
+internal fun toLastTopMoveArrows(player: ChessGame.Player, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
     val comparator = Comparator<Engine.TopMove> { o1, o2 ->
-        if (player == Game.Player.White) {
+        if (player == ChessGame.Player.White) {
             o2.centipawn!! - o1.centipawn!!
         } else {
             o1.centipawn!! - o2.centipawn!!
@@ -53,7 +52,7 @@ internal fun toTopMoveArrows(
         .toSet()
 }
 
-internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
+internal fun Set<ChessGame.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
     val lastMove = this.getLastMove() ?: return emptySet()
     return setOf(
         OverlaySquare(lastMove.move.take(2), OverlaySquare.COLOR_LAST_MOVE),
@@ -61,14 +60,14 @@ internal fun Set<Game.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
     )
 }
 
-private fun Set<Game.HalfMove>.getLastMove(): Game.HalfMove? =
+private fun Set<ChessGame.HalfMove>.getLastMove(): ChessGame.HalfMove? =
     sorted().lastOrNull()
 
-internal fun Set<Game.HalfMove>.sorted(): List<Game.HalfMove> = sortedWith { o1, o2 ->
+internal fun Set<ChessGame.HalfMove>.sorted(): List<ChessGame.HalfMove> = sortedWith { o1, o2 ->
     when {
         o1.number != o2.number -> o1.number - o2.number
-        o1.player == Game.Player.White -> -1
-        o2.player == Game.Player.White -> 1
+        o1.player == ChessGame.Player.White -> -1
+        o2.player == ChessGame.Player.White -> 1
         else -> 0
     }
 }
@@ -79,7 +78,7 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 )
 
 internal fun toPlayerState(
-    player: Game.Player,
+    player: ChessGame.Player,
     position: FenNotation,
     topMoves: List<Engine.TopMove>,
     isLoading: Boolean
@@ -87,7 +86,7 @@ internal fun toPlayerState(
     val nextMovePlayer = position.toNextMovePlayer()
 
     return when {
-        nextMovePlayer == Game.Player.None ->
+        nextMovePlayer == ChessGame.Player.None ->
             PlayerViewState.EMPTY
 
         nextMovePlayer == player ->
@@ -114,9 +113,9 @@ private fun toPlayerViewState(position: FenNotation, isLoading: Boolean): Player
 }
 
 internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
-    "w" -> Game.Player.White
-    "b" -> Game.Player.Black
-    else -> Game.Player.None
+    "w" -> ChessGame.Player.White
+    "b" -> ChessGame.Player.Black
+    else -> ChessGame.Player.None
 }
 
 internal fun Engine.TopMove.toArrow(color: Int) = ChessBoardViewState.Arrow(

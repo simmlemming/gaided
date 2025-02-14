@@ -34,7 +34,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.gaided.game"
+    namespace = "com.gaided.chessgame"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.min.sdk.get().toInt()

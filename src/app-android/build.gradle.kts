@@ -47,7 +47,7 @@ android {
 dependencies {
     implementation(project(":app-common"))
     implementation(project(":chess-ui"))
-    implementation(project(":game"))
+    implementation(project(":chess-game"))
     implementation(libs.material)
     implementation(libs.activity.compose)
     implementation(libs.compose.foundation)
