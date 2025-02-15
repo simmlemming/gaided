@@ -29,10 +29,6 @@ internal class FortressViewModel(private val game: ChessGame) : ChessViewModel(g
             )
         }.stateInThis(ChessBoardViewState.EMPTY)
 
-    fun start() {
-        game.start()
-    }
-
     internal class Factory(
         private val remoteBoardUrl: String = "http://10.0.2.2:8080",
         private val stockfishEngineUrl: String = "http://10.0.2.2:8081",

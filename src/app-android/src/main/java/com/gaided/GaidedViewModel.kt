@@ -6,13 +6,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.app.common.util.toPiece
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
+import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.chessui.model.EvaluationViewState
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.engine.openai.createOpenAiEngine
 import com.gaided.engine.stockfish.createStockfishEngine
-import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.SquareNotation
@@ -103,10 +103,6 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
 
     override val position = game.position
         .stateInThis(FenNotation.START_POSITION, SharingStarted.Eagerly)
-
-    fun start() {
-        game.start()
-    }
 
     override fun onSquareClick(square: SquareNotation) = launch {
         when {

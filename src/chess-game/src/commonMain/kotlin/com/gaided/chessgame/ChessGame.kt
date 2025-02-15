@@ -36,6 +36,35 @@ class ChessGame(
         _started.value = true
     }
 
+    suspend fun start(
+        playerWhite: Player,
+        playerBlack: Player,
+    ) {
+        _started.value = true
+
+        position.collect { position ->
+            val player = when (position.toNextMovePlayer()) {
+                Player.Color.White -> playerWhite
+                Player.Color.Black -> playerBlack
+                else -> null
+            } ?: return@collect
+
+            println("pos update, player = ${player.color::class.simpleName}")
+            suspend fun getCorrectMove(player: Player): MoveNotation {
+                var move = player.getMove()
+                println("   $move from ${player.color::class.simpleName}")
+                while (!isMoveCorrect(move)) {
+                    move = player.getMove()
+                }
+
+                return move
+            }
+
+            val move = getCorrectMove(player)
+            move(move, player.color)
+        }
+    }
+
     fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
         topMovesCache.combineTransform(started) { cache, started ->
             val cached = cache[position]
@@ -59,6 +88,7 @@ class ChessGame(
         }
 
     suspend fun move(move: MoveNotation, player: Player.Color = _position.value.toNextMovePlayer()) {
+        println("game.move($move)")
         val expectedPlayer = _position.value.toNextMovePlayer()
         check(expectedPlayer == player) {
             "Expected player to move $expectedPlayer, was $player"
@@ -66,6 +96,7 @@ class ChessGame(
 
         board.move(_position.value, move)
         val position = board.getPosition()
+        println("game.position <- $position")
         _position.value = position
 
         _history.update {

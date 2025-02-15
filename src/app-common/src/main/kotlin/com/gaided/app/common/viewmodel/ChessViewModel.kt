@@ -35,6 +35,10 @@ abstract class ChessViewModel(
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
+    fun start() {
+        game.start()
+    }
+
     fun onUserMessageShown() {
         _userMessage.value = ""
     }
