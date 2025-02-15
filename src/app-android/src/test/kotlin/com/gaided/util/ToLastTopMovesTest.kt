@@ -10,7 +10,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for black without evaluation`() {
         val arrows = toLastTopMoveArrows(
-            ChessGame.Player.Black,
+            ChessGame.Player.Color.Black,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -33,7 +33,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for white without evaluation`() {
         val arrows = toLastTopMoveArrows(
-            ChessGame.Player.White,
+            ChessGame.Player.Color.White,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -56,7 +56,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for white`() {
         val arrows = toLastTopMoveArrows(
-            ChessGame.Player.White,
+            ChessGame.Player.Color.White,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),
@@ -75,7 +75,7 @@ class ToLastTopMovesTest {
     @Test
     fun `test arrows for black`() {
         val arrows = toLastTopMoveArrows(
-            ChessGame.Player.Black,
+            ChessGame.Player.Color.Black,
             listOf(
                 Engine.TopMove("e1", "a2a4", 100),
                 Engine.TopMove("e1", "a2a3", 50),

@@ -7,7 +7,7 @@ import com.gaided.model.FenNotation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-internal class ToPlayerStateTest {
+internal class ToColorStateTest {
 
     @Test
     fun `waiting for top moves for other player`() {
@@ -17,7 +17,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = ChessGame.Player.Black,
+                player = ChessGame.Player.Color.Black,
                 position = FenNotation.START_POSITION,
                 topMoves = emptyList(),
                 isLoading = false
@@ -33,7 +33,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = ChessGame.Player.White,
+                player = ChessGame.Player.Color.White,
                 position = FenNotation.START_POSITION,
                 topMoves = emptyList(),
                 isLoading = true
@@ -49,7 +49,7 @@ internal class ToPlayerStateTest {
                 movesStats = emptyList()
             ),
             toPlayerState(
-                player = ChessGame.Player.White,
+                player = ChessGame.Player.Color.White,
                 position = FenNotation.START_POSITION,
                 topMoves = listOf(Engine.TopMove("any", "a2a4", 0)),
                 isLoading = false

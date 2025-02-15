@@ -44,7 +44,7 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     @Suppress("OPT_IN_USAGE")
-    private val oldTopMoves: SharedFlow<Pair<ChessGame.Player, List<Engine.TopMove>>> = game.history
+    private val oldTopMoves: SharedFlow<Pair<ChessGame.Player.Color, List<Engine.TopMove>>> = game.history
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
@@ -76,12 +76,12 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
 
     val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(ChessGame.Player.White, position, topMoves.moves, topMoves.inProgress)
+        toPlayerState(ChessGame.Player.Color.White, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val playerBlack = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY
-        toPlayerState(ChessGame.Player.Black, position, topMoves.moves, topMoves.inProgress)
+        toPlayerState(ChessGame.Player.Color.Black, position, topMoves.moves, topMoves.inProgress)
     }.stateInThis(PlayerViewState.EMPTY)
 
     val evaluation =
@@ -132,9 +132,9 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
         }
     }
 
-    private fun Set<ChessGame.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<ChessGame.Player, List<Engine.TopMove>>> {
+    private fun Set<ChessGame.HalfMove>.toOneBeforeLastTopMoves(): Flow<Pair<ChessGame.Player.Color, List<Engine.TopMove>>> {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
-            null -> flowOf(ChessGame.Player.White to emptyList())
+            null -> flowOf(ChessGame.Player.Color.White to emptyList())
             else -> game.getTopMoves(position.positionAfterMove).map {
                 position.positionAfterMove.toNextMovePlayer() to it.moves
             }
@@ -183,7 +183,7 @@ private fun Set<ChessGame.HalfMove>.oneBeforeLastHalfMoveOrNull(): ChessGame.Hal
     }
 
     if (this.size == 1) {
-        return ChessGame.HalfMove(0, "", ChessGame.Player.White, FenNotation.START_POSITION)
+        return ChessGame.HalfMove(0, "", ChessGame.Player.Color.White, FenNotation.START_POSITION)
     }
 
     val sortedHistory = this.sorted()

@@ -1,7 +1,7 @@
 package com.gaided.chessgame
 
 import com.gaided.engine.Engine
-import com.gaided.chessgame.ChessGame.Player
+import com.gaided.chessgame.ChessGame.Player.Color
 import com.gaided.model.FenNotation
 import com.gaided.board.stockfish.Board
 import io.mockk.coEvery
@@ -30,21 +30,21 @@ class ChessChessGameTest {
         val history by game.history.lastValue(backgroundScope, emptySet())
 
         assertTrue(history.isEmpty())
-        game.move("e2e4", Player.White)
+        game.move("e2e4", Color.White)
 
         assertEquals(
-            setOf(ChessGame.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE)),
+            setOf(ChessGame.HalfMove(1, "e2e4", Color.White, POSITION_AFTER_1ST_WHITE_MOVE)),
             history
         )
 
         // WHEN
-        game.move("e7e6", Player.Black)
+        game.move("e7e6", Color.Black)
 
         // THEN
         assertEquals(
             setOf(
-                ChessGame.HalfMove(1, "e2e4", Player.White, POSITION_AFTER_1ST_WHITE_MOVE),
-                ChessGame.HalfMove(1, "e7e6", Player.Black, FenNotation.START_POSITION)
+                ChessGame.HalfMove(1, "e2e4", Color.White, POSITION_AFTER_1ST_WHITE_MOVE),
+                ChessGame.HalfMove(1, "e7e6", Color.Black, FenNotation.START_POSITION)
             ),
             history
         )

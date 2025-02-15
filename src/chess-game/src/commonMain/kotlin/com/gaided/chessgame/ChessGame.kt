@@ -58,7 +58,7 @@ class ChessGame(
             }
         }
 
-    suspend fun move(move: MoveNotation, player: Player = _position.value.toNextMovePlayer()) {
+    suspend fun move(move: MoveNotation, player: Player.Color = _position.value.toNextMovePlayer()) {
         val expectedPlayer = _position.value.toNextMovePlayer()
         check(expectedPlayer == player) {
             "Expected player to move $expectedPlayer, was $player"
@@ -74,9 +74,9 @@ class ChessGame(
     }
 
     private fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
-        "w" -> ChessGame.Player.White
-        "b" -> ChessGame.Player.Black
-        else -> ChessGame.Player.None
+        "w" -> Player.Color.White
+        "b" -> Player.Color.Black
+        else -> Player.Color.None
     }
 
     suspend fun isMoveCorrect(move: MoveNotation) =
@@ -90,7 +90,7 @@ class ChessGame(
     data class HalfMove(
         val number: Int,
         val move: MoveNotation,
-        val player: Player,
+        val player: Player.Color,
         val positionAfterMove: FenNotation,
     ) {
 
@@ -108,12 +108,12 @@ class ChessGame(
         }
     }
 
-    private fun Set<HalfMove>.add(player: Player, move: MoveNotation, fenPosition: String): Set<HalfMove> {
+    private fun Set<HalfMove>.add(player: Player.Color, move: MoveNotation, fenPosition: String): Set<HalfMove> {
         val lastMove = this.getLastMove()
 
         if (lastMove == null) {
             require(this.isEmpty())
-            require(player == Player.White)
+            require(player == Player.Color.White)
             return this + HalfMove(1, move, player, FenNotation.fromFenString(fenPosition))
         }
 
@@ -121,7 +121,7 @@ class ChessGame(
             "Move of player $player already exists in the history: $lastMove"
         }
 
-        val newMoveNumber = if (player == Player.White) {
+        val newMoveNumber = if (player == Player.Color.White) {
             lastMove.number + 1
         } else {
             lastMove.number
@@ -130,18 +130,23 @@ class ChessGame(
         return this + HalfMove(newMoveNumber, move, player, FenNotation.fromFenString(fenPosition))
     }
 
-    sealed class Player {
-        object White : Player()
-        object Black : Player()
-        object None : Player()
+    interface Player {
+        val color: Color
+        suspend fun getMove(): MoveNotation
+
+        sealed class Color {
+            data object White : Color()
+            data object Black : Color()
+            data object None : Color()
+        }
     }
 }
 
 internal fun Set<ChessGame.HalfMove>.sorted(): List<ChessGame.HalfMove> = sortedWith { o1, o2 ->
     when {
         o1.number != o2.number -> o1.number - o2.number
-        o1.player == ChessGame.Player.White -> -1
-        o2.player == ChessGame.Player.White -> 1
+        o1.player == ChessGame.Player.Color.White -> -1
+        o2.player == ChessGame.Player.Color.White -> 1
         else -> 0
     }
 }

@@ -10,9 +10,9 @@ import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.SquareNotation
 
-internal fun toLastTopMoveArrows(player: ChessGame.Player, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
+internal fun toLastTopMoveArrows(player: ChessGame.Player.Color, topMoves: List<Engine.TopMove>): Set<ChessBoardViewState.Arrow> {
     val comparator = Comparator<Engine.TopMove> { o1, o2 ->
-        if (player == ChessGame.Player.White) {
+        if (player == ChessGame.Player.Color.White) {
             o2.centipawn!! - o1.centipawn!!
         } else {
             o1.centipawn!! - o2.centipawn!!
@@ -66,8 +66,8 @@ private fun Set<ChessGame.HalfMove>.getLastMove(): ChessGame.HalfMove? =
 internal fun Set<ChessGame.HalfMove>.sorted(): List<ChessGame.HalfMove> = sortedWith { o1, o2 ->
     when {
         o1.number != o2.number -> o1.number - o2.number
-        o1.player == ChessGame.Player.White -> -1
-        o2.player == ChessGame.Player.White -> 1
+        o1.player == ChessGame.Player.Color.White -> -1
+        o2.player == ChessGame.Player.Color.White -> 1
         else -> 0
     }
 }
@@ -78,7 +78,7 @@ internal fun MoveNotation.toLastMoveSquares() = setOf(
 )
 
 internal fun toPlayerState(
-    player: ChessGame.Player,
+    player: ChessGame.Player.Color,
     position: FenNotation,
     topMoves: List<Engine.TopMove>,
     isLoading: Boolean
@@ -86,7 +86,7 @@ internal fun toPlayerState(
     val nextMovePlayer = position.toNextMovePlayer()
 
     return when {
-        nextMovePlayer == ChessGame.Player.None ->
+        nextMovePlayer == ChessGame.Player.Color.None ->
             PlayerViewState.EMPTY
 
         nextMovePlayer == player ->
@@ -113,9 +113,9 @@ private fun toPlayerViewState(position: FenNotation, isLoading: Boolean): Player
 }
 
 internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
-    "w" -> ChessGame.Player.White
-    "b" -> ChessGame.Player.Black
-    else -> ChessGame.Player.None
+    "w" -> ChessGame.Player.Color.White
+    "b" -> ChessGame.Player.Color.Black
+    else -> ChessGame.Player.Color.None
 }
 
 internal fun Engine.TopMove.toArrow(color: Int) = ChessBoardViewState.Arrow(
