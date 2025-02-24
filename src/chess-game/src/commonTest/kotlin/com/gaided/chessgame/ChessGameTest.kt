@@ -19,7 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class ChessChessGameTest {
+class ChessGameTest {
 
     @Test
     fun `moves with players`() = runTest(UnconfinedTestDispatcher()) {

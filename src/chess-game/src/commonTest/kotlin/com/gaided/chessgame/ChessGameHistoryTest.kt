@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class ChessChessGameHistoryTest {
+internal class ChessGameHistoryTest {
     private lateinit var game: ChessGame
     private lateinit var position: FenNotation
 
@@ -51,7 +51,7 @@ internal class ChessChessGameHistoryTest {
         move: ChessGame.HalfMove,
         getLastHistoryValue: () -> Set<ChessGame.HalfMove>
     ) {
-        this@ChessChessGameHistoryTest.position = move.positionAfterMove
+        this@ChessGameHistoryTest.position = move.positionAfterMove
         move(move.move, move.player)
         assertEquals(move, getLastHistoryValue().getLastMove())
     }
