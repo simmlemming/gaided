@@ -2,6 +2,7 @@ package com.gaided.chessgame
 
 import com.gaided.board.stockfish.Board
 import com.gaided.engine.Engine
+import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import kotlinx.coroutines.flow.Flow
@@ -50,20 +51,52 @@ class ChessGame(
             } ?: return@collect
 
             println("pos update, player = ${player.color::class.simpleName}")
-            suspend fun getCorrectMove(player: Player): MoveNotation {
-                var move = player.getMove()
+            suspend fun getCorrectMove(player: Player): MoveNotation? {
+                var move = player.getMove(position)
                 println("   $move from ${player.color::class.simpleName}")
-                while (!isMoveCorrect(move)) {
-                    move = player.getMove()
+                while (move != null && !isMoveCorrect(move)) {
+                    move = player.getMove(position)
                 }
 
                 return move
             }
 
             val move = getCorrectMove(player)
-            move(move, player.color)
+            if (move != null) {
+                move(move, player.color)
+            } else {
+                Logger.e("move is null", null)
+            }
         }
     }
+
+//    val state = flow<State> {
+//        var state: State = State.WaitingForMove(TODO())
+//
+//        while (state !is State.Ended) {
+//            val move = state.player.getMove(state.position)
+//            move(move!!)
+//            state = State.WaitingForMove(TODO())
+//        }
+//
+//        board.getPosition()
+//
+//    }
+
+//    sealed class State(val position: FenNotation) {
+//        class WaitingForMove(val player: Player, position: FenNotation) : State(position)
+//        class Ended(val result: String, position: FenNotation) : State(position)
+//    }
+
+//    private suspend fun loop(): Result {
+//        position.
+//    }
+
+//    sealed class Result {
+//        data class Win(val player: Player) : Result()
+//        data object Draw : Result()
+//        data class Error(val message: String) : Result()
+//    }
 
     fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
         topMovesCache.combineTransform(started) { cache, started ->
@@ -163,7 +196,7 @@ class ChessGame(
 
     interface Player {
         val color: Color
-        suspend fun getMove(): MoveNotation
+        suspend fun getMove(position: FenNotation): MoveNotation?
 
         sealed class Color {
             data object White : Color()

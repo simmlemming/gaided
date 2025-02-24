@@ -49,5 +49,5 @@ private data class StockfishApiTopMove(
     @SerializedName("Move")
     val move: String,
     @SerializedName("Centipawn")
-    val centipawn: Int
+    val centipawn: Int // TODO: handle "{'Move': 'h8d8', 'Centipawn': None, 'Mate': 13}"
 )

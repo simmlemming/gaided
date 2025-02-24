@@ -3,6 +3,7 @@ package com.gaided.app.common.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gaided.chessgame.ChessGame
+import com.gaided.chessgame.ChessGame.Player
 import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
@@ -37,6 +38,13 @@ abstract class ChessViewModel(
 
     fun start() {
         game.start()
+    }
+
+    fun startWithPlayers(
+        playerWhite: Player,
+        playerBlack: Player,
+    ) = launch {
+        game.start(playerWhite, playerBlack)
     }
 
     fun onUserMessageShown() {

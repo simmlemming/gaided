@@ -1,6 +1,7 @@
 package com.gaided.engine
 
 import com.gaided.model.FenNotation
+import com.gaided.model.MoveNotation
 
 public interface Engine {
     public val name: String
@@ -10,7 +11,7 @@ public interface Engine {
 
     public data class TopMove(
         public val source: String,
-        public val move: String,
+        public val move: MoveNotation,
         public val centipawn: Int? = null
     )
 }

@@ -3,6 +3,8 @@ package com.gaided
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.gaided.app.common.util.sorted
+import com.gaided.app.common.util.toLastMoveSquares
 import com.gaided.app.common.util.toPiece
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
@@ -16,8 +18,6 @@ import com.gaided.engine.stockfish.createStockfishEngine
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.SquareNotation
-import com.gaided.util.sorted
-import com.gaided.util.toLastMoveSquares
 import com.gaided.util.toLastTopMoveArrows
 import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPlayerState
