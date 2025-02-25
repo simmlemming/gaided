@@ -2,8 +2,11 @@ package com.gaided.app.common.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gaided.app.common.util.toLastMoveSquares
+import com.gaided.app.common.util.toPiece
 import com.gaided.chessgame.ChessGame
 import com.gaided.chessgame.ChessGame.Player
+import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -35,6 +39,23 @@ abstract class ChessViewModel(
 
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
+
+    val board =
+        combine(
+            game.position,
+            game.history,
+            selectedSquare,
+            pendingMove
+        ) { position, history, selectedSquare, pendingMove ->
+            ChessBoardViewState(
+                pieces = position
+                    .allPieces()
+                    .let { if (pendingMove == null) it else it.move(pendingMove) }
+                    .map { it.toPiece(selectedSquare, null) }
+                    .toSet(),
+                overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
+            )
+        }.stateInThis(ChessBoardViewState.EMPTY)
 
     fun start() {
         game.start()

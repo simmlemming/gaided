@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.app.common.util.sorted
-import com.gaided.app.common.util.toLastMoveSquares
-import com.gaided.app.common.util.toPiece
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
 import com.gaided.chessgame.ChessGame
@@ -48,31 +46,20 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
         .flatMapLatest { it.toOneBeforeLastTopMoves() }
         .shareIn(safeViewModelScope, SharingStarted.WhileSubscribed(), 1)
 
+    private val arrows: Flow<Set<ChessBoardViewState.Arrow>> =
+        combine(topMoves, oldTopMoves, selectedSquare, pendingMove) { topMoves, oldTopMoves, selectedSquare, pendingMove ->
+            toTopMoveArrows(topMoves.moves, selectedSquare, pendingMove) +
+                    toLastTopMoveArrows(oldTopMoves.first, oldTopMoves.second)
+        }
+
+    val boardWithArrows = combine(board, arrows) { board, arrows ->
+        board.copy(arrows = arrows)
+    }.stateInThis(ChessBoardViewState.EMPTY)
+
     @Suppress("OPT_IN_USAGE")
     private val oldPosition: StateFlow<FenNotation> = game.history
         .mapLatest { it.toOneBeforeLastPosition() }
         .stateInThis(FenNotation.START_POSITION)
-
-    val board =
-        combine(
-            game.position,
-            topMoves,
-            oldTopMoves,
-            game.history,
-            selectedSquare,
-            pendingMove
-        ) { position, topMoves, oldTopMoves, history, selectedSquare, pendingMove ->
-            ChessBoardViewState(
-                pieces = position
-                    .allPieces()
-                    .let { if (pendingMove == null) it else it.move(pendingMove) }
-                    .map { it.toPiece(selectedSquare, null) }
-                    .toSet(),
-                arrows = toTopMoveArrows(topMoves.moves, selectedSquare, pendingMove) +
-                        toLastTopMoveArrows(oldTopMoves.first, oldTopMoves.second),
-                overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
-            )
-        }.stateInThis(ChessBoardViewState.EMPTY)
 
     val playerWhite = combine(game.started, game.position, topMoves) { started, position, topMoves ->
         if (!started) return@combine PlayerViewState.EMPTY

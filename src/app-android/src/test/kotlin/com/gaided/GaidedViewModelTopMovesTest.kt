@@ -35,7 +35,7 @@ internal class GaidedViewModelTopMovesTest : GaidedViewModelTestCase() {
                 Arrow("g1", "f3", Arrow.COLOR_SUGGESTION),
                 Arrow("e2", "e4", Arrow.COLOR_SUGGESTION)
             ),
-            viewModel.board.value.arrows
+            viewModel.boardWithArrows.value.arrows
         )
 
         // WHEN white moves
@@ -54,7 +54,7 @@ internal class GaidedViewModelTopMovesTest : GaidedViewModelTestCase() {
                 Arrow("g1", "f3", Arrow.colorByTopMoveIndex(1)),
                 Arrow("e2", "e4", Arrow.colorByTopMoveIndex(2))
             ),
-            viewModel.board.value.arrows
+            viewModel.boardWithArrows.value.arrows
         )
 
         // WHEN black moves
@@ -74,7 +74,7 @@ internal class GaidedViewModelTopMovesTest : GaidedViewModelTestCase() {
                 Arrow("e7", "e5", Arrow.colorByTopMoveIndex(0)),
                 Arrow("b7", "b6", Arrow.colorByTopMoveIndex(1)),
             ),
-            viewModel.board.value.arrows
+            viewModel.boardWithArrows.value.arrows
         )
     }
 }

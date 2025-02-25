@@ -29,10 +29,10 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         // GIVEN
         val viewModel = createViewModelAndCollectState()
         assertNull(
-            viewModel.board["a4"]
+            viewModel.boardWithArrows["a4"]
         )
         assertNull(
-            viewModel.board["a3"]
+            viewModel.boardWithArrows["a3"]
         )
 
         // WHEN empty squares are clicked
@@ -43,10 +43,10 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         // THEN nothing happens
         confirmVerified(board)
         assertNull(
-            viewModel.board["a4"]
+            viewModel.boardWithArrows["a4"]
         )
         assertNull(
-            viewModel.board["a3"]
+            viewModel.boardWithArrows["a3"]
         )
     }
 
@@ -61,12 +61,12 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         coEvery { engine1.getTopMoves(any(), any()) } returns emptyList()
 
         val viewModel = createViewModelAndCollectState()
-        assertEquals(32, viewModel.board.value.pieces.size)
+        assertEquals(32, viewModel.boardWithArrows.value.pieces.size)
         assertNotNull(
-            viewModel.board["g1"]
+            viewModel.boardWithArrows["g1"]
         )
         assertNull(
-            viewModel.board["f3"]
+            viewModel.boardWithArrows["f3"]
         )
 
         // WHEN a valid move is clicked
@@ -75,10 +75,10 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
 
         // THEN piece is moved
         assertNull(
-            viewModel.board["g1"]
+            viewModel.boardWithArrows["g1"]
         )
         assertNotNull(
-            viewModel.board["f3"]
+            viewModel.boardWithArrows["f3"]
         )
 
         // WHEN an empty square is clicked again
@@ -88,13 +88,13 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         // THEN nothing happens
         confirmVerified(board)
         assertNull(
-            viewModel.board["g1"]
+            viewModel.boardWithArrows["g1"]
         )
         assertNull(
-            viewModel.board["a3"]
+            viewModel.boardWithArrows["a3"]
         )
         assertNotNull(
-            viewModel.board["f3"]
+            viewModel.boardWithArrows["f3"]
         )
     }
 
@@ -106,7 +106,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
 
         val viewModel = createViewModelAndCollectState()
         assertNotNull(
-            viewModel.board["g1"]
+            viewModel.boardWithArrows["g1"]
         )
 
         // WHEN
@@ -116,10 +116,10 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         // THEN
         coVerify { board.isMoveCorrect(POSITION_AT_START, "g1b5") }
         assertNotNull(
-            viewModel.board["g1"]
+            viewModel.boardWithArrows["g1"]
         )
         assertNull(
-            viewModel.board["b5"]
+            viewModel.boardWithArrows["b5"]
         )
     }
 
@@ -137,15 +137,15 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         val expectedArrow = Arrow("g1", "f3", Arrow.COLOR_SUGGESTION)
 
         assertTrue(
-            viewModel.board.value.arrows.contains(expectedArrow)
+            viewModel.boardWithArrows.value.arrows.contains(expectedArrow)
         )
 
         assertNotNull(
-            viewModel.board[expectedArrow.start]
+            viewModel.boardWithArrows[expectedArrow.start]
         )
 
         assertNull(
-            viewModel.board[expectedArrow.end]
+            viewModel.boardWithArrows[expectedArrow.end]
         )
 
         // WHEN
@@ -154,11 +154,11 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         // THEN
         coVerify { board.move(any(), "g1f3") }
         assertNull(
-            viewModel.board[expectedArrow.start]
+            viewModel.boardWithArrows[expectedArrow.start]
         )
 
         assertNotNull(
-            viewModel.board[expectedArrow.end]
+            viewModel.boardWithArrows[expectedArrow.end]
         )
     }
 
@@ -177,7 +177,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         viewModel.start()
         assertEquals(
             3,
-            viewModel.board.value.arrows.size
+            viewModel.boardWithArrows.value.arrows.size
         )
 
         // WHEN
@@ -185,11 +185,11 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
 
         // THEN two arrows are shown
         assertTrue(
-            viewModel.board.value.arrows.all { it.start == "d2" }
+            viewModel.boardWithArrows.value.arrows.all { it.start == "d2" }
         )
         assertEquals(
             2,
-            viewModel.board.value.arrows.size
+            viewModel.boardWithArrows.value.arrows.size
         )
         coVerify(exactly = 0) { board.move(any(), any()) }
 

@@ -52,7 +52,7 @@ internal abstract class GaidedViewModelTestCase {
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()
         .also {
             val unconfinedScope = backgroundScope + UnconfinedTestDispatcher()
-            unconfinedScope.launch { it.board.collect() }
+            unconfinedScope.launch { it.boardWithArrows.collect() }
             unconfinedScope.launch { it.evaluation.collect() }
             unconfinedScope.launch { it.playerWhite.collect() }
             unconfinedScope.launch { it.playerBlack.collect() }

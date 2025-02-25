@@ -29,7 +29,7 @@ private fun FortressApp() {
         factory = FortressViewModel.Factory()
     )
 
-    val chessBoard by viewModel.chessBoardViewState.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
+    val chessBoard by viewModel.board.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
 
     LaunchedEffect(viewModel) {
         viewModel.startFortressGame(FortressViewModel.Player.STOCKFISH, FortressViewModel.Player.STOCKFISH)

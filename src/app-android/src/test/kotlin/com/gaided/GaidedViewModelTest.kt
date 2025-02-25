@@ -22,7 +22,7 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
     fun `initial state`() = runTest {
         viewModel = createViewModelAndCollectState()
 
-        with(viewModel.board.value) {
+        with(viewModel.boardWithArrows.value) {
             assertEquals(32, pieces.size)
             assertTrue(arrows.isEmpty())
             assertTrue(overlaySquares.isEmpty())
@@ -61,7 +61,7 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
             Arrow("e2", "e4", Arrow.COLOR_SUGGESTION),
         )
 
-        with(viewModel.board.value) {
+        with(viewModel.boardWithArrows.value) {
             assertEquals(32, pieces.size)
             assertEquals(expectedArrows, arrows)
             assertTrue(overlaySquares.isEmpty())
@@ -101,9 +101,9 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
 
         assertEquals(
             PIECE_WHITE_KNIGHT_AT_G1,
-            viewModel.board.pieceAt("g1")
+            viewModel.boardWithArrows.pieceAt("g1")
         )
-        assertNull(viewModel.board.pieceAt("f3"))
+        assertNull(viewModel.boardWithArrows.pieceAt("f3"))
 
         // WHEN a square with one top move is clicked
         evaluationResponse = EVALUATION_150
@@ -129,10 +129,10 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
         confirmVerified(board, engine1)
 
         // ... and piece is moved
-        assertNull(viewModel.board.pieceAt("g1"))
+        assertNull(viewModel.boardWithArrows.pieceAt("g1"))
         assertEquals(
             PIECE_WHITE_KNIGHT_AT_F3,
-            viewModel.board.pieceAt("f3")
+            viewModel.boardWithArrows.pieceAt("f3")
         )
 
         // ... and state is updated
@@ -158,7 +158,7 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
                 Arrow("g1", "f3", Arrow.colorByTopMoveIndex(1)),
                 Arrow("e2", "e4", Arrow.colorByTopMoveIndex(2))
             ),
-            viewModel.board.value.arrows
+            viewModel.boardWithArrows.value.arrows
         )
 
         // ... and last move is highlighted
@@ -167,7 +167,7 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
             ChessBoardViewState.OverlaySquare("f3", ChessBoardViewState.OverlaySquare.COLOR_LAST_MOVE)
         )
 
-        assertEquals(expectedOverlaySquares, viewModel.board.value.overlaySquares)
+        assertEquals(expectedOverlaySquares, viewModel.boardWithArrows.value.overlaySquares)
     }
 
     private fun StateFlow<ChessBoardViewState>.pieceAt(square: SquareNotation) =

@@ -54,7 +54,7 @@ internal abstract class FortressViewModelTestCase {
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()
         .also {
             val unconfinedScope = backgroundScope + UnconfinedTestDispatcher()
-            unconfinedScope.launch { it.chessBoardViewState.collect() }
+            unconfinedScope.launch { it.board.collect() }
         }
 
     protected val TOP_MOVES_AT_START = listOf(

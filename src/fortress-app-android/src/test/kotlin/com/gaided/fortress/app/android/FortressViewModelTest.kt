@@ -29,7 +29,7 @@ internal class FortressViewModelTest : FortressViewModelTestCase() {
         val viewModel = createViewModelAndCollectState()
 
         // THEN board has pieces
-        with(viewModel.chessBoardViewState.value) {
+        with(viewModel.board.value) {
             assertEquals(32, pieces.size)
             assertFalse(pieces["a2"]!!.isElevated)
         }
@@ -39,7 +39,7 @@ internal class FortressViewModelTest : FortressViewModelTestCase() {
 
         // THEN piece on a2 is elevated
         assertTrue(
-            viewModel.chessBoardViewState["a2"]!!.isElevated
+            viewModel.board["a2"]!!.isElevated
         )
 
         // WHEN a2 is clicked again
@@ -47,7 +47,7 @@ internal class FortressViewModelTest : FortressViewModelTestCase() {
 
         // THEN piece on b2 is elevated
         assertFalse(
-            viewModel.chessBoardViewState["a2"]!!.isElevated
+            viewModel.board["a2"]!!.isElevated
         )
     }
 
@@ -65,8 +65,8 @@ internal class FortressViewModelTest : FortressViewModelTestCase() {
         viewModel.onSquareClick("a3")
 
         // THEN board is updated
-        assertNull(viewModel.chessBoardViewState["a2"])
-        assertNotNull(viewModel.chessBoardViewState["a3"])
+        assertNull(viewModel.board["a2"])
+        assertNotNull(viewModel.board["a3"])
     }
 
     @Test
@@ -82,8 +82,8 @@ internal class FortressViewModelTest : FortressViewModelTestCase() {
         viewModel.onSquareClick("a3")
 
         // THEN board is not updated
-        assertNotNull(viewModel.chessBoardViewState["a2"])
-        assertNull(viewModel.chessBoardViewState["a3"])
+        assertNotNull(viewModel.board["a2"])
+        assertNull(viewModel.board["a3"])
     }
 }
 

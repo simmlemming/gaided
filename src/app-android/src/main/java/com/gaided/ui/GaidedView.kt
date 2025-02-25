@@ -42,7 +42,7 @@ fun GaidedView(modifier: Modifier = Modifier) = GameTheme {
             )
         )
 
-        val boardViewState by viewModel.board.collectAsState()
+        val boardViewState by viewModel.boardWithArrows.collectAsState()
         val evaluationViewState by viewModel.evaluation.collectAsState()
         val playerWhiteViewState by viewModel.playerWhite.collectAsState()
         val playerBlackViewState by viewModel.playerBlack.collectAsState()
