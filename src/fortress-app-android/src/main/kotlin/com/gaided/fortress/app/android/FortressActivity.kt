@@ -8,9 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.logger.Logger
-
 
 class FortressActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +27,9 @@ private fun FortressApp() {
         factory = FortressViewModel.Factory()
     )
 
-    val chessBoard by viewModel.board.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
+    val chessBoard by viewModel.board.collectAsStateWithLifecycle()
+    val playerWhite by viewModel.playerWhite.collectAsStateWithLifecycle()
+    val playerBlack by viewModel.playerBlack.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.startFortressGame(FortressViewModel.Player.STOCKFISH, FortressViewModel.Player.STOCKFISH)
@@ -40,6 +40,8 @@ private fun FortressApp() {
 
     FortressScreen(
         chessBoard = chessBoard,
+        playerWhiteState = playerWhite,
+        playerBlackState = playerBlack,
         onSquareClick = viewModel::onSquareClick,
         onSquareLongClick = viewModel::onSquareLongClick,
     )

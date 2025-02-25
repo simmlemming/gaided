@@ -1,7 +1,7 @@
 package com.gaided.util
 
+import com.gaided.app.common.util.toNextMovePlayerColor
 import com.gaided.chessui.model.ChessBoardViewState
-import com.gaided.chessui.model.ChessBoardViewState.OverlaySquare
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.engine.openai.OPEN_AI_ENGINE_NAME
@@ -58,7 +58,7 @@ internal fun toPlayerState(
     topMoves: List<Engine.TopMove>,
     isLoading: Boolean
 ): PlayerViewState {
-    val nextMovePlayer = position.toNextMovePlayer()
+    val nextMovePlayer = position.toNextMovePlayerColor()
 
     return when {
         nextMovePlayer == ChessGame.Player.Color.None ->
@@ -85,12 +85,6 @@ private fun toPlayerViewState(position: FenNotation, isLoading: Boolean): Player
         progressVisible = isLoading,
         movesStats = emptyList()
     )
-}
-
-internal fun FenNotation.toNextMovePlayer() = when (nextMoveColor.lowercase()) {
-    "w" -> ChessGame.Player.Color.White
-    "b" -> ChessGame.Player.Color.Black
-    else -> ChessGame.Player.Color.None
 }
 
 internal fun Engine.TopMove.toArrow(color: Int) = ChessBoardViewState.Arrow(

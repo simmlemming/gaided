@@ -2,6 +2,7 @@ package com.gaided.app.common.util
 
 import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.ChessBoardViewState.OverlaySquare
+import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.PieceNotation
 import com.gaided.model.SquareNotation
@@ -42,4 +43,10 @@ fun Set<ChessGame.HalfMove>.sorted(): List<ChessGame.HalfMove> = sortedWith { o1
         o2.player == ChessGame.Player.Color.White -> 1
         else -> 0
     }
+}
+
+fun FenNotation.toNextMovePlayerColor() = when (nextMoveColor.lowercase()) {
+    "w" -> ChessGame.Player.Color.White
+    "b" -> ChessGame.Player.Color.Black
+    else -> ChessGame.Player.Color.None
 }

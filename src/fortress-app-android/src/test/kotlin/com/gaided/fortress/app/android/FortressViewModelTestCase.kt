@@ -55,6 +55,8 @@ internal abstract class FortressViewModelTestCase {
         .also {
             val unconfinedScope = backgroundScope + UnconfinedTestDispatcher()
             unconfinedScope.launch { it.board.collect() }
+            unconfinedScope.launch { it.playerWhite.collect() }
+            unconfinedScope.launch { it.playerBlack.collect() }
         }
 
     protected val TOP_MOVES_AT_START = listOf(

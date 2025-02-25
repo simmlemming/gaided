@@ -42,22 +42,21 @@ abstract class ChessViewModel(
     // Needed only for onSquareClick() to find the piece.
     private val currentPosition = game.position.stateInThis(FenNotation.START_POSITION)
 
-    val board =
-        combine(
-            game.position,
-            game.history,
-            selectedSquare,
-            pendingMove
-        ) { position, history, selectedSquare, pendingMove ->
-            ChessBoardViewState(
-                pieces = position
-                    .allPieces()
-                    .let { if (pendingMove == null) it else it.move(pendingMove) }
-                    .map { it.toPiece(selectedSquare, null) }
-                    .toSet(),
-                overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
-            )
-        }.stateInThis(ChessBoardViewState.EMPTY)
+    val board = combine(
+        game.position,
+        game.history,
+        selectedSquare,
+        pendingMove
+    ) { position, history, selectedSquare, pendingMove ->
+        ChessBoardViewState(
+            pieces = position
+                .allPieces()
+                .let { if (pendingMove == null) it else it.move(pendingMove) }
+                .map { it.toPiece(selectedSquare, null) }
+                .toSet(),
+            overlaySquares = pendingMove?.toLastMoveSquares() ?: history.toLastMoveSquares()
+        )
+    }.stateInThis(ChessBoardViewState.EMPTY)
 
     fun start() {
         game.start()

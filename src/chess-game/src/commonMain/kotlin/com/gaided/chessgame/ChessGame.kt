@@ -37,6 +37,7 @@ class ChessGame(
         _started.value = true
     }
 
+    // TODO: Add start position, for example "5R2/8/K7/8/8/8/7k/6q1 w - - 0 77"
     suspend fun start(
         playerWhite: Player,
         playerBlack: Player,

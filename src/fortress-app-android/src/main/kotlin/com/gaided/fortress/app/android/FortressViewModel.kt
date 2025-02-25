@@ -8,14 +8,27 @@ import com.gaided.board.stockfish.Board
 import com.gaided.chessgame.ChessGame
 import com.gaided.engine.Engine
 import com.gaided.engine.stockfish.createStockfishEngine
+import com.gaided.fortress.app.android.ui.FortressPlayerViewState
+import com.gaided.fortress.app.android.util.toFortressPLayerViewState
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlin.reflect.KClass
 
 internal class FortressViewModel(
     private val game: ChessGame,
     private val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player,
 ) : ChessViewModel(game) {
+
+    val playerWhite: StateFlow<FortressPlayerViewState> = game.position.map {
+        it.toFortressPLayerViewState(ChessGame.Player.Color.White)
+    }.stateInThis(FortressPlayerViewState(false))
+
+    val playerBlack: StateFlow<FortressPlayerViewState> = game.position.map {
+        it.toFortressPLayerViewState(ChessGame.Player.Color.Black)
+    }.stateInThis(FortressPlayerViewState(false))
+
     fun startFortressGame(playerWhite: Player, playerBlack: Player) {
         startWithPlayers(
             playerWhite = createPlayer(playerWhite, ChessGame.Player.Color.White),
