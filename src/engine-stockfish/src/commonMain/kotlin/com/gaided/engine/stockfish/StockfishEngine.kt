@@ -37,7 +37,7 @@ internal class StockfishEngine internal constructor(
             val type = object : TypeToken<List<StockfishApiTopMove>>() {}.type
             val topMoves = gson
                 .fromJson<List<StockfishApiTopMove>>(moves, type)
-                .map { TopMove(name, it.move, it.centipawn) }
+                .map { TopMove(name, it.move, it.centipawn.toIntOrNull(), it.mate.toIntOrNull()) }
 
             Logger.i("$name: ${topMoves.map { it.move }}")
 
@@ -49,5 +49,7 @@ private data class StockfishApiTopMove(
     @SerializedName("Move")
     val move: String,
     @SerializedName("Centipawn")
-    val centipawn: Int // TODO: handle "{'Move': 'h8d8', 'Centipawn': None, 'Mate': 13}"
+    val centipawn: String,
+    @SerializedName("Mate")
+    val mate: String,
 )

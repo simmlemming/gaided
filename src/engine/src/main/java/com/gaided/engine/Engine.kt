@@ -12,6 +12,7 @@ public interface Engine {
     public data class TopMove(
         public val source: String,
         public val move: MoveNotation,
-        public val centipawn: Int? = null
+        public val centipawn: Int? = null,
+        public val mate: Int? = null,
     )
 }

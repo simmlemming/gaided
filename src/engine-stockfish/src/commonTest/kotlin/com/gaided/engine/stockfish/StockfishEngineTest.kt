@@ -20,7 +20,7 @@ class StockfishEngineTest {
     }
 
     @Test
-    fun `valid input`() = runTest {
+    fun `input with centipawn evaluation`() = runTest {
         coEvery {
             api.getTopMoves(
                 any(),
@@ -34,6 +34,25 @@ class StockfishEngineTest {
                 TopMove(sut.name, "f1g2", -580),
                 TopMove(sut.name, "f1g1", -736),
                 TopMove(sut.name, "f1e1", -949)
+            ),
+            sut.getTopMoves()
+        )
+    }
+
+    @Test
+    fun `input with mate`() = runTest {
+        coEvery {
+            api.getTopMoves(
+                any(),
+                any()
+            )
+        } returns "[{'Move': 'f1g2', 'Centipawn': None, 'Mate': 3}, {'Move': 'f1g1', 'Centipawn': None, 'Mate': -1}]"
+        sut = StockfishEngine(api = api)
+
+        assertEquals(
+            listOf(
+                TopMove(sut.name, "f1g2", null, 3),
+                TopMove(sut.name, "f1g1", null, -1),
             ),
             sut.getTopMoves()
         )
