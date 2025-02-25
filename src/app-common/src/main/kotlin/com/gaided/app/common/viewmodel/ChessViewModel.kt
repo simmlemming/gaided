@@ -40,10 +40,7 @@ abstract class ChessViewModel(
         game.start()
     }
 
-    fun startWithPlayers(
-        playerWhite: Player,
-        playerBlack: Player,
-    ) = launch {
+    fun startWithPlayers(playerWhite: Player, playerBlack: Player) = launch {
         game.start(playerWhite, playerBlack)
     }
 

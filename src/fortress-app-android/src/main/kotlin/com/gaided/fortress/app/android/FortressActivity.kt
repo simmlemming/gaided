@@ -32,7 +32,7 @@ private fun FortressApp() {
     val chessBoard by viewModel.chessBoardViewState.collectAsStateWithLifecycle(ChessBoardViewState.EMPTY)
 
     LaunchedEffect(viewModel) {
-        viewModel.startFortressGame()
+        viewModel.startFortressGame(FortressViewModel.Player.STOCKFISH, FortressViewModel.Player.STOCKFISH)
         viewModel.userMessage.collect {
             Logger.i(it)
         }

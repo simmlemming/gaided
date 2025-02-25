@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.just
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -16,6 +17,11 @@ import kotlin.test.assertTrue
 
 
 internal class FortressViewModelTest : FortressViewModelTestCase() {
+
+    @Before
+    fun setUpFortressTest() {
+        createPlayer = { _, _ -> TODO() }
+    }
 
     @Test
     fun onSquareClick() = runTest {

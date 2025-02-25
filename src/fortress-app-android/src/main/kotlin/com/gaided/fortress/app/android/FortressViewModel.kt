@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlin.reflect.KClass
 
-internal class FortressViewModel(private val game: ChessGame) : ChessViewModel(game) {
+internal class FortressViewModel(
+    private val game: ChessGame,
+    private val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player,
+) : ChessViewModel(game) {
     override val position: StateFlow<FenNotation> =
         game.position.stateInThis(FenNotation.START_POSITION)
 
@@ -33,19 +36,10 @@ internal class FortressViewModel(private val game: ChessGame) : ChessViewModel(g
             )
         }.stateInThis(ChessBoardViewState.EMPTY)
 
-    fun startFortressGame() {
-        // TODO: Initialize players properly.
-        val engine = createStockfishEngine(url = "http://10.0.2.2:8081")
-
+    fun startFortressGame(playerWhite: Player, playerBlack: Player) {
         startWithPlayers(
-            playerWhite = Bot(
-                color = ChessGame.Player.Color.White,
-                engine = engine,
-            ),
-            playerBlack = Bot(
-                color = ChessGame.Player.Color.Black,
-                engine = engine,
-            ),
+            playerWhite = createPlayer(playerWhite, ChessGame.Player.Color.White),
+            playerBlack = createPlayer(playerBlack, ChessGame.Player.Color.Black),
         )
     }
 
@@ -55,12 +49,26 @@ internal class FortressViewModel(private val game: ChessGame) : ChessViewModel(g
     ) : ViewModelProvider.Factory {
         @Suppress("kotlin:S6530", "UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
+            val stockfishEngine = createStockfishEngine(url = stockfishEngineUrl)
+
             val game = ChessGame(
                 board = Board(url = remoteBoardUrl),
-                engines = listOf(createStockfishEngine(url = stockfishEngineUrl))
+                engines = listOf(stockfishEngine)
             )
-            return FortressViewModel(game) as T
+
+            val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player = { player, color ->
+                when (player) {
+                    Player.STOCKFISH -> Bot(color = color, engine = stockfishEngine)
+                    else -> throw IllegalArgumentException("$player is not supported.")
+                }
+            }
+
+            return FortressViewModel(game, createPlayer) as T
         }
+    }
+
+    enum class Player {
+        HUMAN, STOCKFISH
     }
 }
 

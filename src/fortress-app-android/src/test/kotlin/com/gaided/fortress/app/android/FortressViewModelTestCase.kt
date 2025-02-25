@@ -28,6 +28,7 @@ internal abstract class FortressViewModelTestCase {
     protected lateinit var engine1: Engine
     protected lateinit var viewModel: FortressViewModel
     private lateinit var testDispatcher: TestDispatcher
+    protected lateinit var createPlayer: (FortressViewModel.Player, ChessGame.Player.Color) -> ChessGame.Player
 
     @Before
     fun setUp() {
@@ -46,7 +47,8 @@ internal abstract class FortressViewModelTestCase {
     }
 
     private fun createViewModel() = FortressViewModel(
-        ChessGame(board, listOf(engine1))
+        game = ChessGame(board, listOf(engine1)),
+        createPlayer = createPlayer,
     )
 
     protected fun TestScope.createViewModelAndCollectState() = createViewModel()
