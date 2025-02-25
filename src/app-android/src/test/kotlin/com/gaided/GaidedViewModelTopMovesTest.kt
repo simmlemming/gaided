@@ -3,6 +3,7 @@ package com.gaided
 import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
+import com.gaided.model.toMove
 import io.mockk.coEvery
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -80,15 +81,15 @@ internal class GaidedViewModelTopMovesTest : GaidedViewModelTestCase() {
 }
 
 private val TOP_3_MOVES_AFTER_G1F3 = listOf(
-    Engine.TopMove("engine-1", "e7e6", 23),
-    Engine.TopMove("engine-1", "e7e5", -23),
-    Engine.TopMove("engine-1", "b7b6", 7),
+    Engine.TopMove("engine-1", "e7e6".toMove(), 23),
+    Engine.TopMove("engine-1", "e7e5".toMove(), -23),
+    Engine.TopMove("engine-1", "b7b6".toMove(), 7),
 )
 
 private val TOP_3_MOVES_AFTER_B7B6 = listOf(
-    Engine.TopMove("engine-1", "b1c3", 55),
-    Engine.TopMove("engine-1", "e2e4", 47),
-    Engine.TopMove("engine-1", "d2d4", 37),
+    Engine.TopMove("engine-1", "b1c3".toMove(), 55),
+    Engine.TopMove("engine-1", "e2e4".toMove(), 47),
+    Engine.TopMove("engine-1", "d2d4".toMove(), 37),
 )
 
 private val POSITION_AFTER_1ST_BLACK_MOVE_B7B6 =

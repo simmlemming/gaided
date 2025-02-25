@@ -1,11 +1,11 @@
 package com.gaided.util
 
 import com.gaided.app.common.util.toNextMovePlayerColor
+import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.engine.openai.OPEN_AI_ENGINE_NAME
-import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.SquareNotation
@@ -47,7 +47,7 @@ internal fun toTopMoveArrows(
     }
 
     return topMoves
-        .filter { selectedSquare == null || it.move.take(2) == selectedSquare }
+        .filter { selectedSquare == null || it.move.from == selectedSquare }
         .map { it.toArrow(ChessBoardViewState.Arrow.COLOR_SUGGESTION) }
         .toSet()
 }
@@ -88,8 +88,8 @@ private fun toPlayerViewState(position: FenNotation, isLoading: Boolean): Player
 }
 
 internal fun Engine.TopMove.toArrow(color: Int) = ChessBoardViewState.Arrow(
-    start = this.move.take(2),
-    end = this.move.takeLast(2),
+    start = this.move.from,
+    end = this.move.to,
     color = color,
     strong = (this.source != OPEN_AI_ENGINE_NAME)
 )

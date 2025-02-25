@@ -3,6 +3,7 @@ package com.gaided.util
 import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
 import com.gaided.chessgame.ChessGame
+import com.gaided.model.toMove
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -12,10 +13,10 @@ class ToLastTopMovesTest {
         val arrows = toLastTopMoveArrows(
             ChessGame.Player.Color.Black,
             listOf(
-                Engine.TopMove("e1", "a2a4", 100),
-                Engine.TopMove("e1", "a2a3", 50),
-                Engine.TopMove("e2", "b2b4"),
-                Engine.TopMove("e2", "b2b3"),
+                Engine.TopMove("e1", "a2a4".toMove(), 100),
+                Engine.TopMove("e1", "a2a3".toMove(), 50),
+                Engine.TopMove("e2", "b2b4".toMove()),
+                Engine.TopMove("e2", "b2b3".toMove()),
             )
         )
 
@@ -35,10 +36,10 @@ class ToLastTopMovesTest {
         val arrows = toLastTopMoveArrows(
             ChessGame.Player.Color.White,
             listOf(
-                Engine.TopMove("e1", "a2a4", 100),
-                Engine.TopMove("e1", "a2a3", 50),
-                Engine.TopMove("e2", "b2b4"),
-                Engine.TopMove("e2", "b2b3"),
+                Engine.TopMove("e1", "a2a4".toMove(), 100),
+                Engine.TopMove("e1", "a2a3".toMove(), 50),
+                Engine.TopMove("e2", "b2b4".toMove()),
+                Engine.TopMove("e2", "b2b3".toMove()),
             )
         )
 
@@ -58,8 +59,8 @@ class ToLastTopMovesTest {
         val arrows = toLastTopMoveArrows(
             ChessGame.Player.Color.White,
             listOf(
-                Engine.TopMove("e1", "a2a4", 100),
-                Engine.TopMove("e1", "a2a3", 50),
+                Engine.TopMove("e1", "a2a4".toMove(), 100),
+                Engine.TopMove("e1", "a2a3".toMove(), 50),
             )
         )
 
@@ -77,8 +78,8 @@ class ToLastTopMovesTest {
         val arrows = toLastTopMoveArrows(
             ChessGame.Player.Color.Black,
             listOf(
-                Engine.TopMove("e1", "a2a4", 100),
-                Engine.TopMove("e1", "a2a3", 50),
+                Engine.TopMove("e1", "a2a4".toMove(), 100),
+                Engine.TopMove("e1", "a2a3".toMove(), 50),
             )
         )
 

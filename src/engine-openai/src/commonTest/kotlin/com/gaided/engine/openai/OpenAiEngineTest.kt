@@ -2,6 +2,7 @@ package com.gaided.engine.openai
 
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
+import com.gaided.model.toMove
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -32,7 +33,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Bxh6, Bxb7+",
-            listOf(Engine.TopMove(sut.name, "f8h6"), Engine.TopMove(sut.name, "c8b7"))
+            listOf(Engine.TopMove(sut.name, "f8h6".toMove()), Engine.TopMove(sut.name, "c8b7".toMove()))
         )
     }
 
@@ -41,7 +42,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Bh6, Bb7+",
-            listOf(Engine.TopMove(sut.name, "f8h6"), Engine.TopMove(sut.name, "c8b7"))
+            listOf(Engine.TopMove(sut.name, "f8h6".toMove()), Engine.TopMove(sut.name, "c8b7".toMove()))
         )
     }
 
@@ -50,7 +51,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Bxa3, Bxg5+",
-            listOf(Engine.TopMove(sut.name, "c1a3"), Engine.TopMove(sut.name, "c1g5"))
+            listOf(Engine.TopMove(sut.name, "c1a3".toMove()), Engine.TopMove(sut.name, "c1g5".toMove()))
         )
     }
 
@@ -59,7 +60,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Ba3+, Bg5",
-            listOf(Engine.TopMove(sut.name, "c1a3"), Engine.TopMove(sut.name, "c1g5"))
+            listOf(Engine.TopMove(sut.name, "c1a3".toMove()), Engine.TopMove(sut.name, "c1g5".toMove()))
         )
     }
 
@@ -68,7 +69,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "1. e4, 3. d4+",
-            listOf(Engine.TopMove(sut.name, "e2e4"), Engine.TopMove(sut.name, "d2d4"))
+            listOf(Engine.TopMove(sut.name, "e2e4".toMove()), Engine.TopMove(sut.name, "d2d4".toMove()))
         )
     }
 
@@ -77,7 +78,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Rxa5, Rxa6+",
-            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1a6"))
+            listOf(Engine.TopMove(sut.name, "a1a5".toMove()), Engine.TopMove(sut.name, "a1a6".toMove()))
         )
     }
 
@@ -86,7 +87,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Rxa5",
-            listOf(Engine.TopMove(sut.name, "a8a5"))
+            listOf(Engine.TopMove(sut.name, "a8a5".toMove()))
         )
     }
 
@@ -95,7 +96,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "Ra5, Rg8",
-            listOf(Engine.TopMove(sut.name, "a8a5"), Engine.TopMove(sut.name, "a8g8"))
+            listOf(Engine.TopMove(sut.name, "a8a5".toMove()), Engine.TopMove(sut.name, "a8g8".toMove()))
         )
     }
 
@@ -104,7 +105,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Ra5, Rg1",
-            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1g1"))
+            listOf(Engine.TopMove(sut.name, "a1a5".toMove()), Engine.TopMove(sut.name, "a1g1".toMove()))
         )
     }
 
@@ -113,7 +114,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "Ra5+, Rg1+",
-            listOf(Engine.TopMove(sut.name, "a1a5"), Engine.TopMove(sut.name, "a1g1"))
+            listOf(Engine.TopMove(sut.name, "a1a5".toMove()), Engine.TopMove(sut.name, "a1g1".toMove()))
         )
     }
 
@@ -122,7 +123,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "cxb3",
-            listOf(Engine.TopMove(sut.name, "c2b3"))
+            listOf(Engine.TopMove(sut.name, "c2b3".toMove()))
         )
     }
 
@@ -131,7 +132,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "dxe6",
-            listOf(Engine.TopMove(sut.name, "d7e6"))
+            listOf(Engine.TopMove(sut.name, "d7e6".toMove()))
         )
     }
 
@@ -140,7 +141,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a3, b4",
-            listOf(Engine.TopMove(sut.name, "a2a3"), Engine.TopMove(sut.name, "b2b4"))
+            listOf(Engine.TopMove(sut.name, "a2a3".toMove()), Engine.TopMove(sut.name, "b2b4".toMove()))
         )
     }
 
@@ -149,7 +150,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_AFTER_1ST_MOVE_G1F3,
             "a6, c5",
-            listOf(Engine.TopMove(sut.name, "a7a6"), Engine.TopMove(sut.name, "c7c5"))
+            listOf(Engine.TopMove(sut.name, "a7a6".toMove()), Engine.TopMove(sut.name, "c7c5".toMove()))
         )
     }
 
@@ -158,7 +159,11 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2a4, g1f3, b7xb6",
-            listOf(Engine.TopMove(sut.name, "a2a4"), Engine.TopMove(sut.name, "g1f3"), Engine.TopMove(sut.name, "b7b6"))
+            listOf(
+                Engine.TopMove(sut.name, "a2a4".toMove()),
+                Engine.TopMove(sut.name, "g1f3".toMove()),
+                Engine.TopMove(sut.name, "b7b6".toMove())
+            )
         )
     }
 
@@ -167,7 +172,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2-a4, Qd1-d2",
-            listOf(Engine.TopMove(sut.name, "a2a4"), Engine.TopMove(sut.name, "d1d2"))
+            listOf(Engine.TopMove(sut.name, "a2a4".toMove()), Engine.TopMove(sut.name, "d1d2".toMove()))
         )
     }
 
@@ -176,7 +181,7 @@ class OpenAiEngineTest {
         testEngine(
             FEN_POSITION_START,
             "a2 to a4",
-            listOf(Engine.TopMove(sut.name, "a2a4"))
+            listOf(Engine.TopMove(sut.name, "a2a4".toMove()))
         )
     }
 

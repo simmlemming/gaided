@@ -2,7 +2,6 @@
 
 package com.gaided.board.stockfish
 
-import com.gaided.model.MoveNotation
 import com.gaided.network.StockfishApi
 import kotlinx.coroutines.sync.withLock
 import java.net.HttpURLConnection
@@ -29,7 +28,7 @@ internal open class RemoteBoardApi(
         call("get_evaluation")
     }
 
-    public suspend fun isMoveCorrect(position: String, move: MoveNotation): Boolean = withPosition(position) {
+    public suspend fun isMoveCorrect(position: String, move: String): Boolean = withPosition(position) {
         val response = call("is_move_correct", move)
         response == "True"
     }

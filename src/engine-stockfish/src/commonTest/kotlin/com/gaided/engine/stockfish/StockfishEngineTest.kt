@@ -3,6 +3,7 @@ package com.gaided.engine.stockfish
 import com.gaided.engine.Engine
 import com.gaided.engine.Engine.TopMove
 import com.gaided.model.FenNotation
+import com.gaided.model.toMove
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -31,9 +32,9 @@ class StockfishEngineTest {
 
         assertEquals(
             listOf(
-                TopMove(sut.name, "f1g2", -580),
-                TopMove(sut.name, "f1g1", -736),
-                TopMove(sut.name, "f1e1", -949)
+                TopMove(sut.name, "f1g2".toMove(), -580),
+                TopMove(sut.name, "f1g1".toMove(), -736),
+                TopMove(sut.name, "f1e1".toMove(), -949)
             ),
             sut.getTopMoves()
         )
@@ -51,8 +52,8 @@ class StockfishEngineTest {
 
         assertEquals(
             listOf(
-                TopMove(sut.name, "f1g2", null, 3),
-                TopMove(sut.name, "f1g1", null, -1),
+                TopMove(sut.name, "f1g2".toMove(), null, 3),
+                TopMove(sut.name, "f1g1".toMove(), null, -1),
             ),
             sut.getTopMoves()
         )

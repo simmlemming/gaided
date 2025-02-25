@@ -11,7 +11,7 @@ fun Map.Entry<SquareNotation, PieceNotation>.toPiece(selectedSquare: SquareNotat
     com.gaided.chessui.model.ChessBoardViewState.Piece(
         drawableName = value.toDrawableName(),
         position = key,
-        isElevated = key in setOf(selectedSquare, pendingMove?.takeLast(2))
+        isElevated = key in setOf(selectedSquare, pendingMove?.to)
     )
 
 fun PieceNotation.toDrawableName(): String {
@@ -21,15 +21,15 @@ fun PieceNotation.toDrawableName(): String {
 }
 
 fun MoveNotation.toLastMoveSquares() = setOf(
-    OverlaySquare(this.take(2), OverlaySquare.COLOR_LAST_MOVE),
-    OverlaySquare(this.takeLast(2), OverlaySquare.COLOR_LAST_MOVE)
+    OverlaySquare(this.from, OverlaySquare.COLOR_LAST_MOVE),
+    OverlaySquare(this.to, OverlaySquare.COLOR_LAST_MOVE)
 )
 
 fun Set<ChessGame.HalfMove>.toLastMoveSquares(): Set<OverlaySquare> {
     val lastMove = this.getLastMove() ?: return emptySet()
     return setOf(
-        OverlaySquare(lastMove.move.take(2), OverlaySquare.COLOR_LAST_MOVE),
-        OverlaySquare(lastMove.move.takeLast(2), OverlaySquare.COLOR_LAST_MOVE),
+        OverlaySquare(lastMove.move.from, OverlaySquare.COLOR_LAST_MOVE),
+        OverlaySquare(lastMove.move.to, OverlaySquare.COLOR_LAST_MOVE),
     )
 }
 

@@ -1,8 +1,9 @@
 package com.gaided.chessgame
 
+import com.gaided.board.stockfish.Board
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
-import com.gaided.board.stockfish.Board
+import com.gaided.model.toMove
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,7 +63,7 @@ private val FEN_1B = FenNotation.fromFenString("pieces2 w KQkq - 1 2")
 private val FEN_2W = FenNotation.fromFenString("pieces3 b KQkq - 1 2")
 private val FEN_2B = FenNotation.fromFenString("pieces4 w KQkq - 1 2")
 
-private val move1w = ChessGame.HalfMove(1, "e2e4", ChessGame.Player.Color.White, FEN_1W)
-private val move1b = ChessGame.HalfMove(1, "e7e6", ChessGame.Player.Color.Black, FEN_1B)
-private val move2w = ChessGame.HalfMove(2, "a2a3", ChessGame.Player.Color.White, FEN_2W)
-private val move2b = ChessGame.HalfMove(2, "h7h5", ChessGame.Player.Color.Black, FEN_2B)
+private val move1w = ChessGame.HalfMove(1, "e2e4".toMove(), ChessGame.Player.Color.White, FEN_1W)
+private val move1b = ChessGame.HalfMove(1, "e7e6".toMove(), ChessGame.Player.Color.Black, FEN_1B)
+private val move2w = ChessGame.HalfMove(2, "a2a3".toMove(), ChessGame.Player.Color.White, FEN_2W)
+private val move2b = ChessGame.HalfMove(2, "h7h5".toMove(), ChessGame.Player.Color.Black, FEN_2B)

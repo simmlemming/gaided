@@ -4,6 +4,7 @@ import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.chessui.model.ChessBoardViewState.Arrow
 import com.gaided.engine.Engine
 import com.gaided.model.SquareNotation
+import com.gaided.model.toMove
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -54,8 +55,8 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
     fun `valid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
         coEvery { board.setPosition(any()) } returns Unit
-        coEvery { board.isMoveCorrect(any(), "g1f3") } returns true
-        coEvery { board.move(any(), "g1f3") } returns Unit
+        coEvery { board.isMoveCorrect(any(), "g1f3".toMove()) } returns true
+        coEvery { board.move(any(), "g1f3".toMove()) } returns Unit
         coEvery { board.getPosition() } returns POSITION_AFTER_1ST_MOVE_G1F3
         coEvery { board.getEvaluation(any()) } returns EVALUATION_50
         coEvery { engine1.getTopMoves(any(), any()) } returns emptyList()
@@ -102,7 +103,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
     fun `invalid move`() = runTest(UnconfinedTestDispatcher()) {
         // GIVEN
         coEvery { board.setPosition(any()) } returns Unit
-        coEvery { board.isMoveCorrect(any(), "g1b5") } returns false
+        coEvery { board.isMoveCorrect(any(), "g1b5".toMove()) } returns false
 
         val viewModel = createViewModelAndCollectState()
         assertNotNull(
@@ -114,7 +115,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         viewModel.onSquareClick("b5")
 
         // THEN
-        coVerify { board.isMoveCorrect(POSITION_AT_START, "g1b5") }
+        coVerify { board.isMoveCorrect(POSITION_AT_START, "g1b5".toMove()) }
         assertNotNull(
             viewModel.boardWithArrows["g1"]
         )
@@ -152,7 +153,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         viewModel.onSquareClick(expectedArrow.start)
 
         // THEN
-        coVerify { board.move(any(), "g1f3") }
+        coVerify { board.move(any(), "g1f3".toMove()) }
         assertNull(
             viewModel.boardWithArrows[expectedArrow.start]
         )
@@ -166,7 +167,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
     fun `two arrows from the same square`() = runTest {
         // GIVEN
         coEvery { board.getPosition() } returns POSITION_AT_START
-        coEvery { board.isMoveCorrect(any(), "d2d4") } returns true
+        coEvery { board.isMoveCorrect(any(), "d2d4".toMove()) } returns true
         coEvery { board.getEvaluation(any()) } returns EVALUATION_50
         coEvery { board.move(any(), any()) } just Runs
 
@@ -197,7 +198,7 @@ internal class GaidedViewModelOnSquareClickTest : GaidedViewModelTestCase() {
         viewModel.onSquareClick("d4")
 
         // THEN the move is made
-        coVerify(exactly = 1) { board.move(any(), "d2d4") }
+        coVerify(exactly = 1) { board.move(any(), "d2d4".toMove()) }
     }
 }
 
@@ -205,7 +206,7 @@ private operator fun StateFlow<ChessBoardViewState>.get(key: SquareNotation): Ch
     value.pieces.firstOrNull { it.position == key }
 
 private val TOP_MOVES_FROM_SAME_SQUARE = listOf(
-    Engine.TopMove("engine-1", "d2d4", 29),
-    Engine.TopMove("engine-1", "d2d3", 25),
-    Engine.TopMove("engine-1", "e2e4", 23),
+    Engine.TopMove("engine-1", "d2d4".toMove(), 29),
+    Engine.TopMove("engine-1", "d2d3".toMove(), 25),
+    Engine.TopMove("engine-1", "e2e4".toMove(), 23),
 )

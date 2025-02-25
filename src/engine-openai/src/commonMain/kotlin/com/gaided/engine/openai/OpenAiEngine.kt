@@ -52,7 +52,7 @@ internal class OpenAiEngine internal constructor(
         topMoves
     }
 
-    private val matchers: Map<Regex, (FenNotation, MoveNotation, List<String>) -> TopMove?> = mapOf(
+    private val matchers: Map<Regex, (FenNotation, String, List<String>) -> TopMove?> = mapOf(
         "\\d\\. ([a-z][1-8])\\+?".toRegex() to ::shortNotationPawnMoves,
         "[A-Z]?([a-z][1-8])x([a-z][1-8])\\+?".toRegex() to ::fullNotation,
         "[A-Z]?([a-z][1-8])([a-z][1-8])\\+?".toRegex() to ::fullNotation,
@@ -65,7 +65,7 @@ internal class OpenAiEngine internal constructor(
     )
 
     @Suppress("UNUSED_PARAMETER")
-    private fun shortNotationBishopMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+    private fun shortNotationBishopMoves(position: FenNotation, move: String, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
         }
@@ -74,11 +74,11 @@ internal class OpenAiEngine internal constructor(
         val expectedPiece = if (position.nextMoveColor == "w") 'B' else 'b'
 
         val from = findOnDiagonal(position, to, expectedPiece)
-        return from?.let { TopMove(name, "$it$to") }
+        return from?.let { TopMove(name, MoveNotation(from = it, to = to)) }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun shortNotationRookMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+    private fun shortNotationRookMoves(position: FenNotation, move: String, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
         }
@@ -87,7 +87,7 @@ internal class OpenAiEngine internal constructor(
         val expectedPiece = if (position.nextMoveColor == "w") 'R' else 'r'
 
         val from = (findInRow(position, to, expectedPiece) ?: findInFile(position, to, expectedPiece))
-        return from?.let { TopMove(name, "$it$to") }
+        return from?.let { TopMove(name, MoveNotation(from = it, to = to)) }
     }
 
     private fun findOnDiagonal(
@@ -179,7 +179,7 @@ internal class OpenAiEngine internal constructor(
     )
 
     @Suppress("MoveLambdaOutsideParentheses", "UNUSED_PARAMETER")
-    private fun shortNotationPawnTakes(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+    private fun shortNotationPawnTakes(position: FenNotation, move: String, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null
         }
@@ -202,11 +202,11 @@ internal class OpenAiEngine internal constructor(
             )
         }
 
-        return from?.let { TopMove(name, "$it$to") }
+        return from?.let { TopMove(name, MoveNotation(from = it, to = to)) }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun shortNotationPawnMoves(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+    private fun shortNotationPawnMoves(position: FenNotation, move: String, groups: List<String>): TopMove? {
         if (groups.size != 2) {
             return null
         }
@@ -228,7 +228,7 @@ internal class OpenAiEngine internal constructor(
             )
         }
 
-        return from?.let { TopMove(name, "$it$to") }
+        return from?.let { TopMove(name, MoveNotation(from = it, to = to)) }
     }
 
     private fun findFromSquare(
@@ -257,11 +257,11 @@ internal class OpenAiEngine internal constructor(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun fullNotation(position: FenNotation, move: MoveNotation, groups: List<String>): TopMove? {
+    private fun fullNotation(position: FenNotation, move: String, groups: List<String>): TopMove? {
         if (groups.size != 3) {
             return null
         }
 
-        return TopMove(name, "${groups[1]}${groups[2]}")
+        return TopMove(name, MoveNotation(from = groups[1], to = groups[2]))
     }
 }

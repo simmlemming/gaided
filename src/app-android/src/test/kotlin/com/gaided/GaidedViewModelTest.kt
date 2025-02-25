@@ -6,6 +6,7 @@ import com.gaided.chessui.model.EvaluationViewState
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
 import com.gaided.model.SquareNotation
+import com.gaided.model.toMove
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerifyAll
@@ -120,7 +121,7 @@ internal class GaidedViewModelTest : GaidedViewModelTestCase() {
             engine1.getTopMoves(POSITION_AT_START, any())
 
             // move
-            board.move(POSITION_AT_START, "g1f3")
+            board.move(POSITION_AT_START, "g1f3".toMove())
             board.getPosition()
             board.getEvaluation(POSITION_AFTER_1ST_MOVE_G1F3)
             engine1.recommendedNumberOfMoves

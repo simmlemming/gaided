@@ -81,7 +81,7 @@ abstract class ChessViewModel(
             }
 
             selectedSquare.value != null && selectedSquare.value != square -> {
-                val move = "${selectedSquare.value}$square"
+                val move = MoveNotation(from = selectedSquare.value!!, to = square)
                 pendingMove.value = move
                 if (game.isMoveCorrect(move)) {
                     game.move(move)
@@ -107,11 +107,11 @@ abstract class ChessViewModel(
 
     protected fun Map<SquareNotation, PieceNotation>.move(move: MoveNotation): Map<SquareNotation, PieceNotation> {
         return this.toMutableMap().let {
-            if (!it.containsKey(move.take(2))) {
+            if (!it.containsKey(move.from)) {
                 return@let it
             }
 
-            it[move.takeLast(2)] = checkNotNull(it.remove(move.take(2)))
+            it[move.to] = checkNotNull(it.remove(move.from))
             it.toMap()
         }
     }

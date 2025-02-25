@@ -5,6 +5,7 @@ import com.gaided.chessgame.ChessGame.Player.Color
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
+import com.gaided.model.toMove
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -33,8 +34,8 @@ class ChessGameTest {
                 POSITION_AFTER_2ND_BLACK_MOVE,
             )
             coEvery { isMoveCorrect(any(), any()) } returns false
-            coEvery { isMoveCorrect(any(), "a2a3") } returns true
-            coEvery { isMoveCorrect(any(), "a7a6") } returns true
+            coEvery { isMoveCorrect(any(), "a2a3".toMove()) } returns true
+            coEvery { isMoveCorrect(any(), "a7a6".toMove()) } returns true
         }
 
         val game = ChessGame(board, listOf())
@@ -49,32 +50,32 @@ class ChessGameTest {
         }
 
         // WHEN
-        playerWhite.move("a2a3")
+        playerWhite.move("a2a3".toMove())
 
         // THEN
-        coVerify { board.move(any(), "a2a3") }
+        coVerify { board.move(any(), "a2a3".toMove()) }
         assertEquals(1, history.size)
 
         // WHEN
-        playerBlack.move("a7a6")
+        playerBlack.move("a7a6".toMove())
 
         // THEN
-        coVerify { board.move(any(), "a7a6") }
+        coVerify { board.move(any(), "a7a6".toMove()) }
         assertEquals(2, history.size)
 
         // WHEN
         clearMocks(board, answers = false)
-        playerWhite.move("invalid move")
+        playerWhite.move("a0b0".toMove())
 
         // THEN
         coVerify(exactly = 0) { board.move(any(), any()) }
         assertEquals(2, history.size)
 
         // WHEN
-        playerWhite.move("a2a3")
+        playerWhite.move("a2a3".toMove())
 
         // THEN
-        coVerify{ board.move(any(), "a2a3") }
+        coVerify { board.move(any(), "a2a3".toMove()) }
         assertEquals(3, history.size)
     }
 
@@ -105,21 +106,21 @@ class ChessGameTest {
         val history by game.history.lastValue(backgroundScope, emptySet())
 
         assertTrue(history.isEmpty())
-        game.move("e2e4", Color.White)
+        game.move("e2e4".toMove(), Color.White)
 
         assertEquals(
-            setOf(ChessGame.HalfMove(1, "e2e4", Color.White, POSITION_AFTER_1ST_WHITE_MOVE)),
+            setOf(ChessGame.HalfMove(1, "e2e4".toMove(), Color.White, POSITION_AFTER_1ST_WHITE_MOVE)),
             history
         )
 
         // WHEN
-        game.move("e7e6", Color.Black)
+        game.move("e7e6".toMove(), Color.Black)
 
         // THEN
         assertEquals(
             setOf(
-                ChessGame.HalfMove(1, "e2e4", Color.White, POSITION_AFTER_1ST_WHITE_MOVE),
-                ChessGame.HalfMove(1, "e7e6", Color.Black, FenNotation.START_POSITION)
+                ChessGame.HalfMove(1, "e2e4".toMove(), Color.White, POSITION_AFTER_1ST_WHITE_MOVE),
+                ChessGame.HalfMove(1, "e7e6".toMove(), Color.Black, FenNotation.START_POSITION)
             ),
             history
         )

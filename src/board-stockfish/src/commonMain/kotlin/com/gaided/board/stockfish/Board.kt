@@ -30,7 +30,7 @@ public class Board internal constructor(
     }
 
     public suspend fun move(position: FenNotation, move: MoveNotation): Unit = withContext(ioContext) {
-        api.makeMoves(position.fenString, listOf(move))
+        api.makeMoves(position.fenString, listOf(move.rawMoveString))
     }
 
     public suspend fun setPosition(position: FenNotation): Unit = withContext(ioContext) {
@@ -43,7 +43,7 @@ public class Board internal constructor(
     }
 
     public suspend fun isMoveCorrect(position: FenNotation, move: MoveNotation): Boolean = withContext(ioContext) {
-        api.isMoveCorrect(position.fenString, move)
+        api.isMoveCorrect(position.fenString, move.rawMoveString)
     }
 
     public data class Evaluation(
@@ -51,3 +51,6 @@ public class Board internal constructor(
         public val value: Int
     )
 }
+
+private val MoveNotation.rawMoveString: String
+    get() = listOfNotNull(from, to, promoteToPiece).joinToString(separator = "")

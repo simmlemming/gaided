@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.gaided.app.common.util.sorted
+import com.gaided.app.common.util.toNextMovePlayerColor
 import com.gaided.app.common.viewmodel.ChessViewModel
 import com.gaided.board.stockfish.Board
 import com.gaided.chessgame.ChessGame
@@ -17,7 +18,6 @@ import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.SquareNotation
 import com.gaided.util.toLastTopMoveArrows
-import com.gaided.util.toNextMovePlayer
 import com.gaided.util.toPlayerState
 import com.gaided.util.toTopMoveArrows
 import kotlinx.coroutines.flow.Flow
@@ -116,7 +116,7 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
         return when (val position = this.oneBeforeLastHalfMoveOrNull()) {
             null -> flowOf(ChessGame.Player.Color.White to emptyList())
             else -> game.getTopMoves(position.positionAfterMove).map {
-                position.positionAfterMove.toNextMovePlayer() to it.moves
+                position.positionAfterMove.toNextMovePlayerColor() to it.moves
             }
         }
     }
@@ -146,13 +146,13 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
 private fun Engine.TopMove.toMakeMoveAction(position: FenNotation): MakeMoveAction {
     return { game, pendingMove ->
         pendingMove.value = move
-        game.move(move, position.toNextMovePlayer())
+        game.move(move, position.toNextMovePlayerColor())
         pendingMove.value = null
     }
 }
 
 private fun Map<MoveNotation, MakeMoveAction>.getMovesFromSquare(square: SquareNotation) =
-    filter { it.key.take(2) == square }
+    filter { it.key.from == square }
 
 
 private typealias MakeMoveAction = suspend (ChessGame, MutableStateFlow<MoveNotation?>) -> Unit
@@ -163,7 +163,7 @@ private fun Set<ChessGame.HalfMove>.oneBeforeLastHalfMoveOrNull(): ChessGame.Hal
     }
 
     if (this.size == 1) {
-        return ChessGame.HalfMove(0, "", ChessGame.Player.Color.White, FenNotation.START_POSITION)
+        return ChessGame.HalfMove(0, MoveNotation("", ""), ChessGame.Player.Color.White, FenNotation.START_POSITION)
     }
 
     val sortedHistory = this.sorted()

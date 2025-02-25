@@ -2,11 +2,12 @@
 
 package com.gaided
 
+import com.gaided.board.stockfish.Board
+import com.gaided.chessgame.ChessGame
+import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
-import com.gaided.board.stockfish.Board
-import com.gaided.chessui.model.ChessBoardViewState
-import com.gaided.chessgame.ChessGame
+import com.gaided.model.toMove
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -59,13 +60,13 @@ internal abstract class GaidedViewModelTestCase {
         }
 
     protected val TOP_MOVES_AT_START = listOf(
-        Engine.TopMove("engine-1", "d2d4", 29),
-        Engine.TopMove("engine-1", "g1f3", 25),
-        Engine.TopMove("engine-1", "e2e4", 23),
+        Engine.TopMove("engine-1", "d2d4".toMove(), 29),
+        Engine.TopMove("engine-1", "g1f3".toMove(), 25),
+        Engine.TopMove("engine-1", "e2e4".toMove(), 23),
     )
 
     protected val TOP_MOVES_AFTER_1ST_MOVE = listOf(
-        Engine.TopMove("engine-1", "e7e6", 23),
+        Engine.TopMove("engine-1", "e7e6".toMove(), 23),
     )
 
     protected val POSITION_AT_START =

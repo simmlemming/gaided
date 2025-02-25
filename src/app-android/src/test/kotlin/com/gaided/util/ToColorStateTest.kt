@@ -1,9 +1,10 @@
 package com.gaided.util
 
+import com.gaided.chessgame.ChessGame
 import com.gaided.chessui.model.PlayerViewState
 import com.gaided.engine.Engine
-import com.gaided.chessgame.ChessGame
 import com.gaided.model.FenNotation
+import com.gaided.model.toMove
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -51,7 +52,7 @@ internal class ToColorStateTest {
             toPlayerState(
                 player = ChessGame.Player.Color.White,
                 position = FenNotation.START_POSITION,
-                topMoves = listOf(Engine.TopMove("any", "a2a4", 0)),
+                topMoves = listOf(Engine.TopMove("any", "a2a4".toMove(), 0)),
                 isLoading = false
             )
         )

@@ -4,6 +4,7 @@ import com.gaided.engine.Engine
 import com.gaided.engine.Engine.TopMove
 import com.gaided.logger.Logger
 import com.gaided.model.FenNotation
+import com.gaided.model.toMove
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
@@ -37,7 +38,7 @@ internal class StockfishEngine internal constructor(
             val type = object : TypeToken<List<StockfishApiTopMove>>() {}.type
             val topMoves = gson
                 .fromJson<List<StockfishApiTopMove>>(moves, type)
-                .map { TopMove(name, it.move, it.centipawn.toIntOrNull(), it.mate.toIntOrNull()) }
+                .map { TopMove(name, it.move.toMove(), it.centipawn.toIntOrNull(), it.mate.toIntOrNull()) }
 
             Logger.i("$name: ${topMoves.map { it.move }}")
 
