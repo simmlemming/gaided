@@ -10,16 +10,12 @@ import com.gaided.engine.Engine
 import com.gaided.engine.stockfish.createStockfishEngine
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.reflect.KClass
 
 internal class FortressViewModel(
     private val game: ChessGame,
     private val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player,
 ) : ChessViewModel(game) {
-    override val position: StateFlow<FenNotation> =
-        game.position.stateInThis(FenNotation.START_POSITION)
-
     fun startFortressGame(playerWhite: Player, playerBlack: Player) {
         startWithPlayers(
             playerWhite = createPlayer(playerWhite, ChessGame.Player.Color.White),

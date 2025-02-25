@@ -35,10 +35,12 @@ abstract class ChessViewModel(
 
     protected val selectedSquare = MutableStateFlow<SquareNotation?>(null)
     protected val pendingMove = MutableStateFlow<MoveNotation?>(null)
-    protected abstract val position: StateFlow<FenNotation>
 
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
+
+    // Needed only for onSquareClick() to find the piece.
+    private val currentPosition = game.position.stateInThis(FenNotation.START_POSITION)
 
     val board =
         combine(
@@ -75,7 +77,7 @@ abstract class ChessViewModel(
                 selectedSquare.value = null
             }
 
-            selectedSquare.value == null && position.value.allPieces().containsKey(square) -> {
+            selectedSquare.value == null && currentPosition.value.allPieces().containsKey(square) -> {
                 selectedSquare.value = square
             }
 
@@ -92,6 +94,7 @@ abstract class ChessViewModel(
     }
 
     fun onSquareLongClick(square: SquareNotation) {
+        // Check if square has a piece, like in onSquareClick()?
         selectedSquare.value = square
     }
 

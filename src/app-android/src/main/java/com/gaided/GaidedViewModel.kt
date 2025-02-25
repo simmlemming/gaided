@@ -88,9 +88,6 @@ class GaidedViewModel(private val game: ChessGame) : ChessViewModel(game) {
         topMoves.moves.associate { topMove -> topMove.move to topMove.toMakeMoveAction(position) }
     }.stateInThis(emptyMap(), SharingStarted.Eagerly)
 
-    override val position = game.position
-        .stateInThis(FenNotation.START_POSITION, SharingStarted.Eagerly)
-
     override fun onSquareClick(square: SquareNotation) = launch {
         when {
             selectedSquare.value == null && square.hasArrow() -> {
