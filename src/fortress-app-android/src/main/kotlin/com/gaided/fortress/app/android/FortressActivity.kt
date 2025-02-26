@@ -18,6 +18,7 @@ import com.gaided.logger.Logger
  * - Support config changes.
  * - Support starting from a custom position, for example "5R2/8/K7/8/8/8/7k/6q1 w - - 0 77"
  * - Add different Stockfish levels.
+ * - Request Stockfish player info from server.
  */
 
 class FortressActivity : ComponentActivity() {
