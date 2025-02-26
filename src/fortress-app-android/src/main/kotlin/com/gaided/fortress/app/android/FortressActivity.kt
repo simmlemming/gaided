@@ -10,6 +10,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gaided.logger.Logger
 
+/**
+ * TODO in the Fortress app
+ *
+ * - Move player view state to teh ChessViewModel.
+ * - Detect when game ends.
+ * - Support config changes.
+ */
+
 class FortressActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
