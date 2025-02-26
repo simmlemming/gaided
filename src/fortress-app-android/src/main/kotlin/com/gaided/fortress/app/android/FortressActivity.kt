@@ -16,6 +16,7 @@ import com.gaided.logger.Logger
  * - Move player view state to teh ChessViewModel.
  * - Detect when game ends.
  * - Support config changes.
+ * - Support starting from a custom position.
  */
 
 class FortressActivity : ComponentActivity() {
