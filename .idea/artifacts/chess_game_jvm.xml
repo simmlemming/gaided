@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="chess-game-jvm">
+    <output-path>$PROJECT_DIR$/src/chess-game/build/libs</output-path>
+    <root id="archive" name="chess-game-jvm.jar">
+      <element id="module-output" name="Gaided.chess-game.jvmMain" />
+    </root>
+  </artifact>
+</component>

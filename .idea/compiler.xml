@@ -5,6 +5,9 @@
       <module name="Gaided.androidApp" target="17" />
       <module name="Gaided.app" target="17" />
       <module name="Gaided.desktopApp" target="17" />
+      <module name="Gaided.fortress-game" target="17" />
+      <module name="Gaided.game" target="17" />
+      <module name="Gaided.player-stockfish" target="17" />
       <module name="Gaided.src.androidApp" target="17" />
       <module name="Gaided.src.game" target="17" />
       <module name="Gaided.stockfish-board" target="17" />
