@@ -12,27 +12,48 @@ import com.gaided.fortress.app.android.ui.FortressPlayerViewState
 import com.gaided.fortress.app.android.util.toFortressPLayerViewState
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlin.reflect.KClass
 
 internal class FortressViewModel(
     private val game: ChessGame,
-    private val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player,
+    private val createPlayer: (PlayerType, ChessGame.Player.Color) -> ChessGame.Player,
 ) : ChessViewModel(game) {
 
-    val playerWhite: StateFlow<FortressPlayerViewState> = game.position.map {
-        it.toFortressPLayerViewState(ChessGame.Player.Color.White)
-    }.stateInThis(FortressPlayerViewState(false))
+    private val players = MutableStateFlow<Map<ChessGame.Player.Color, PlayerInfo>>(emptyMap())
 
-    val playerBlack: StateFlow<FortressPlayerViewState> = game.position.map {
-        it.toFortressPLayerViewState(ChessGame.Player.Color.Black)
-    }.stateInThis(FortressPlayerViewState(false))
+    val playerWhite: StateFlow<FortressPlayerViewState> = combine(game.position, players) { position, players ->
+        val player = players[ChessGame.Player.Color.White] ?: return@combine FortressPlayerViewState.EMPTY
+        position.toFortressPLayerViewState(player)
+    }.stateInThis(FortressPlayerViewState.EMPTY)
 
-    fun startFortressGame(playerWhite: Player, playerBlack: Player) {
+    val playerBlack: StateFlow<FortressPlayerViewState> = combine(game.position, players) { position, players ->
+        val playerInfo = players[ChessGame.Player.Color.Black] ?: return@combine FortressPlayerViewState.EMPTY
+        position.toFortressPLayerViewState(playerInfo)
+    }.stateInThis(FortressPlayerViewState.EMPTY)
+
+    fun startFortressGame(playerTypeWhite: PlayerType, playerTypeBlack: PlayerType) {
+        val gamePlayerWhite = createPlayer(playerTypeWhite, ChessGame.Player.Color.White)
+        val gamePlayerBlack = createPlayer(playerTypeBlack, ChessGame.Player.Color.Black)
+
+        players.value = mapOf(
+            ChessGame.Player.Color.White to PlayerInfo(
+                name = gamePlayerWhite.name,
+                type = playerTypeWhite,
+                color = ChessGame.Player.Color.White,
+            ),
+            ChessGame.Player.Color.Black to PlayerInfo(
+                name = gamePlayerBlack.name,
+                type = playerTypeBlack,
+                color = ChessGame.Player.Color.Black,
+            )
+        )
+
         startWithPlayers(
-            playerWhite = createPlayer(playerWhite, ChessGame.Player.Color.White),
-            playerBlack = createPlayer(playerBlack, ChessGame.Player.Color.Black),
+            playerWhite = gamePlayerWhite,
+            playerBlack = gamePlayerBlack,
         )
     }
 
@@ -49,9 +70,9 @@ internal class FortressViewModel(
                 engines = listOf(stockfishEngine)
             )
 
-            val createPlayer: (Player, ChessGame.Player.Color) -> ChessGame.Player = { player, color ->
+            val createPlayer: (PlayerType, ChessGame.Player.Color) -> ChessGame.Player = { player, color ->
                 when (player) {
-                    Player.STOCKFISH -> Bot(color = color, engine = stockfishEngine)
+                    PlayerType.Stockfish -> Bot(color = color, engine = stockfishEngine)
                     else -> throw IllegalArgumentException("$player is not supported.")
                 }
             }
@@ -60,9 +81,16 @@ internal class FortressViewModel(
         }
     }
 
-    enum class Player {
-        HUMAN, STOCKFISH
+    sealed class PlayerType {
+        data class Human(val name: String) : PlayerType()
+        data object Stockfish : PlayerType()
     }
+
+    internal data class PlayerInfo(
+        val type: PlayerType,
+        val name: String,
+        val color: ChessGame.Player.Color,
+    )
 }
 
 // TODO: Move `Bot` to a proper place.
@@ -70,6 +98,8 @@ class Bot(
     override val color: ChessGame.Player.Color,
     private val engine: Engine
 ) : ChessGame.Player {
+    override val name = engine.name
+
     override suspend fun getMove(position: FenNotation): MoveNotation? {
         return engine.getTopMoves(
             position = position,

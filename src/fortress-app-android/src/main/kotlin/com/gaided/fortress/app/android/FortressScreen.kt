@@ -7,13 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.gaided.chessui.ChessBoardView
 import com.gaided.chessui.model.ChessBoardViewState
 import com.gaided.fortress.app.android.ui.FortressPlayerView
@@ -64,7 +65,15 @@ internal fun FortressScreen(
 fun FortressScreenPreview() {
     FortressScreen(
         chessBoard = ChessBoardViewState.EMPTY,
-        playerWhiteState = FortressPlayerViewState(progressVisible = true),
-        playerBlackState = FortressPlayerViewState(progressVisible = false),
+        playerWhiteState = FortressPlayerViewState(
+            progressVisible = true,
+            name = "Person name",
+            icon = Icons.Default.Person,
+        ),
+        playerBlackState = FortressPlayerViewState(
+            progressVisible = false,
+            name = "Stockfish 15",
+            icon = Icons.Default.Computer,
+        ),
     )
 }

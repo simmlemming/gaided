@@ -29,7 +29,7 @@ internal abstract class FortressViewModelTestCase {
     protected lateinit var engine1: Engine
     protected lateinit var viewModel: FortressViewModel
     private lateinit var testDispatcher: TestDispatcher
-    protected lateinit var createPlayer: (FortressViewModel.Player, ChessGame.Player.Color) -> ChessGame.Player
+    protected lateinit var createPlayer: (FortressViewModel.PlayerType, ChessGame.Player.Color) -> ChessGame.Player
 
     @Before
     fun setUp() {

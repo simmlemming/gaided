@@ -80,6 +80,8 @@ class ChessGameTest {
     }
 
     private class TestPlayer(override val color: Color) : ChessGame.Player {
+        override val name = "Test player"
+
         private val _moves = Channel<MoveNotation>()
 
         override suspend fun getMove(position: FenNotation): MoveNotation? {

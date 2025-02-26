@@ -29,6 +29,7 @@ coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", 
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 mockk = { module = "io.mockk:mockk", version = "1.13.9" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.7.1" }
 androidxCore-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }

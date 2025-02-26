@@ -197,6 +197,7 @@ class ChessGame(
 
     interface Player {
         val color: Color
+        val name: String
         suspend fun getMove(position: FenNotation): MoveNotation?
 
         sealed class Color {

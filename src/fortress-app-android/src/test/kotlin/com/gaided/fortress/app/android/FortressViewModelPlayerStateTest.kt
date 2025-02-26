@@ -1,5 +1,8 @@
 package com.gaided.fortress.app.android
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Person
 import com.gaided.chessgame.ChessGame
 import com.gaided.fortress.app.android.ui.FortressPlayerViewState
 import com.gaided.model.FenNotation
@@ -17,13 +20,27 @@ internal class FortressViewModelPlayerStateTest : FortressViewModelTestCase() {
 
     @BeforeTest
     fun setUpFortressTest() {
-        createPlayer = { _, color ->
-            object : ChessGame.Player {
-                override val color = color
-                override suspend fun getMove(position: FenNotation): MoveNotation? {
-                    delay(Long.MAX_VALUE)
-                    throw RuntimeException()
-                }
+        createPlayer = { playerType, color ->
+            when (playerType) {
+                is FortressViewModel.PlayerType.Human ->
+                    object : ChessGame.Player {
+                        override val color = color
+                        override val name = playerType.name
+                        override suspend fun getMove(position: FenNotation): MoveNotation? {
+                            delay(Long.MAX_VALUE)
+                            throw RuntimeException()
+                        }
+                    }
+
+                is FortressViewModel.PlayerType.Stockfish ->
+                    object : ChessGame.Player {
+                        override val color = color
+                        override val name = "Stockfish 15"
+                        override suspend fun getMove(position: FenNotation): MoveNotation? {
+                            delay(Long.MAX_VALUE)
+                            throw RuntimeException()
+                        }
+                    }
             }
         }
     }
@@ -36,15 +53,26 @@ internal class FortressViewModelPlayerStateTest : FortressViewModelTestCase() {
 
         val viewModel = createViewModelAndCollectState()
 
-        viewModel.startFortressGame(FortressViewModel.Player.STOCKFISH, FortressViewModel.Player.STOCKFISH)
+        viewModel.startFortressGame(
+            playerTypeWhite = FortressViewModel.PlayerType.Human("Person name"),
+            playerTypeBlack = FortressViewModel.PlayerType.Stockfish,
+        )
 
         assertEquals(
-            FortressPlayerViewState(progressVisible = true),
+            FortressPlayerViewState(
+                progressVisible = true,
+                name = "Person name",
+                icon = Icons.Default.Person,
+            ),
             viewModel.playerWhite.value,
         )
 
         assertEquals(
-            FortressPlayerViewState(progressVisible = false),
+            FortressPlayerViewState(
+                progressVisible = false,
+                name = "Stockfish 15",
+                icon = Icons.Default.Computer,
+            ),
             viewModel.playerBlack.value,
         )
     }

@@ -32,7 +32,7 @@ private fun FortressApp() {
     val playerBlack by viewModel.playerBlack.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.startFortressGame(FortressViewModel.Player.STOCKFISH, FortressViewModel.Player.STOCKFISH)
+        viewModel.startFortressGame(FortressViewModel.PlayerType.Stockfish, FortressViewModel.PlayerType.Stockfish)
         viewModel.userMessage.collect {
             Logger.i(it)
         }
