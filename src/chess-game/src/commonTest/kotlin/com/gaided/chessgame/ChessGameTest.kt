@@ -2,6 +2,7 @@ package com.gaided.chessgame
 
 import com.gaided.board.stockfish.Board
 import com.gaided.chessgame.ChessGame.Player.Color
+import com.gaided.chessgame.ChessGame.State
 import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
@@ -15,12 +16,75 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 @ExperimentalCoroutinesApi
 class ChessGameTest {
+
+
+    @Test
+    fun state() = runTest(UnconfinedTestDispatcher(), timeout = 5.seconds) {
+        // GIVEN
+        val board = mockBoard()
+
+        val playerWhite = TestPlayer(Color.White)
+        val playerBlack = TestPlayer(Color.Black)
+
+        val game = ChessGame(board, listOf())
+        val state by game.state.lastValue(backgroundScope, null)
+
+        // THEN
+        assertIs<State.Created>(state)
+
+        // WHEN game is started
+        backgroundScope.launch {
+            game.play(playerWhite, playerBlack)
+        }
+
+        // THEN
+        state.assertWaitingForMove(
+            Color.White, FenNotation.START_POSITION, EVALUATION_START_POSITION
+        )
+
+        // WHEN
+        playerWhite.move("a2a3".toMove())
+
+        // THEN
+        state.assertWaitingForMove(
+            Color.Black, POSITION_AFTER_1ST_WHITE_MOVE, EVALUATION_AFTER_1ST_WHITE_MOVE
+        )
+    }
+
+    private fun State?.assertWaitingForMove(color: Color, position: FenNotation, evaluation: Board.Evaluation) =
+        assertEquals(State.WaitingForMove(color, position, evaluation), this)
+
+
+    private fun mockBoard() = mockk<Board> {
+        coEvery { getPosition() } returnsMany listOf(
+            POSITION_AFTER_1ST_WHITE_MOVE,
+            POSITION_AFTER_1ST_BLACK_MOVE,
+            POSITION_AFTER_2ND_WHITE_MOVE,
+            POSITION_AFTER_2ND_BLACK_MOVE,
+        )
+
+        coEvery { isMoveCorrect(any(), any()) } returns false
+        coEvery { isMoveCorrect(any(), "a2a3".toMove()) } returns true
+        coEvery { isMoveCorrect(any(), "a7a6".toMove()) } returns true
+
+        mapOf(
+            FenNotation.START_POSITION to EVALUATION_START_POSITION,
+            POSITION_AFTER_1ST_WHITE_MOVE to EVALUATION_AFTER_1ST_WHITE_MOVE,
+            POSITION_AFTER_1ST_BLACK_MOVE to EVALUATION_AFTER_1ST_BLACK_MOVE,
+            POSITION_AFTER_2ND_WHITE_MOVE to EVALUATION_AFTER_2ND_WHITE_MOVE,
+            POSITION_AFTER_2ND_BLACK_MOVE to EVALUATION_AFTER_2ND_BLACK_MOVE,
+        ).forEach {
+            coEvery { getEvaluation(it.key) } returns it.value
+        }
+    }
 
     @Test
     fun `moves with players`() = runTest(UnconfinedTestDispatcher()) {
@@ -140,3 +204,9 @@ private val POSITION_AFTER_2ND_WHITE_MOVE =
 
 private val POSITION_AFTER_2ND_BLACK_MOVE =
     FenNotation.fromFenString("rnbqkb1r/pp2pppp/2p2n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R w KQkq - 0 4")
+
+private val EVALUATION_START_POSITION = Board.Evaluation("centipawn", 0)
+private val EVALUATION_AFTER_1ST_WHITE_MOVE = Board.Evaluation("centipawn", 100)
+private val EVALUATION_AFTER_1ST_BLACK_MOVE = Board.Evaluation("centipawn", -100)
+private val EVALUATION_AFTER_2ND_WHITE_MOVE = Board.Evaluation("mate", 1)
+private val EVALUATION_AFTER_2ND_BLACK_MOVE = Board.Evaluation("mate", 0)
