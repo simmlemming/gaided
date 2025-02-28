@@ -24,14 +24,14 @@ internal class FortressViewModel(
 
     private val players = MutableStateFlow<Map<ChessGame.Player.Color, PlayerInfo>>(emptyMap())
 
-    val playerWhite: StateFlow<FortressPlayerViewState> = combine(game.position, players) { position, players ->
+    val playerWhite: StateFlow<FortressPlayerViewState> = combine(game.state, players) { state, players ->
         val player = players[ChessGame.Player.Color.White] ?: return@combine FortressPlayerViewState.EMPTY
-        position.toFortressPLayerViewState(player)
+        state.toFortressPLayerViewState(player)
     }.stateInThis(FortressPlayerViewState.EMPTY)
 
-    val playerBlack: StateFlow<FortressPlayerViewState> = combine(game.position, players) { position, players ->
+    val playerBlack: StateFlow<FortressPlayerViewState> = combine(game.state, players) { state, players ->
         val playerInfo = players[ChessGame.Player.Color.Black] ?: return@combine FortressPlayerViewState.EMPTY
-        position.toFortressPLayerViewState(playerInfo)
+        state.toFortressPLayerViewState(playerInfo)
     }.stateInThis(FortressPlayerViewState.EMPTY)
 
     fun startFortressGame(playerTypeWhite: PlayerType, playerTypeBlack: PlayerType) {

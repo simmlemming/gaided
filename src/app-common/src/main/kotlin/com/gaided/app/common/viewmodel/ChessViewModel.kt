@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -39,11 +40,16 @@ abstract class ChessViewModel(
     private val _userMessage = MutableStateFlow("")
     val userMessage = _userMessage.asStateFlow()
 
-    // Needed only for onSquareClick() to find the piece.
-    private val currentPosition = game.position.stateInThis(FenNotation.START_POSITION)
+    private val currentPosition = game.state.map {
+        when (it) {
+            is ChessGame.State.Created -> it.position
+            is ChessGame.State.WaitingForMove -> it.position
+            is ChessGame.State.Finished -> it.position
+        }
+    }.stateInThis(FenNotation.START_POSITION)
 
     val board = combine(
-        game.position,
+        currentPosition,
         game.history,
         selectedSquare,
         pendingMove
@@ -63,7 +69,7 @@ abstract class ChessViewModel(
     }
 
     fun startWithPlayers(playerWhite: Player, playerBlack: Player) = launch {
-        game.start(playerWhite, playerBlack)
+        game.play(playerWhite, playerBlack)
     }
 
     fun onUserMessageShown() {

@@ -16,14 +16,17 @@ class ChessGame(
     private val board: Board,
     private val engines: List<Engine>
 ) {
+    // TODO: Remove game.position
     private val _position = MutableStateFlow(FenNotation.START_POSITION)
     val position: Flow<FenNotation> = _position.asStateFlow()
 
+    // TODO: Remove (?) game.started
     private val _started = MutableStateFlow(false)
     val started = _started.asStateFlow()
 
     // Cold flow!
     // Each consumer triggers engine.getEvaluation()
+    // TODO: Remove game.evaluation
     val evaluation = combine(_position, _started) { position, stared ->
         if (stared) mapOf(position to board.getEvaluation(position)) else emptyMap()
     }
@@ -36,15 +39,34 @@ class ChessGame(
     private val _players = MutableStateFlow<Pair<Player, Player>?>(null)
 
     private val _state = MutableStateFlow<State>(State.Created(FenNotation.START_POSITION))
-//    val state = _state.asStateFlow()
+    val state = _state.asStateFlow()
 
-    val state: Flow<State> = combine(_state, evaluation, _players) { state, eval, players ->
-        TODO()
+    fun start() {
+        _started.value = true
+    }
+
+    suspend fun play(
+        playerWhite: Player,
+        playerBlack: Player,
+    ) {
+        _started.value = true
+        _players.value = Pair(playerWhite, playerBlack)
+
+        _state.value = State.Created()
+
+        while (_state.value !is State.Finished) {
+            _state.update {
+                loop(
+                    state = it,
+                    playerWhite = playerWhite,
+                    playerBlack = playerBlack,
+                )
+            }
+        }
     }
 
     private suspend fun loop(
         state: State,
-        evaluations: Map<FenNotation, Board.Evaluation>,
         playerWhite: Player,
         playerBlack: Player,
     ): State {
@@ -56,13 +78,14 @@ class ChessGame(
             return State.WaitingForMove(
                 position = state.position,
                 nextMovePlayerColor = Player.Color.White,
-                evaluation = evaluations[state.position]
+                evaluation = Board.Evaluation(type = "cp", value = 0)
             )
         }
 
         state as State.WaitingForMove
 
         val position = state.position
+        val player = state.position.toNextMovePlayer()
         val move: MoveNotation? = getNextCorrectMove(position, playerWhite, playerBlack)
 
         if (move == null) {
@@ -72,11 +95,21 @@ class ChessGame(
 
         board.move(position, move)
         val newPosition = board.getPosition()
+        val evaluation = board.getEvaluation(newPosition)
 
+        if (evaluation.type == "mate" && evaluation.value == 0) {
+            _history.update { it.add(player, move, position.fenString) }
+            return State.Finished(
+                winner = position.toNextMovePlayer(),
+                position = newPosition,
+            )
+        }
+
+        _history.update { it.add(player, move, position.fenString) }
         return State.WaitingForMove(
             nextMovePlayerColor = newPosition.toNextMovePlayer(),
             position = newPosition,
-            evaluation = null
+            evaluation = evaluation
         )
     }
 
@@ -102,94 +135,6 @@ class ChessGame(
         }
 
         return move
-    }
-
-    fun start() {
-        _started.value = true
-    }
-
-    suspend fun play(
-        playerWhite: Player,
-        playerBlack: Player,
-    ) {
-        _started.value = true
-        _players.value = Pair(playerWhite, playerBlack)
-
-//        var state: State = State.Created()
-//
-//        while (state !is State.Finished) {
-//            state = loop(
-//                state = state,
-//                evaluations = emptyMap(),
-//                playerWhite = playerWhite,
-//                playerBlack = playerBlack,
-//            )
-//        }
-
-//        // Starts the loop, that ends when value == State.Finished
-//        val position = FenNotation.START_POSITION
-//        _state.value = State.WaitingForMove(
-//            nextMovePlayerColor = position.toNextMovePlayer(),
-//            position = position,
-//            evaluation = null
-//        )
-//
-//        _state.collect {
-//            _state.update {
-//                loop(it, emptyMap(), playerWhite, playerBlack)
-//            }
-//        }
-    }
-
-    suspend fun start(
-        playerWhite: Player,
-        playerBlack: Player,
-    ) {
-        _started.value = true
-        _players.value = Pair(playerWhite, playerBlack)
-
-        position.collect { position ->
-            val player = when (position.toNextMovePlayer()) {
-                Player.Color.White -> playerWhite
-                Player.Color.Black -> playerBlack
-                else -> null
-            } ?: return@collect
-
-            println("pos update, player = ${player.color::class.simpleName}")
-            suspend fun getCorrectMove(player: Player): MoveNotation? {
-                var move = player.getMove(position)
-                println("   $move from ${player.color::class.simpleName}")
-                while (move != null && !isMoveCorrect(move)) {
-                    move = player.getMove(position)
-                }
-
-                return move
-            }
-
-            val move = getCorrectMove(player)
-            if (move != null) {
-                move(move, player.color)
-            } else {
-                Logger.e("move is null", null)
-            }
-        }
-    }
-
-    sealed class State {
-        data class WaitingForMove(
-            val nextMovePlayerColor: Player.Color,
-            val position: FenNotation,
-            val evaluation: Board.Evaluation? = null,
-        ) : State()
-
-        class Finished(
-            val winner: Player.Color?,
-            val position: FenNotation,
-        ) : State()
-
-        data class Created(
-            val position: FenNotation = FenNotation.START_POSITION,
-        ) : State()
     }
 
     fun getTopMoves(position: FenNotation): Flow<TopMovesProgress> =
@@ -297,6 +242,24 @@ class ChessGame(
             data object Black : Color()
             data object None : Color()
         }
+    }
+
+    // TODO: Refactor Game.State to access position without casting.
+    sealed class State {
+        data class WaitingForMove(
+            val nextMovePlayerColor: Player.Color,
+            val position: FenNotation,
+            val evaluation: Board.Evaluation? = null,
+        ) : State()
+
+        data class Finished(
+            val winner: Player.Color?,
+            val position: FenNotation,
+        ) : State()
+
+        data class Created(
+            val position: FenNotation = FenNotation.START_POSITION,
+        ) : State()
     }
 }
 

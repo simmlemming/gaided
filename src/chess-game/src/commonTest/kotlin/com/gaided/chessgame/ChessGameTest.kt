@@ -7,9 +7,9 @@ import com.gaided.engine.Engine
 import com.gaided.model.FenNotation
 import com.gaided.model.MoveNotation
 import com.gaided.model.toMove
-import io.mockk.clearMocks
+import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +25,6 @@ import kotlin.time.Duration.Companion.seconds
 @ExperimentalCoroutinesApi
 class ChessGameTest {
 
-
     @Test
     fun state() = runTest(UnconfinedTestDispatcher(), timeout = 5.seconds) {
         // GIVEN
@@ -36,6 +35,7 @@ class ChessGameTest {
 
         val game = ChessGame(board, listOf())
         val state by game.state.lastValue(backgroundScope, null)
+        val history by game.history.lastValue(backgroundScope, emptySet())
 
         // THEN
         assertIs<State.Created>(state)
@@ -46,24 +46,49 @@ class ChessGameTest {
         }
 
         // THEN
+        assertEquals(0, history.size)
         state.assertWaitingForMove(
             Color.White, FenNotation.START_POSITION, EVALUATION_START_POSITION
         )
 
-        // WHEN
+        // 1st white move
         playerWhite.move("a2a3".toMove())
-
-        // THEN
+        assertEquals(1, history.size)
         state.assertWaitingForMove(
             Color.Black, POSITION_AFTER_1ST_WHITE_MOVE, EVALUATION_AFTER_1ST_WHITE_MOVE
         )
+
+        // 1st black move
+        playerBlack.move("a7a6".toMove())
+        assertEquals(2, history.size)
+        state.assertWaitingForMove(
+            Color.White, POSITION_AFTER_1ST_BLACK_MOVE, EVALUATION_AFTER_1ST_BLACK_MOVE
+        )
+
+        // 2nd white move -> state: mate in 1
+        playerWhite.move("a2a3".toMove())
+        assertEquals(3, history.size)
+        state.assertWaitingForMove(
+            Color.Black, POSITION_AFTER_2ND_WHITE_MOVE, EVALUATION_AFTER_2ND_WHITE_MOVE
+        )
+
+        // 2nd black move -> state: mate
+        playerBlack.move("a7a6".toMove())
+        assertEquals(4, history.size)
+        state.assertFinished(
+            Color.Black, POSITION_AFTER_2ND_BLACK_MOVE
+        )
     }
+
+    private fun State?.assertFinished(winner: Color, position: FenNotation) =
+        assertEquals(State.Finished(winner, position), this)
 
     private fun State?.assertWaitingForMove(color: Color, position: FenNotation, evaluation: Board.Evaluation) =
         assertEquals(State.WaitingForMove(color, position, evaluation), this)
 
-
     private fun mockBoard() = mockk<Board> {
+        coEvery { move(any(), any()) } just Runs
+
         coEvery { getPosition() } returnsMany listOf(
             POSITION_AFTER_1ST_WHITE_MOVE,
             POSITION_AFTER_1ST_BLACK_MOVE,
@@ -86,63 +111,6 @@ class ChessGameTest {
         }
     }
 
-    @Test
-    fun `moves with players`() = runTest(UnconfinedTestDispatcher()) {
-        // GIVEN
-        val board = mockk<Board>(relaxed = true) {
-            coEvery { getPosition() } returnsMany listOf(
-                POSITION_AFTER_1ST_WHITE_MOVE,
-                POSITION_AFTER_1ST_BLACK_MOVE,
-                POSITION_AFTER_2ND_BLACK_MOVE,
-                POSITION_AFTER_2ND_WHITE_MOVE,
-                POSITION_AFTER_2ND_BLACK_MOVE,
-            )
-            coEvery { isMoveCorrect(any(), any()) } returns false
-            coEvery { isMoveCorrect(any(), "a2a3".toMove()) } returns true
-            coEvery { isMoveCorrect(any(), "a7a6".toMove()) } returns true
-        }
-
-        val game = ChessGame(board, listOf())
-        val history by game.history.lastValue(backgroundScope, emptySet())
-        assertTrue(history.isEmpty())
-
-        val playerWhite = TestPlayer(Color.White)
-        val playerBlack = TestPlayer(Color.Black)
-
-        backgroundScope.launch {
-            game.start(playerWhite, playerBlack)
-        }
-
-        // WHEN
-        playerWhite.move("a2a3".toMove())
-
-        // THEN
-        coVerify { board.move(any(), "a2a3".toMove()) }
-        assertEquals(1, history.size)
-
-        // WHEN
-        playerBlack.move("a7a6".toMove())
-
-        // THEN
-        coVerify { board.move(any(), "a7a6".toMove()) }
-        assertEquals(2, history.size)
-
-        // WHEN
-        clearMocks(board, answers = false)
-        playerWhite.move("a0b0".toMove())
-
-        // THEN
-        coVerify(exactly = 0) { board.move(any(), any()) }
-        assertEquals(2, history.size)
-
-        // WHEN
-        playerWhite.move("a2a3".toMove())
-
-        // THEN
-        coVerify { board.move(any(), "a2a3".toMove()) }
-        assertEquals(3, history.size)
-    }
-
     private class TestPlayer(override val color: Color) : ChessGame.Player {
         override val name = "Test player"
 
@@ -150,7 +118,9 @@ class ChessGameTest {
 
         override suspend fun getMove(position: FenNotation): MoveNotation? {
             println("Get move ${color::class.simpleName}")
-            return _moves.receive()
+            val received = _moves.receive()
+            println("... move = $received")
+            return received
         }
 
         suspend fun move(move: MoveNotation) {
@@ -194,19 +164,19 @@ class ChessGameTest {
 }
 
 private val POSITION_AFTER_1ST_WHITE_MOVE =
-    FenNotation.fromFenString("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1")
+    FenNotation.fromFenString("1nbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1")
 
 private val POSITION_AFTER_1ST_BLACK_MOVE =
-    FenNotation.fromFenString("rnbqkbnr/pppp1ppp/4p3/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2")
+    FenNotation.fromFenString("2bqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 1")
 
 private val POSITION_AFTER_2ND_WHITE_MOVE =
-    FenNotation.fromFenString("rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/4PN2/PP3PPP/RNBQKB1R b KQkq - 0 4")
+    FenNotation.fromFenString("3qkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1")
 
 private val POSITION_AFTER_2ND_BLACK_MOVE =
-    FenNotation.fromFenString("rnbqkb1r/pp2pppp/2p2n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R w KQkq - 0 4")
+    FenNotation.fromFenString("4kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 1")
 
-private val EVALUATION_START_POSITION = Board.Evaluation("centipawn", 0)
-private val EVALUATION_AFTER_1ST_WHITE_MOVE = Board.Evaluation("centipawn", 100)
-private val EVALUATION_AFTER_1ST_BLACK_MOVE = Board.Evaluation("centipawn", -100)
+private val EVALUATION_START_POSITION = Board.Evaluation("cp", 0)
+private val EVALUATION_AFTER_1ST_WHITE_MOVE = Board.Evaluation("cp", 100)
+private val EVALUATION_AFTER_1ST_BLACK_MOVE = Board.Evaluation("cp", -100)
 private val EVALUATION_AFTER_2ND_WHITE_MOVE = Board.Evaluation("mate", 1)
 private val EVALUATION_AFTER_2ND_BLACK_MOVE = Board.Evaluation("mate", 0)
