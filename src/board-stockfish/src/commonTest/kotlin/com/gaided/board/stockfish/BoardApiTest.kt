@@ -14,8 +14,8 @@ import java.net.HttpURLConnection
 
 @ExperimentalCoroutinesApi
 internal class BoardApiTest {
-
     private lateinit var api: ApiUnderTest
+    private var nextHttpResponse: String = ""
 
     @Before
     fun setUp() {
@@ -123,8 +123,37 @@ internal class BoardApiTest {
         assertRequestBody(api.connection, expectedRequests)
     }
 
+    @Test
+    fun `position is not set after it is received`() = runTest {
+        api.makeMoves("pos-1", listOf("a2a3"))
+        nextHttpResponse = "pos-2"
+        api.getFenPosition()
+
+        api.getEvaluation("pos-2")
+
+        // pos-2 is not set before the `get_evaluation` call
+        // because it was previously received with `get_fen_position`.
+        val expectedRequests = """
+            {
+                "method": "set_fen_position",
+                "args": ["pos-1"]
+            }{
+                "method": "make_moves_from_current_position",
+                "args": [["a2a3"]]
+            }{
+                "method": "get_fen_position",
+                "args": []
+            }{
+                "method": "get_evaluation",
+                "args": []
+            }
+        """.trimIndent()
+
+        assertRequestBody(api.connection, expectedRequests)
+    }
+
     private fun mockConnection() = mockk<HttpURLConnection>(relaxed = true) {
-        every { inputStream } returns ByteArrayInputStream("123".toByteArray())
+        every { inputStream } answers { ByteArrayInputStream(nextHttpResponse.toByteArray()) }
         every { outputStream } returns ByteArrayOutputStream()
     }
 

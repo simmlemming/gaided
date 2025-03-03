@@ -13,7 +13,9 @@ internal open class RemoteBoardApi(
 ) : StockfishApi(url, openConnection) {
 
     public suspend fun getFenPosition(): String = mutex.withLock {
-        call("get_fen_position")
+        call("get_fen_position").also {
+            lastSetPosition = it
+        }
     }
 
     public suspend fun setFenPosition(position: String): Unit = withPosition(position) {

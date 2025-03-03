@@ -11,7 +11,7 @@ public open class StockfishApi protected constructor(
 ) : HttpApi(openConnection) {
 
     private val endpoint: URL = URL("$url/call")
-    private var lastSetPosition: String? = null
+    protected var lastSetPosition: String? = null
     protected val mutex: Mutex = Mutex()
 
     protected suspend fun <R> withPosition(position: String, block: () -> R): R = mutex.withLock {
